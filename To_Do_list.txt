@@ -1,0 +1,5 @@
+### Coisas para fazer ###
+
+1. criar uma planilha com as refletancias.
+2. Adicionar essa planilha no pacote.
+3. Criar funcao para filtrar os dados desse pacote de forma simples.
