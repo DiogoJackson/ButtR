@@ -2,4 +2,3 @@
 
 export(imp)
 export(somar)
-importFrom(readr,read_file)

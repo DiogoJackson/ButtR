@@ -1,43 +1,71 @@
-#organizacao
-#' as pastas no dryad serao colocadas por zips de especies.
-#' cada pasta vai ser nomeada da seguinte forma: exemplo: Pieridae_Delia_crassipes
-get_butterfly <- function(families = c("family1", "family2", "family3", "family4"), species = c()) {
-  ## Usando dados de: https://datadryad.org/stash/dataset/doi:10.5061/dryad.7wm37pw1d
+get_species <- function(species = c(),
+                        family = c("Pieridae",
+                                   "Lycanidae",
+                                   "Papilionidae",
+                                   "Hesperiidae",
+                                   "Nymphalidae"),
+                        place = c("Brisbane",
+                                  "Cairns",
+                                  "Sydney")) {
 
-  for (family in families) {
-    if (family == "family1") {
-      download.file(url = "https://datadryad.org/stash/downloads/file_stream/3048006",
-                    destfile = paste0("family1", ".zip"),
-                    mode = "wb")
-    } else if (family == "family2") {
-      download.file(url = "https://datadryad.org/stash/downloads/file_stream/3048005",
-                    destfile = paste0("family2", ".zip"),
-                    mode = "wb")
-    } else if (family == "family3") {
-      download.file(url = "https://datadryad.org/stash/downloads/file_stream/3048019",
-                    destfile = paste0("family3", ".zip"),
-                    mode = "wb")
+  # URLs das espécies
+  species_urls <- list(
+    "Delia_cristata" = "https://datadryad.org/stash/downloads/file_stream/3048006",
+    "Delia_crassipes" = "https://datadryad.org/stash/downloads/file_stream/3048006",
+    "Amata_leptodactyla" = "https://datadryad.org/stash/downloads/file_stream/3048005",
+    "Leptuca_albugularis" = "https://datadryad.org/stash/downloads/file_stream/3048005"
+    # Adicione mais URLs conforme necessário
+  )
+
+  # Mapeamento de espécies para famílias
+  species_families <- list(
+    "Delia_cristata" = "Pieridae",
+    "Delia_crassipes" = "Pieridae",
+    "Amata_leptodactyla" = "Nymphalidae",
+    "Leptuca_albugularis" = "Nymphalidae"
+    # Adicione mais mapeamentos conforme necessário
+  )
+
+  # Criação da pasta "butterfly_data" para os downloads
+  species_folder <- "butterfly_data"
+  dir.create(species_folder, showWarnings = FALSE)
+
+  for (sp in species) {
+    if (sp %in% names(species_urls)) {
+      zip_file <- paste0(sp, ".zip")
+      zip_path <- file.path(species_folder, zip_file)
+      download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
+      unzip(zip_path, exdir = file.path(species_folder, sp))
+      cat("Espécie", sp, "baixada com sucesso no diretório:\n", getwd(), "\n")
     } else {
-      print("Invalid family:", family)
+      cat("Espécie", sp, "não encontrada\n")
     }
+  }
 
-    # Descompactar o arquivo zip
-    unzip(paste0(family, ".zip"))
+  for (fam in family) {
+    if (fam %in% unique(unlist(species_families))) {
+      family_folder <- paste0("butterfly_data_", fam)
+      dir.create(family_folder, showWarnings = FALSE)
+      species_in_family <- names(Filter(function(x) x == fam, species_families))
 
-    # Excluir pastas de espécies não selecionadas
-    if (!is.null(species)) {
-      all_species <- list.files(paste0(family, "/"))
-      species_to_delete <- setdiff(all_species, species)
-      for (specie in species_to_delete) {
-        file.remove(paste0(family, "/", specie))
+      for (sp in species_in_family) {
+        if (sp %in% names(species_urls)) {
+          zip_file <- paste0(sp, ".zip")
+          zip_path <- file.path(family_folder, zip_file)
+          download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
+          unzip(zip_path, exdir = file.path(family_folder, sp))
+          cat("Espécie", sp, "baixada com sucesso para a família", fam, "\n")
+        } else {
+          cat("Espécie", sp, "não encontrada para a família", fam, "\n")
+        }
       }
+    } else {
+      cat("Família", fam, "não encontrada\n")
     }
   }
 }
 
-# Exemplo de uso: baixando várias famílias e mantendo apenas pastas de espécies selecionadas
-get_butterfly(c("family1", "family2"), c("leptuca_leptodactyla", "leptuca_cumulanta"))
-
-# Se nenhum argumento for passado, nada será baixado
-get_butterfly()
-get_butterfly()
+# Exemplo de uso da função
+get_species(family = c("Pieridae"),
+            species = c("Delia_cristata", "Amata_leptodactyla"),
+            place = "Brisbane")

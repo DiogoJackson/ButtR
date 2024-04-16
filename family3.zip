@@ -1,0 +1,54 @@
+# Data from: forest stand dynamics of a short-stature tree species: ecological knowledge for sustainable forest management
+
+[https://doi.org/10.5061/dryad.7wm37pw1d](https://doi.org/10.5061/dryad.7wm37pw1d)
+
+This data set is a forest inventory of *Nothofagus antarctica* in southern Chile. More than 20 sites were selected. In each site, parallel transects were set and every 30 m a sampling point was set where the distance to the nearest four trees (in accordance with the cardinal points) were measured.
+
+## Description of the data and file structure
+
+variable name and description
+
+STAND - or site, it is where the sampling was conducted; sites varied in terms of precipitation, from very-humid. humid, mesic, and dry
+
+TRANSECT - a line draw within the stand
+
+PLOT - it is the sampling unit; it is located within the transect
+
+Q1SP - 	distance to tree species 1 (m)
+
+Q1DBH - diameter at breast height (DBH, cm) of tree species 1
+
+Q1HEIGHT - height (m) of tree species 1
+
+Q2SP - 	distance to tree species 2 (m)
+
+Q2DBH - diameter at breast height (DBH, cm) of tree species 2
+
+Q2HEIGHT - height (m) of tree species 2
+
+Q3SP - 	distance to tree species 3 (m)
+
+Q3DBH - diameter at breast height (DBH, cm) of tree species 3
+
+Q3HEIGHT - height (m) of tree species 3
+
+Q4SP - 	distance to tree species 4 (m)
+
+Q4DBH - diameter at breast height (DBH, cm) of tree species 4
+
+Q4HEIGHT - height (m) of tree species 4
+
+REG1 - number of seedlings of 0-20 cm height within a central 1 m2 plot
+
+REG2 - number of seedlings of 20-50 cm height within a central 1 m2 plot
+
+REG3 - number of seedlings of 50-100 cm height within a central 1 m2 plot
+
+Missing code - "NA"
+
+##### Sharing/Access information:
+
+Data was derived from the following sources:
+
+*   Fajardo, Alex; Moreno-Meynard, Paulo; Soto, Daniel (Forthcoming 2024). Forest stand dynamics of a short-stature tree species: ecological knowledge for sustainable forest management
+
