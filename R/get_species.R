@@ -1,90 +1,94 @@
 #'
 #'
 get_species <- function(species = c(),
-                        family = c("Pieridae",
-                                   "Lycanidae",
-                                   "Papilionidae",
-                                   "Hesperiidae",
-                                   "Nymphalidae"),
-                        place = c("Brisbane",
-                                  "Cairns",
-                                  "Sydney")) {
+                        family = NULL,
+                        place = c("__MACOSX",
+                                  "sample frames, landmark data")) {
 
-  # Pieridae list ----
+  # Verificar se as listas de espécies e famílias estão vazias
+  if (length(species) == 0 && is.null(family)) {
+    cat("Please, insert a species name and/or a family name to download.\n Use the get_splist() function to see the names.\n")
+    return(NULL)
+  }
+
+  # URLs of all species ----
   species_urls <- list(
-    "Delia_cristata" = "https://datadryad.org/stash/downloads/file_stream/3048006",
-    "Delia_crassipes" = "https://datadryad.org/stash/downloads/file_stream/3048006",
-    "Amata_leptodactyla" = "https://datadryad.org/stash/downloads/file_stream/3048005",
-    "Leptuca_albugularis" = "https://datadryad.org/stash/downloads/file_stream/3048005"
-    # Add species here
+    "Delia_cristata" = "https://datadryad.org/stash/downloads/file_stream/3103278"
+    # >>> Add more species here <<<
   )
 
-  # Mapeamento de espécies para famílias
+  # Species for families
   species_families <- list(
-    "Delia_cristata" = "Pieridae",
-    "Delia_crassipes" = "Pieridae",
-    "Amata_leptodactyla" = "Nymphalidae",
-    "Leptuca_albugularis" = "Nymphalidae"
-    # Adicione mais mapeamentos conforme necessário
+    "Delia_cristata" = "Pieridae"
+    # >>> Add more mapping here <<<
   )
 
-  place_list <- list(
-    "Brisbane",
-    "Cairns",
-    "Sydney"
-    # Add places
-  )
-
-  # Criação da pasta "species" para os downloads
-  species_folder <- "butterfly_data"
+  # Creating "butterfly_data" file for downloads ----
+  species_folder <- "Butterfly_species"
   dir.create(species_folder, showWarnings = FALSE)
 
+  # Download individual species by name ----
   for (sp in species) {
     if (sp %in% names(species_urls)) {
-
       zip_file <- paste0(sp, ".zip")
       zip_path <- file.path(species_folder, zip_file)
       download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
       unzip(zip_path, exdir = file.path(species_folder, sp))
-      cat("Espécie", sp, "baixada com sucesso no diretorio:\n", getwd())
+
+      # Delete place files
+      folders_to_keep <- intersect(place, c("__MACOSX", "sample frames, landmark data"))
+      folders_to_delete <- setdiff(c("__MACOSX", "sample frames, landmark data"), folders_to_keep)
+
+      for (folder in folders_to_delete) {
+        folder_path <- file.path(species_folder, sp, folder)
+        if (file.exists(folder_path)) {
+          unlink(folder_path, recursive = TRUE)
+        }
+      }
+
+      cat("Species", sp, "was successfully downloaded in:\n", getwd(), "\n")
 
     } else {
-      cat("Espécie", sp, "nao encontrada\n")
+      cat("Species", sp, "not found. Please check the species list in the dataset\n")
     }
   }
 
-      for (fam in family) {
-        # Verifica se a família está mapeada
-        if (fam %in% unique(unlist(species_families))) {
-          family_folder <- paste0("butterfly_data_", family)
-          dir.create(family_folder, showWarnings = FALSE)
+  # Download species by family if family is selected ----
+  if (!is.null(family)) {
+    for (fam in family) {
+      if (fam %in% unique(unlist(species_families))) {
+        family_folder <- paste0("Family_", fam)
+        dir.create(family_folder, showWarnings = FALSE)
+        species_in_family <- names(Filter(function(x) x == fam, species_families))
 
-          # Obtém as espécies associadas à família
-          species_in_family <- names(Filter(function(x) x == family, species_families))
+        for (sp in species_in_family) {
+          if (sp %in% names(species_urls)) {
+            zip_file <- paste0(sp, ".zip")
+            zip_path <- file.path(family_folder, zip_file)
+            download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
+            unzip(zip_path, exdir = file.path(family_folder, sp))
 
-          # Baixa cada espécie associada à família
-          for (sp in species_in_family) {
-            if (sp %in% names(species_urls)) {
-              # Nome do arquivo ZIP
-              zip_file <- paste0(sp, ".zip")
-              # Caminho completo para o arquivo ZIP
-              zip_path <- file.path(family_folder, zip_file)
+            # Delete place files
+            folders_to_keep <- intersect(place, c("__MACOSX", "sample frames, landmark data"))
+            folders_to_delete <- setdiff(c("__MACOSX", "sample frames, landmark data"), folders_to_keep)
 
-              # Download do arquivo ZIP
-              download.file(url = species_in_family[[sp]], destfile = zip_path, mode = "wb")
-
-              # Descompactar o arquivo ZIP
-              unzip(zip_path, exdir = file.path(family_folder, sp))
-
-              cat(family, "baixada com sucesso!\n")
-            } else {
-              cat(family,"não encontrada!\n")
+            for (folder in folders_to_delete) {
+              folder_path <- file.path(family_folder, sp, folder)
+              if (file.exists(folder_path)) {
+                unlink(folder_path, recursive = TRUE)
+              }
             }
+
+            cat("Family", fam, "was successfully downloaded in:\n", getwd(), "\n")
+          } else {
+            cat("Family", fam, "not found. Please check the family list in the dataset\n")
           }
         }
       }
+    }
   }
+}
 
-get_species(family = c("none"),
-            species = c("Delia_cristata", "Amata_leptodactyla"),
-            place = "Brisbane")
+get_species(species = c("Delia_cristata"),
+            place = c("__MACOSX"),
+            family = c("Pieridae"))
