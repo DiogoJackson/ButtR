@@ -25,10 +25,8 @@ get_species <- function(species = c(),
                         place = c("__MACOSX",
                                   "sample frames, landmark data")) {
 
-  # Verificar se as listas de espécies e famílias estão vazias
   if (length(species) == 0 && is.null(family)) {
     cat("Please, insert a species name and/or a family name to download.\n Use the get_splist() function to see the names.\n")
-    return(NULL)
   }
 
   # URLs of all species ----
