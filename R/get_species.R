@@ -1,5 +1,25 @@
+#' Download files from Dryad...
 #'
+#' This function allows downloading files from Dryad for a specific butterfly species or family...
 #'
+#' @param species Character vector containing the names of the species to be downloaded. Default is empty.
+#' @param family Character vector containing the names of the families from which all species will be downloaded. Default is NULL.
+#' @param place Character vector containing the names of places to be excluded after download. Default is c("__MACOSX", "sample frames, landmark data").
+#'
+#' @examples
+#' # Download files for a single species
+#' get_species(species = c("Delia_cristata"))
+#'
+#' # Download files for a more the one species
+#' get_species(species = c("Delia_cristata","Delia_cumulanta"))
+#'
+#' # Download files for an entire family
+#' get_species(family = c("Pieridae"))
+#'
+#' # Download files for species and families of a specific place
+#' get_species(species = c("Delia_cristata", "Delia_cumulanta), family = c("Pieridae", "Hesperidae"), place = c("__MACOSX"))
+#'
+#' @export
 get_species <- function(species = c(),
                         family = NULL,
                         place = c("__MACOSX",
