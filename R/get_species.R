@@ -7,18 +7,21 @@
 #' @param place Character vector containing the names of places to be excluded after download. Default is c("__MACOSX", "sample frames, landmark data").
 #'
 #' @examples
+#'\dontrun{
 #' # Download files for a single species
-#' get_species(species = c("Delia_cristata"))
+#' get_species(species = "Delia_cristata")
 #'
 #' # Download files for a more the one species
 #' get_species(species = c("Delia_cristata","Delia_cumulanta"))
 #'
 #' # Download files for an entire family
-#' get_species(family = c("Pieridae"))
+#' get_species(family = "Pieridae")
 #'
 #' # Download files for species and families of a specific place
-#' get_species(species = c("Delia_cristata", "Delia_cumulanta), family = c("Pieridae", "Hesperidae"), place = c("__MACOSX"))
-#'
+#' get_species(species = c("Delia_cristata", "Delia_cumulanta"),
+#'             family = c("Pieridae", "Hesperidae"),
+#'             place = "Brisbane")
+#'}
 #' @export
 get_species <- function(species = c(),
                         family = NULL,
@@ -50,8 +53,8 @@ get_species <- function(species = c(),
     if (sp %in% names(species_urls)) {
       zip_file <- paste0(sp, ".zip")
       zip_path <- file.path(species_folder, zip_file)
-      download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
-      unzip(zip_path, exdir = file.path(species_folder, sp))
+      utils::download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
+      utils::unzip(zip_path, exdir = file.path(species_folder, sp))
 
       # Delete place files
       folders_to_keep <- intersect(place, c("__MACOSX", "sample frames, landmark data"))
@@ -83,8 +86,8 @@ get_species <- function(species = c(),
           if (sp %in% names(species_urls)) {
             zip_file <- paste0(sp, ".zip")
             zip_path <- file.path(family_folder, zip_file)
-            download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
-            unzip(zip_path, exdir = file.path(family_folder, sp))
+            utils::download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
+            utils::unzip(zip_path, exdir = file.path(family_folder, sp))
 
             # Delete place files
             folders_to_keep <- intersect(place, c("__MACOSX", "sample frames, landmark data"))
@@ -107,6 +110,6 @@ get_species <- function(species = c(),
   }
 }
 
-get_species(species = c("Delia_cristata"),
-            place = c("__MACOSX"),
-            family = c("Pieridae"))
+# get_species(species = c("Delia_cristata"),
+#             place = c("__MACOSX"),
+#             family = c("Pieridae"))
