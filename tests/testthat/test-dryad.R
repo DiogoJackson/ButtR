@@ -25,6 +25,15 @@ test_that("dryad interface works", {
   expect_equal(line1, "# Data from: Evaluating genotyping-in-thousands by sequencing as a genetic monitoring tool for a climate sentinel mammal using non-invasive and archival samples")
 })
 
+test_that("correct version", {
+  # Check that we are finding the latest version from Dryad
+  f <- listFilesInDryad("doi:10.5061/dryad.15dv41nwj")
+  # There should be 1 file called mimicry-in-motion-main.v2.zip.
+  # Earlier versions had different file names
+  expect_equal(nrow(f), 1)
+  expect_equal(f$file, "mimicry-in-motion-main.v2.zip")
+})
+
 test_that("local file interface works", {
   # This is to test that the test mock Dryad interface works. It is tested
   # because it is the basis of further tests, so if it doesn't work, later tests
