@@ -33,7 +33,7 @@ listFilesInDryad <- function(doi) {
   # Available files
   data.frame(
     file = fj$`_embedded`[[1]]$path,
-    url = paste0(DRYAD_API_SITE, fj$`_embedded`[[1]]$`_links.stash:file-download.href`)
+    url = paste0(DRYAD_API_SITE, fj$`_embedded`[[1]]$`_links.stash:download.href`)
   )
 }
 
