@@ -47,7 +47,8 @@ listFilesInDryad <- function(doi) {
 #
 listLocalFiles <- function(path) {
   files <- list.files(path)
-  urls <- paste0("file://", normalizePath(file.path(path, files)))
+  urls <- paste0("file://", normalizePath(file.path(path, files), winslash = "/"))
+  #urls <- utils::URLencode(urls)
   data.frame(
     file = files,
     url = urls

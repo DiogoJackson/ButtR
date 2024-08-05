@@ -56,5 +56,12 @@ test_that("local file interface works", {
     expect_true(file.exists(f$file[readmeIdx]))
     newContent <- readLines(f$file[readmeIdx])
     expect_equal(newContent, origContent)
-    })
+
+    # Also check we can download a file with a space in its name
+    spaceIdx <- which(f$file == "Test space.txt")
+    utils::download.file(url = f$url[spaceIdx], destfile = f$file[spaceIdx], quiet = FALSE)
+    expect_true(file.exists(f$file[spaceIdx]))
+    newContent <- readLines(f$file[spaceIdx], warn = FALSE)
+    expect_equal(newContent, "Test whether we can handle file names that contain spaces.")
+  })
 })
