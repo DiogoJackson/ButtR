@@ -1,42 +1,13 @@
 library(readxl)
 
-#' Download files from Dryad...
-#'
-#' This function allows downloading files from Dryad for a specific butterfly species or family...
-#'
-#' @param species Character vector containing the names of the species to be downloaded. Default is empty.
-#' @param family Character vector containing the names of the families from which all species will be downloaded. Default is NULL.
-#' @param place Character vector containing the names of places to be excluded after download. Default is c("__MACOSX", "sample frames, landmark data").
-#'
-#' @examples
-#'\dontrun{
-#' # Download files for a single species
-#' get_species(species = "Delia_cristata")
-#'
-#' # Download files for a more the one species
-#' get_species(species = c("Delia_cristata","Delia_cumulanta"))
-#'
-#' # Download files for an entire family
-#' get_species(family = "Pieridae")
-#'
-#' # Download files for species and families of a specific place
-#' get_species(species = c("Delia_cristata", "Delia_cumulanta"),
-#'             family = c("Pieridae", "Hesperidae"),
-#'             place = "Brisbane")
-#'}
 #' @export
 get_species <- function(species = c(),
                         db_folder = "australian_butterflies",
                         family = NULL,
-                        place = c("__MACOSX",
-                                  "sample frames, landmark data")) {
-
-  if (length(species) == 0 && is.null(family)) {
-    cat("Please, insert a species name and/or a family name to download.\n Use the get_splist() function to see the names.\n")
-  }
+                        location = c("Sydney", "Brisbane", "Cairns")) {
 
   # Verifica se a pasta "db_folder" (onde os dados serão armazenados) existe.
-  # Se não existir, cria a pasta.
+  # Se não existir, cria a pasta. O simbolo de exclamacao significa "nao"
   if(!dir.exists(db_folder)) {
     dir.create(db_folder)
   }
@@ -48,6 +19,7 @@ get_species <- function(species = c(),
   url <- files$url[files$file == "australian_butterflies.xlsx"]
 
   # Define o caminho onde a planilha será salva localmente
+  # db_folder eh um argumento da funcao.
   spread_sheet <- file.path(db_folder, "australian_butterflies.xlsx")
 
   # Baixa a planilha a partir da URL e a salva no caminho especificado
@@ -65,8 +37,13 @@ get_species <- function(species = c(),
   # Adiciona a extensão ".zip" ao final dos nomes de arquivo na coluna "zipname"
   meta_data$zipname <- paste0(meta_data$zipname, ".zip")
 
-  # Filtra as linhas da tabela onde a família corresponde a uma das famílias de interesse
-  rows <- meta_data$Family %in% family
+  # Se o usuário não especificar nenhuma espécie ou família, seleciona todas as linhas
+  if (length(species) == 0 && is.null(family)) {
+    rows <- rep(TRUE, nrow(meta_data))
+  } else {
+    # Filtra as linhas da tabela onde a família corresponde a uma das famílias de interesse
+    rows <- meta_data$Family %in% family
+  }
 
   # Obtém os nomes dos arquivos zip únicos que correspondem às famílias filtradas
   zips <- unique(meta_data$zipname[rows])
@@ -88,6 +65,7 @@ get_species <- function(species = c(),
     # Descompacta o arquivo zip no diretório de destino especificado
     utils::unzip(zip_path, exdir = file.path(db_folder, sp))
   }
+}
 
   # Download individual species by name ----
   # for (sp in species) {
@@ -97,8 +75,8 @@ get_species <- function(species = c(),
   #     utils::download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
   #     utils::unzip(zip_path, exdir = file.path(species_folder, sp))
 
-      # Delete place files
-  #     folders_to_keep <- intersect(place, c("__MACOSX", "sample frames, landmark data"))
+      # Delete location files
+  #     folders_to_keep <- intersect(location, c("__MACOSX", "sample frames, landmark data"))
   #     folders_to_delete <- setdiff(c("__MACOSX", "sample frames, landmark data"), folders_to_keep)
   #
   #     for (folder in folders_to_delete) {
@@ -130,8 +108,8 @@ get_species <- function(species = c(),
   #           utils::download.file(url = species_urls[[sp]], destfile = zip_path, mode = "wb")
   #           utils::unzip(zip_path, exdir = file.path(family_folder, sp))
   #
-  #           # Delete place files
-  #           folders_to_keep <- intersect(place, c("__MACOSX", "sample frames, landmark data"))
+  #           # Delete location files
+  #           folders_to_keep <- intersect(location, c("__MACOSX", "sample frames, landmark data"))
   #           folders_to_delete <- setdiff(c("__MACOSX", "sample frames, landmark data"), folders_to_keep)
   #
   #           for (folder in folders_to_delete) {
@@ -149,8 +127,7 @@ get_species <- function(species = c(),
   #     }
   #   }
   # }
-}
 
 # get_species(species = c("Delia_cristata"),
-#             place = c("__MACOSX"),
+#             location = c("__MACOSX"),
 #             family = c("Pieridae"))
