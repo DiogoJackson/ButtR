@@ -45,10 +45,12 @@ listFilesInDryad <- function(doi) {
 # ListDbsFiles <- function() listLocalFiles(testthat::test_path("testdata"))
 # get_species(...)
 #
-listLocalFiles <- function(path) {
+listLocalFiles <- function(path, encode = FALSE) {
   files <- list.files(path)
   urls <- paste0("file://", normalizePath(file.path(path, files), winslash = "/"))
-  #urls <- utils::URLencode(urls)
+  if (encode) {
+    urls <- utils::URLencode(urls)
+  }
   data.frame(
     file = files,
     url = urls
