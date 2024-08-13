@@ -1,0 +1,1 @@
+Test whether we can handle file names that contain spaces.
