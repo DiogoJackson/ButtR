@@ -1,8 +1,39 @@
 library(readxl)
 
+# Database structure (unpacked)
+# Oz_butterflies.xlsx
+# Oz_butterflies.csv (TBD)
+# Oz_butterflies.json (TBD)
+# Folder for each family, which contains
+# Folder for each species, which contains
+# Folder for each specimen
+#
+# Specimen folder
+# TODO Name of specimen folder?
+# Family/species/specimen
+# Within each specimen folder:
+# Always contains
+# "<ID>(RGB).arw"
+# "<ID>(UV).arw"
+# May contain
+# Sequence file
+# 2 x linear TIFFs (with corrected specimen IDs), named as for raw files
+# 1 x TIFF with spec locations highlighted (name TBD)
+# Spec files ("<ID><species initials><a|n><spot ID>.rspec") (a|n = angle or normal))
+# CSV equivalent of all spec files
+
+# In Dryad:
+# Oz_butterflies.xlsx
+# Oz_butterflies.csv (TBD)
+# Oz_butterflies.json (TBD)
+# Lots of species zip files
+#
+
+
+
 #' @export
-get_species <- function(species = c(),
-                        db_folder = "australian_butterflies",
+get_species <- function(species = NULL,
+                        db_folder = "Oz_butterflies",
                         family = NULL,
                         location = c("Sydney", "Brisbane", "Cairns")) {
 
@@ -15,12 +46,12 @@ get_species <- function(species = c(),
   # Lista todos os arquivos locais presentes na pasta especificada (neste caso, "data_buttr")
   files <- listLocalFiles("C:\\Users\\Diogo Silva\\Desktop\\data_buttr")
 
-  # Filtra a URL do arquivo "australian_butterflies.xlsx" a partir dos arquivos listados
-  url <- files$url[files$file == "australian_butterflies.xlsx"]
+  # Filtra a URL do arquivo "Oz_butterflies.xlsx" a partir dos arquivos listados
+  url <- files$url[files$file == "Oz_butterflies.xlsx"]
 
   # Define o caminho onde a planilha será salva localmente
   # db_folder eh um argumento da funcao.
-  spread_sheet <- file.path(db_folder, "australian_butterflies.xlsx")
+  spread_sheet <- file.path(db_folder, "Oz_butterflies.xlsx")
 
   # Baixa a planilha a partir da URL e a salva no caminho especificado
   utils::download.file(url = url, destfile = spread_sheet, mode = "wb")
@@ -37,12 +68,22 @@ get_species <- function(species = c(),
   # Adiciona a extensão ".zip" ao final dos nomes de arquivo na coluna "zipname"
   meta_data$zipname <- paste0(meta_data$zipname, ".zip")
 
-  # Se o usuário não especificar nenhuma espécie ou família, seleciona todas as linhas
-  if (length(species) == 0 && is.null(family)) {
-    rows <- rep(TRUE, nrow(meta_data))
-  } else {
-    # Filtra as linhas da tabela onde a família corresponde a uma das famílias de interesse
-    rows <- meta_data$Family %in% family
+  # Se nenhuma espécie ou família for especificada, seleciona todas as linhas
+  rows <- rep(TRUE, nrow(meta_data))
+
+  # Se a família for especificada, atualiza a filtragem
+  if (length(family) > 0) {
+    rows <- rows & meta_data$Family %in% family
+  }
+
+  # Se a espécie for especificada, atualiza a filtragem
+  if (length(species) > 0) {
+    rows <- rows & meta_data$full_species %in% species
+  }
+
+  # Se a espécie for especificada, atualiza a filtragem
+  if (length(location) > 0) {
+    rows <- rows & meta_data$location %in% location
   }
 
   # Obtém os nomes dos arquivos zip únicos que correspondem às famílias filtradas
