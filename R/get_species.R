@@ -9,7 +9,7 @@ library(readxl)
 # Folder for each specimen
 #
 # Specimen folder
-# TODO Name of specimen folder?
+# TO DO Name of specimen folder?
 # Family/species/specimen
 # Within each specimen folder:
 # Always contains

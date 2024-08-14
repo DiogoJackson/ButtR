@@ -1,3 +1,4 @@
+library(testthat)
 test_that("dryad interface works", {
   # Get list of files from an arbitrary repo
   # (https://datadryad.org/stash/landing/show?id=doi%3A10.5061%2Fdryad.s1rn8pkdv)
