@@ -87,35 +87,36 @@ get_species <- function(species = NULL,
   # Get the unique zip file names that match the filtered criteria
   zips <- unique(meta_data$zipname[rows])
 
-  # Create a temporary directory to store the downloaded zip files
+  # Create a temporary directory to store zip files
   tempdir <- tempdir()
 
-  # Iterate through each selected zip file, downloading and extracting the files
+  # For each selected zip file, downloading and extracting the files
   for (zip in zips) {
-    # Define the path where the zip file will be saved temporarily
+    # Define the path to be saved temporarily
     zip_path <- file.path(tempdir, zip)
 
     # Get the URL of the corresponding zip file
     url <- files$url[files$file == zip]
 
-    # Download the zip file from the URL and save it to the temporary path
+    # Download the zip file from the URL
     utils::download.file(url = url, destfile = zip_path, mode = "wb")
 
-    # List the files inside the zip archive without extracting them
+    # List the files without extracting them
     zip_content <- utils::unzip(zip_path, list = TRUE)
 
-    # Extract IDs from the file names (assuming file names are like "specimen01", "specimen21", etc.)
+    # Extract IDs from the file names (assuming file names are like "specimen01", "specimen21"...)
     file_ids <- gsub("\\D", "", zip_content$Name)  # Remove non-digit characters to get IDs
 
-    # Find the IDs corresponding to the specified locations
-    valid_ids <- unique(meta_data$ID[meta_data$location %in% location])
+    # Filtering the IDs corresponding to the specified locations
+    ids_to_extract <- unique(meta_data$ID[meta_data$location %in% location])
 
-    # Select the files whose IDs are in the valid_ids list
-    selected_files <- zip_content$Name[file_ids %in% valid_ids]
+    # Select the files whose IDs are in the list to extract
+    selected_files <- zip_content$Name[file_ids %in% ids_to_extract]
 
-    # If there are matching files, extract only those files
+    # Extract only selected files
     if (length(selected_files) > 0) {
       utils::unzip(zip_path, files = selected_files, exdir = file.path(db_folder, zip))
+
     }
   }
 }
