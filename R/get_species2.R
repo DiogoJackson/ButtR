@@ -79,10 +79,10 @@ get_species <- function(species = NULL,
     rows <- rows & meta_data$full_species %in% species
   }
 
-  # # If location is specified, update the filtering
-  # if (length(location) > 0) {
-  #   rows <- rows & meta_data$location %in% location
-  # }
+  # If location is specified, update the filtering
+  if (length(location) > 0) {
+    rows <- rows & meta_data$location %in% location
+  }
 
   # Get the unique zip file names that match the filtered criteria
   zips <- unique(meta_data$zipname[rows])
