@@ -1,5 +1,3 @@
-library(readxl)
-
 # Database structure (unpacked)
 # Oz_butterflies.xlsx
 # Oz_butterflies.csv (TBD)
@@ -8,8 +6,7 @@ library(readxl)
 # Folder for each species, which contains
 # Folder for each specimen
 #
-# Specimen folder
-# TO DO Name of specimen folder?
+# Specimen folder = specimen1, specimen13, etc...
 # Family/species/specimen
 # Within each specimen folder:
 # Always contains
@@ -32,7 +29,10 @@ library(readxl)
 get_species <- function(species = NULL,
                         genus = NULL,
                         family = NULL,
+                        sex = NULL,
+                        year = c("2022", "2023"),
                         location = c("Sydney", "Brisbane", "Cairns"),
+                        reflectance = NULL,
                         db_folder = "Oz_butterflies") {
 
   # Check if the "db_folder" directory (where the data will be stored) exists.
@@ -53,13 +53,12 @@ get_species <- function(species = NULL,
   # Download the spreadsheet from the URL and save it in the specified path
   # utils::download.file(url = url_oz, destfile = spread_sheet, mode = "wb")
 
-  # Path to the local folder where files are stored
+  # Using local folder to test function --------------
   local_folder <- "C:\\Users\\Diogo Silva\\Desktop\\data_buttr"
   spread_sheet <- file.path(local_folder, "Oz_butterflies.xlsx")
   file.copy(spread_sheet, file.path(db_folder, "Oz_butterflies.xlsx"), overwrite = TRUE)
 
-  # Testing in the PC (without download)
-  # Read the data from desktop
+  # reading metadata
   meta_data <- readxl::read_excel(spread_sheet,
                                   skip = 1)
 
@@ -68,7 +67,6 @@ get_species <- function(species = NULL,
   meta_data$full_species <- paste(meta_data$genus, meta_data$species)
 
   # Create a new column "zipname" that combines "genus", "species" into a single name, separated by "_"
-
   meta_data$zipname <- paste(meta_data$genus, meta_data$species, sep = "_")
 
   # Add the ".zip" extension to the end of the file names in the "zipname" column
@@ -77,14 +75,10 @@ get_species <- function(species = NULL,
   # If no species or family is specified, select all rows (TRUE will be repeated nrow times)
   rows <- rep(TRUE, nrow(meta_data))
 
-
-  # Simulating parameters settings
-  # family <- NULL
-  # genus <- NULL
-  # species <- NULL
-  # location <- c("Sydney", "Brisbane", "Cairns")
-
-  # If a family is specified, update the filtering
+  # If the user has specified a family (or more), this will filter the 'meta_data'
+  # to include only the rows where the 'Family' column matches any specified family names.
+  # The '&' operator is used to combine this condition with any previously applied,
+  # ensuring that the final set of rows meets all specified criteria.
   if (length(family) > 0) {
     rows <- rows & meta_data$Family %in% family
   }
@@ -104,6 +98,21 @@ get_species <- function(species = NULL,
     rows <- rows & meta_data$location %in% location
   }
 
+  # If spectra is specified, update the filtering
+  if (length(reflectance) > 0) {
+    rows <- rows & meta_data$reflectance %in% reflectance
+  }
+
+  # If sex is specified, update the filtering
+  if (length(sex) > 0) {
+    rows <- rows & meta_data$sex %in% sex
+  }
+
+  # If year is specified, update the filtering
+  if (length(year) > 0) {
+    rows <- rows & meta_data$year %in% year
+  }
+
   # Get the unique zip file names that match the filtered criteria
   zips <- unique(meta_data$zipname[rows])
 
@@ -120,9 +129,26 @@ get_species <- function(species = NULL,
       # List files inside the zip archive without extracting them
       zip_content <- utils::unzip(zip_path, list = TRUE)
 
-      # Extract IDs from the file names and filter based on location
+      # Extract IDs from the file names
       file_ids <- gsub("\\D", "", zip_content$Name)
-      valid_ids <- unique(meta_data$ID[meta_data$location %in% location])
+
+      # Filter IDs based on location
+      valid_ids <- meta_data$ID[meta_data$location %in% location]
+
+      # Refine the valid IDs by matching sex, reflectance, and year.
+      if (!is.null(sex)) {
+        valid_ids <- valid_ids[valid_ids %in% meta_data$ID[meta_data$sex %in% sex]]
+      }
+
+      if (!is.null(reflectance)) {
+        valid_ids <- valid_ids[valid_ids %in% meta_data$ID[meta_data$reflectance %in% reflectance]]
+      }
+
+      if (!is.null(year)) {
+        valid_ids <- valid_ids[valid_ids %in% meta_data$ID[meta_data$year %in% year]]
+      }
+
+      # Select files that match the filtered valid IDs
       selected_files <- zip_content$Name[file_ids %in% valid_ids]
 
       # If there are matching files, extract only those files
@@ -134,6 +160,10 @@ get_species <- function(species = NULL,
       warning(paste("Zip file not found locally:", zip))
     }
   }
+
+  dir <- getwd()
+  full_path <- file.path(dir, db_folder)
+  message(paste("Files have been successfully downloaded to the folder:", full_path))
 }
 
 # For each selected zip file, downloading and extracting the files
