@@ -38,15 +38,21 @@ listFilesInDryad <- function(doi) {
 }
 
 # Function for testing without using Dryad. This is a drop-in replacement for
-# listFilesInDryad
+# listFilesInDryad. It may not work correctly for files with spaces in their
+# names.
 #
 # @examples
 # # To use in testing, do something like:
-# ListDbsFiles <- function() listLocalFiles(testthat::test_path("testdata"))
+# testthat::local_mocked_bindings(ListDbsFiles = function() {
+#    listLocalFiles(testthat::test_path("testdata/repo"))
+# })
 # get_species(...)
 #
 listLocalFiles <- function(path, encode = FALSE) {
   files <- list.files(path)
+  # Remove unwanted files
+  files <- grep("^~\\$", files, invert = TRUE, value = TRUE)
+  # Construct URLs
   urls <- paste0("file://", normalizePath(file.path(path, files), winslash = "/"))
   if (encode) {
     urls <- utils::URLencode(urls)
@@ -66,4 +72,6 @@ listLocalFiles <- function(path, encode = FALSE) {
 ListDbsFiles <- function() listFilesInDryad(BUTTR_DOI)
 
 
-
+#Uncomment this for debugging/development using local repository. For unit
+#tests, use testthat::local_mocked_bindings instead ListDbsFiles = function()
+#listLocalFiles(testthat::test_path("testdata/repo"))

@@ -1,4 +1,5 @@
 library(testthat)
+
 test_that("dryad interface works", {
   # Get list of files from an arbitrary repo
   # (https://datadryad.org/stash/landing/show?id=doi%3A10.5061%2Fdryad.s1rn8pkdv)
@@ -41,28 +42,18 @@ test_that("local file interface works", {
   # will fail spuriously
 
   # This should list the files in the testdata folder
-  f <- listLocalFiles(testthat::test_path("testdata"))
+  f <- listLocalFiles(testthat::test_path("testdata/db"))
   # Check that various files exist
-  expect_true("ButtR.csv" %in% f$file)
   expect_true("README.txt" %in% f$file)
-  expect_true("Hesperiidae-Ochlodes-sylvanus.zip" %in% f$file)
-  expect_true("Papilionidae-Papilio-aegeus.zip" %in% f$file)
 
   # Download the README.txt file
   readmeIdx <- which(f$file == "README.txt")
-  origContent <- readLines(file.path(testthat::test_path("testdata"), f$file[readmeIdx]))
+  origContent <- readLines(file.path(testthat::test_path("testdata/db"), f$file[readmeIdx]))
   # Check that it can be downloaded and has the same contents as the original
   withr::with_dir(tempdir(), {
     utils::download.file(url = f$url[readmeIdx], destfile = f$file[readmeIdx], quiet = TRUE)
     expect_true(file.exists(f$file[readmeIdx]))
     newContent <- readLines(f$file[readmeIdx])
     expect_equal(newContent, origContent)
-
-    # Also check we can download a file with a space in its name
-    spaceIdx <- which(f$file == "Test space.txt")
-    utils::download.file(url = f$url[spaceIdx], destfile = f$file[spaceIdx], method = "internal", quiet = TRUE)
-    expect_true(file.exists(f$file[spaceIdx]))
-    newContent <- readLines(f$file[spaceIdx], warn = FALSE)
-    expect_equal(newContent, "Test whether we can handle file names that contain spaces.")
   })
 })

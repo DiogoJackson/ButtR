@@ -2,38 +2,44 @@
 % Please edit documentation in R/get_species.R
 \name{get_species}
 \alias{get_species}
-\title{Download files from Dryad...}
+\title{Downloads all or part of the Oz butterflies database to a local folder.}
 \usage{
 get_species(
-  species = c(),
+  species = NULL,
+  genus = NULL,
   family = NULL,
-  place = c("__MACOSX", "sample frames, landmark data")
+  sex = NULL,
+  year = NULL,
+  location = NULL,
+  reflectance = NULL,
+  db_folder = "Oz_butterflies"
 )
 }
 \arguments{
-\item{species}{Character vector containing the names of the species to be downloaded. Default is empty.}
+\item{species}{Optional vector of binomial names of species of interest. If
+specified, only species from this list will be included in the local
+database.}
 
-\item{family}{Character vector containing the names of the families from which all species will be downloaded. Default is NULL.}
+\item{genus}{If specified, only specimens from these genera will be
+installed.}
 
-\item{place}{Character vector containing the names of places to be excluded after download. Default is c("__MACOSX", "sample frames, landmark data").}
+\item{family}{If specified, only specimens from this family will be
+installed.}
+
+\item{sex}{If specified, only specimens of this sex (\code{"male"} or \code{"female"}) will
+be installed.}
+
+\item{year}{If specified, only specimens collected during these years will be
+installed (options are 2022 or 2023).}
+
+\item{location}{If specified, only specimens collected at these locations
+will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and \code{"Sydney"}).}
+
+\item{reflectance}{If specified, only specimens with the specified reflectance
+will be installed (\code{"yes"} or \code{"no"}).}
+
+\item{db_folder}{Path of folder that will contain the downloaded database.}
 }
 \description{
-This function allows downloading files from Dryad for a specific butterfly species or family...
-}
-\examples{
-\dontrun{
-# Download files for a single species
-get_species(species = "Delia_cristata")
-
-# Download files for a more the one species
-get_species(species = c("Delia_cristata","Delia_cumulanta"))
-
-# Download files for an entire family
-get_species(family = "Pieridae")
-
-# Download files for species and families of a specific place
-get_species(species = c("Delia_cristata", "Delia_cumulanta"),
-            family = c("Pieridae", "Hesperidae"),
-            place = "Brisbane")
-}
+Downloads all or part of the Oz butterflies database to a local folder.
 }
