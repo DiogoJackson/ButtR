@@ -1,11 +1,26 @@
-# Functions for constructing and checking the database. Carries out some basic
-# checks of database completeness and correctness. These functions are not
-# strictly part of the published package, but are used to check and publish the
-# database.
+# Functions for constructing and checking the database. Carries out some checks
+# of database completeness and correctness, then creates a directory in the
+# format suitable for uploading to Dryad. These functions are not strictly part
+# of the published package, but are used to check and publish the database.
+#
+# Will be slow to run the first time, because it queries the Australian Faunal
+# Directory once for each species. The results are saved locally to speed up
+# subsequent runs. Results are saved in AFD-query.csv in the top level package
+# directory.
+
+
+# Location of the source (unpacked) database to be checked
+DBDIR <- "tests/testthat/testdata/db"
+
+# Directory where the packed database will be created
+REPODIR <- "tests/testthat/testdata/repo"
+
+# Basename of the metadata spreadsheet file
+METADATA_BASENAME <- "Oz_butterflies"
+
 
 library(rvest) # Required for checking species names
 
-METADATA_BASENAME <- "Oz_butterflies"
 
 readDbMetadata <- function(dir) {
   meta <- file.path(dir, paste0(METADATA_BASENAME, ".xlsx"))
@@ -21,6 +36,11 @@ isCapitalised <- function(word) {
 
 isLower <- function(word) {
   grepl("^[[:lower:]]+$", word)
+}
+
+capWord <- function(word) {
+  paste0(toupper(substring(word, 1, 1)),
+         tolower(substring(word, 2)))
 }
 
 reportBad <- function(msg, errs, limit = 5) {
@@ -96,31 +116,75 @@ checkOzButtPacked <- function(dir) {
 
 # Compares species and family names against the Australian faunal directory to check for correctness
 checkSpecies <- function(dbdir) {
-  descr <- readDbMetadata(dbdir)
-  species <- unique(descr[, c("Family", "genus", "species")])
-  for (spi in seq_len(nrow(species))) {
+
+  queryAFDSpecies <- function(spi, species) {
     url <- sprintf("https://biodiversity.org.au/afd/taxa/%s", paste(species$genus[spi], species$species[spi], sep = "_"))
+
     tryCatch({
       urlc <- url(url, "rb")
       page <- read_html(urlc)
       close(urlc)
 
       # Check the family
-      crumbs <- page |> html_element("#supertaxa-breadcrumb") |> html_text2()
-      crumbs <- strsplit(crumbs, "»")[[1]]
-      family <- grep("(Family)", crumbs, value = TRUE)
+      crumbs <- page |> html_element("#supertaxa-breadcrumb")
+      crumbTxt <- strsplit(html_text2(crumbs), "»")[[1]]
+      family <- grep("(Family)", crumbTxt, value = TRUE)
       family <- sub("^ *", "", family)
       family <- sub(" .*", "", family)
-      family <- paste0(substring(family, 1, 1),
-                       tolower(substring(family, 2)))
-      if (family != species$Family[spi]) {
-        cat(sprintf("Wrong family for %s %s, should be %s but is %s\n",
-                    species$genus[spi], species$species[spi], family, species$Family[spi]))
-      }
+      family <- capWord(family)
+
+      crumbs <- page |> html_element("#breadcrumb")
+      adfSpecies <- (crumbs |> html_elements("em") |> html_text2())[2]
+
+      data.frame(orig.genus = species$genus[spi], orig.species = species$species[spi],
+                 orig.family = species$Family[spi],
+                 afd.species = adfSpecies, afd.family = family,
+                 url = url)
+
     },
-    warning = function(e) cat(sprintf("Bad species %s %s (%s)\n", species$genus[spi], species$species[spi], url)),
-    error = function(e) cat(sprintf("Bad species %s %s (%s)\n", species$genus[spi], species$species[spi], url))
+    warning = function(e) data.frame(orig.genus = species$genus[spi], orig.species = species$species[spi],
+                                     orig.family = species$Family[spi], afd.species = NA, afd.family = NA, url = url),
+    error = function(e) data.frame(orig.genus = species$genus[spi], orig.species = species$species[spi],
+                                   orig.family = species$Family[spi], afd.species = NA, afd.family = NA, url = url)
     )
+  }
+
+  descr <- readDbMetadata(dbdir)
+  # Ignore case errors
+  descr$Family <- capWord(descr$Family)
+  descr$genus <- capWord(descr$genus)
+  descr$species <- tolower(descr$species)
+  # Limit queries to one per distinct species
+  species <- unique(descr[, c("Family", "genus", "species")])
+
+  # Try to limit queries to AFD
+  if (file.exists("AFD-query.csv")) {
+    afd <- read.csv("AFD-query.csv")
+  } else {
+    l <- lapply(seq_len(nrow(species)), queryAFDSpecies, species)
+    afd <- do.call(rbind, l)
+    write.csv(afd, "AFD-query.csv", row.names = FALSE)
+  }
+
+  for (spi in seq_len(nrow(species))) {
+    if (is.na(species$species[spi])) {
+      cat(sprintf("Unspecified species in genus %s\n", species$genus[spi]))
+    } else {
+      r <- afd[which(afd$orig.genus == species$genus[spi] & afd$orig.species == species$species[spi] & afd$orig.family == species$Family[spi]), ]
+
+      if (is.na(r$afd.species)) {
+        cat(sprintf("Species %s %s not found in AFD (%s)\n", species$genus[spi], species$species[spi], r$url))
+      } else {
+        if (r$afd.family != species$Family[spi]) {
+          cat(sprintf("Wrong family for %s %s, should be %s but is %s (%s)\n",
+                      species$genus[spi], species$species[spi], r$afd.family, species$Family[spi], r$url))
+        }
+        if (r$afd.species != paste(r$orig.genus, r$orig.species)) {
+          cat(sprintf("Species %s %s doesn't match AFD species which is %s (%s)\n",
+                      species$genus[spi], species$species[spi], r$afd.species, r$url))
+        }
+      }
+    }
   }
 }
 
@@ -178,9 +242,6 @@ createZippedDb <- function(indir, zipDir) {
 
 
 #######################################################
-
-DBDIR <- "tests/testthat/testdata/db"
-REPODIR <- "tests/testthat/testdata/repo"
 
 # Check the database to be packed up
 checkOzButtUnpacked(DBDIR)
