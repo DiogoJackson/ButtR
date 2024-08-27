@@ -3,6 +3,8 @@
 # strictly part of the published package, but are used to check and publish the
 # database.
 
+library(rvest) # Required for checking species names
+
 METADATA_BASENAME <- "Oz_butterflies"
 
 readDbMetadata <- function(dir) {
@@ -92,6 +94,35 @@ checkOzButtPacked <- function(dir) {
   }
 }
 
+# Compares species and family names against the Australian faunal directory to check for correctness
+checkSpecies <- function(dbdir) {
+  descr <- readDbMetadata(dbdir)
+  species <- unique(descr[, c("Family", "genus", "species")])
+  for (spi in seq_len(nrow(species))) {
+    url <- sprintf("https://biodiversity.org.au/afd/taxa/%s", paste(species$genus[spi], species$species[spi], sep = "_"))
+    tryCatch({
+      urlc <- url(url, "rb")
+      page <- read_html(urlc)
+      close(urlc)
+
+      # Check the family
+      crumbs <- page |> html_element("#supertaxa-breadcrumb") |> html_text2()
+      crumbs <- strsplit(crumbs, "»")[[1]]
+      family <- grep("(Family)", crumbs, value = TRUE)
+      family <- sub("^ *", "", family)
+      family <- sub(" .*", "", family)
+      family <- paste0(substring(family, 1, 1),
+                       tolower(substring(family, 2)))
+      if (family != species$Family[spi]) {
+        cat(sprintf("Wrong family for %s %s, should be %s but is %s\n",
+                    species$genus[spi], species$species[spi], family, species$Family[spi]))
+      }
+    },
+    warning = function(e) cat(sprintf("Bad species %s %s (%s)\n", species$genus[spi], species$species[spi], url)),
+    error = function(e) cat(sprintf("Bad species %s %s (%s)\n", species$genus[spi], species$species[spi], url))
+    )
+  }
+}
 
 
 #######
@@ -146,7 +177,6 @@ createZippedDb <- function(indir, zipDir) {
 }
 
 
-
 #######################################################
 
 DBDIR <- "tests/testthat/testdata/db"
@@ -154,6 +184,9 @@ REPODIR <- "tests/testthat/testdata/repo"
 
 # Check the database to be packed up
 checkOzButtUnpacked(DBDIR)
+
+# Don't do this too often because it load the website
+checkSpecies(DBDIR)
 
 # Create zip files
 createZippedDb(DBDIR, REPODIR)
