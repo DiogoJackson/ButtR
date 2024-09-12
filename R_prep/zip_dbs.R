@@ -28,7 +28,7 @@ readDbMetadata <- function(dir) {
   if (!file.exists(meta)) {
     stop(sprintf("Metadata spreadsheet (%s) not found", meta))
   }
-  read.csv(meta)
+  utils::read.csv(meta)
 }
 
 isCapitalised <- function(word) {
@@ -164,7 +164,7 @@ checkSpecies <- function(dbdir) {
 
   # Try to limit queries to AFD
   if (file.exists("AFD-query.csv")) {
-    afd <- read.csv("AFD-query.csv")
+    afd <- utils::read.csv("AFD-query.csv")
   } else {
     l <- lapply(seq_len(nrow(species)), queryAFDSpecies, species)
     afd <- do.call(rbind, l)

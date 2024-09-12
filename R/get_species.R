@@ -93,7 +93,7 @@ get_species <- function(species = NULL,
   spread_sheet <- file.path(db_folder, "Oz_butterflies.csv")
 
   # Read metadata
-  meta_data <- read.csv(spread_sheet)
+  meta_data <- utils::read.csv(spread_sheet)
 
   # Create a new column "full_species" that combines the "genus" and "species" columns into a full species name
   meta_data$full_species <- paste(meta_data$Genus, meta_data$Species)

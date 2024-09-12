@@ -14,8 +14,7 @@ LazyData: true
 RoxygenNote: 7.3.1
 Imports:
     httr,
-    jsonlite,
-    readxl
+    jsonlite
 Suggests: 
     testthat (>= 3.0.0),
     withr
