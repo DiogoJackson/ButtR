@@ -1,17 +1,17 @@
 # Database structure (unpacked)
+# Oz_butterflies.csv
 # Oz_butterflies.xlsx
-# Oz_butterflies.csv (TBD)
-# Oz_butterflies.json (TBD)
+# Oz_butterflies.json
 # Folder for each family, which contains
 # Folder for each species, which contains
 # Folder for each specimen
 #
-# Specimen folder = specimen1, specimen13, etc...
+# Specimen folder = 1, 2 ... 13, etc...
 # Family/species/specimen
 # Within each specimen folder:
 # Always contains
-# "<ID>(RGB).arw"
-# "<ID>(UV).arw"
+# "<ID>RGB.arw"
+# "<ID>UV.arw"
 # May contain
 # Sequence file
 # 2 x linear TIFFs (with corrected specimen IDs), named as for raw files
@@ -20,11 +20,23 @@
 # CSV equivalent of all spec files
 
 # In Dryad:
+# Oz_butterflies.csv
 # Oz_butterflies.xlsx
-# Oz_butterflies.csv (TBD)
-# Oz_butterflies.json (TBD)
+# Oz_butterflies.json
 # Lots of species zip files
 #
+
+# Download one or more files from the repository
+downloadFiles <- function(files, subset, destDir) {
+  # Download them one at a time
+  for (idx in subset) {
+    # Define the path where the file will be saved locally
+    destfile <- file.path(destDir, files$file[idx])
+
+    # Download the spreadsheet from the URL and save it in the specified path
+    utils::download.file(url = files$url[idx], destfile = destfile, mode = "wb", quiet = TRUE)
+  }
+}
 
 #' Downloads all or part of the Oz butterflies database to a local folder.
 #'
@@ -34,16 +46,21 @@
 #' @param genus If specified, only specimens from this genus will be installed.
 #' @param family If specified, only specimens from this family will be
 #'   installed.
-#' @param sex If specified, only specimens of this sex (\code{"male"} or \code{"female"}) will
-#'   be installed.
+#' @param sex If specified, only specimens of this sex (\code{"male"},
+#'   \code{"female"} or  \code{"unknown"}) will be installed.
 #' @param genus If specified, only specimens from these genera will be
 #'   installed.
 #' @param year If specified, only specimens collected during these years will be
 #'   installed (options are 2022 or 2023).
 #' @param location If specified, only specimens collected at these locations
-#'   will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and \code{"Sydney"}).
-#' @param reflectance If specified, only specimens with the specified reflectance
-#'   will be installed (\code{"yes"} or \code{"no"}).
+#'   will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and
+#'   \code{"Sydney"}).
+#' @param reflectance If specified, only specimens with the specified
+#'   reflectance will be installed (\code{"yes"} or \code{"no"}).
+#' @param sampleIDs If specified, only specimens with the specified IDs will be
+#'   installed.
+#' @param download_images Specifies whether \code{"raw"} and/or \code{"jpeg"}
+#'   images should be downloaded.
 #' @param db_folder Path of folder that will contain the downloaded database.
 #'
 #' @export
@@ -54,7 +71,11 @@ get_species <- function(species = NULL,
                         year = NULL,
                         location = NULL,
                         reflectance = NULL,
+                        sampleIDs = NULL,
+                        download_images = c("raw", "jpeg"),
                         db_folder = "Oz_butterflies") {
+
+  download_images <- match.arg(download_images, several.ok = TRUE)
 
   # Check if the "db_folder" directory (where the data will be stored) exists.
   # If it doesn't exist, create the folder.
@@ -65,28 +86,25 @@ get_species <- function(species = NULL,
   # List all files in the database
   files <- ListDbsFiles()
 
-  # Filter the URL of the "Oz_butterflies.xlsx" file from the listed files
-  url_oz <- files$url[files$file == "Oz_butterflies.xlsx"]
+  # Download the metadata spreadsheet in all formats
+  downloadFiles(files, grep("Oz_butterflies\\.", files$file), db_folder)
 
-  # Define the path where the spreadsheet will be saved locally
-  spread_sheet <- file.path(db_folder, "Oz_butterflies.xlsx")
-
-  # Download the spreadsheet from the URL and save it in the specified path
-  utils::download.file(url = url_oz, destfile = spread_sheet, mode = "wb", quiet = TRUE)
+  # Identify the local spreadsheet file path
+  spread_sheet <- file.path(db_folder, "Oz_butterflies.csv")
 
   # Read metadata
-  meta_data <- readxl::read_excel(spread_sheet, skip = 1)
+  meta_data <- read.csv(spread_sheet)
 
   # Create a new column "full_species" that combines the "genus" and "species" columns into a full species name
-  meta_data$full_species <- paste(meta_data$genus, meta_data$species)
+  meta_data$full_species <- paste(meta_data$Genus, meta_data$Species)
 
   # Create a new column "zipname" that combines "family", genus", "species" into a single name, separated by "_"
-  meta_data$zipname <- paste(meta_data$Family, meta_data$genus, meta_data$species, sep = "_")
+  meta_data$zipname <- paste(meta_data$Family, meta_data$Genus, meta_data$Species, sep = "_")
 
   # Add the ".zip" extension to the end of the file names in the "zipname" column
   meta_data$zipname <- paste0(meta_data$zipname, ".zip")
 
-  # If no species or family is specified, select all rows (TRUE will be repeated nrow times)
+  # Start by selecting all rows (TRUE will be repeated nrow times)
   rows <- rep(TRUE, nrow(meta_data))
 
   # If the user has specified a family (or more), this will filter the 'meta_data'
@@ -94,22 +112,22 @@ get_species <- function(species = NULL,
   # The '&' operator is used to combine this condition with any previously applied,
   # ensuring that the final set of rows meets all specified criteria.
   if (length(family) > 0) {
-    rows <- rows & meta_data$Family %in% family
+    rows <- rows & tolower(meta_data$Family) %in% tolower(family)
   }
 
   # If genus is specified, update the filtering
   if (length(genus) > 0) {
-    rows <- rows & meta_data$genus %in% genus
+    rows <- rows & tolower(meta_data$genus) %in% tolower(genus)
   }
 
   # If species is specified, update the filtering
   if (length(species) > 0) {
-    badSpecies <- !species %in% meta_data$full_species
+    badSpecies <- !tolower(species) %in% unique(tolower(meta_data$full_species))
     if (any(badSpecies)) {
-      stop(sprintf("The following species do not exist in the Oz butterflies database: %s",
+      stop(sprintf("The following requested species do not exist in the Oz butterflies database: %s",
                    paste(species[badSpecies], collapse = ", ")))
     }
-    rows <- rows & meta_data$full_species %in% species
+    rows <- rows & tolower(meta_data$full_species) %in% tolower(species)
   }
 
   # If location is specified, update the filtering
@@ -124,12 +142,17 @@ get_species <- function(species = NULL,
 
   # If sex is specified, update the filtering
   if (length(sex) > 0) {
-    rows <- rows & meta_data$sex %in% sex
+    rows <- rows & tolower(meta_data$sex) %in% tolower(sex)
   }
 
   # If year is specified, update the filtering
   if (length(year) > 0) {
     rows <- rows & meta_data$year %in% year
+  }
+
+  # If sample ID is specified, update the filtering
+  if (length(sampleIDs) > 0) {
+    rows <- rows & meta_data$ID %in% sampleIDs
   }
 
   # Get the unique zip file names that match the filtered criteria
@@ -155,30 +178,18 @@ get_species <- function(species = NULL,
     # List files inside the zip archive without extracting them
     zip_content <- utils::unzip(zip_path, list = TRUE)
 
-    # Extract IDs from the file names (assuming file names are like "specimen01", "specimen21"...)
-    file_ids <- gsub("\\D", "", zip_content$Name)  # Remove non-digit characters to get IDs
+    # Select files in this zip that match the filtered sample IDs.
+    # Assume sample folder is sample ID
+    samplesInZip <- basename(dirname(zip_content$Name))
+    selected_files <- zip_content$Name[samplesInZip %in% meta_data$ID[rows]]
 
-    # Filter IDs based on location
-    valid_ids <- meta_data$ID
-    if (length(location) > 0) {
-      valid_ids <- meta_data$ID[meta_data$location %in% location]
+    # If not all image files were requested, filter them out
+    if (!"raw" %in% download_images) {
+      selected_files <- selected_files[grep("\\.arw", selected_files, invert = TRUE, ignore.case = TRUE)]
     }
-
-    # Refine the valid IDs by matching sex, reflectance, and year.
-    if (!is.null(sex)) {
-      valid_ids <- valid_ids[valid_ids %in% meta_data$ID[meta_data$sex %in% sex]]
+    if (!"jpeg" %in% download_images) {
+      selected_files <- selected_files[grep("\\.jpg", selected_files, invert = TRUE, ignore.case = TRUE)]
     }
-
-    if (!is.null(reflectance)) {
-      valid_ids <- valid_ids[valid_ids %in% meta_data$ID[meta_data$reflectance %in% reflectance]]
-    }
-
-    if (!is.null(year)) {
-      valid_ids <- valid_ids[valid_ids %in% meta_data$ID[meta_data$year %in% year]]
-    }
-
-    # Select files that match the filtered valid IDs
-    selected_files <- zip_content$Name[file_ids %in% valid_ids]
 
     # If there are matching files, extract only those files
     if (length(selected_files) > 0) {

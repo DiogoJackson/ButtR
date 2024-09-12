@@ -12,6 +12,8 @@ get_species(
   year = NULL,
   location = NULL,
   reflectance = NULL,
+  sampleIDs = NULL,
+  download_images = c("raw", "jpeg"),
   db_folder = "Oz_butterflies"
 )
 }
@@ -26,17 +28,24 @@ installed.}
 \item{family}{If specified, only specimens from this family will be
 installed.}
 
-\item{sex}{If specified, only specimens of this sex (\code{"male"} or \code{"female"}) will
-be installed.}
+\item{sex}{If specified, only specimens of this sex (\code{"male"},
+\code{"female"} or  \code{"unknown"}) will be installed.}
 
 \item{year}{If specified, only specimens collected during these years will be
 installed (options are 2022 or 2023).}
 
 \item{location}{If specified, only specimens collected at these locations
-will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and \code{"Sydney"}).}
+will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and
+\code{"Sydney"}).}
 
-\item{reflectance}{If specified, only specimens with the specified reflectance
-will be installed (\code{"yes"} or \code{"no"}).}
+\item{reflectance}{If specified, only specimens with the specified
+reflectance will be installed (\code{"yes"} or \code{"no"}).}
+
+\item{sampleIDs}{If specified, only specimens with the specified IDs will be
+installed.}
+
+\item{download_images}{Specifies whether \code{"raw"} and/or \code{"jpeg"}
+images should be downloaded.}
 
 \item{db_folder}{Path of folder that will contain the downloaded database.}
 }

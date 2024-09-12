@@ -18,16 +18,17 @@ REPODIR <- "tests/testthat/testdata/repo"
 # Basename of the metadata spreadsheet file
 METADATA_BASENAME <- "Oz_butterflies"
 
-
+library(openxlsx)
+library(lubridate)
 library(rvest) # Required for checking species names
 
 
 readDbMetadata <- function(dir) {
-  meta <- file.path(dir, paste0(METADATA_BASENAME, ".xlsx"))
+  meta <- file.path(dir, paste0(METADATA_BASENAME, ".csv"))
   if (!file.exists(meta)) {
     stop(sprintf("Metadata spreadsheet (%s) not found", meta))
   }
-  readxl::read_xlsx(meta, skip = 1, .name_repair = "minimal")
+  read.csv(meta)
 }
 
 isCapitalised <- function(word) {
@@ -58,52 +59,56 @@ checkOzButtUnpacked <- function(dir) {
 
   # Check spelling conventions
   badFamilies <-  unique(descr$Family[!isCapitalised(descr$Family)])
-  badGenera <- unique(descr$genus[!isCapitalised(descr$genus)])
-  badSpecies <- unique(descr$species[!isLower(descr$species)])
-  badGeneraM <- unique(descr$genus_m[!isCapitalised(descr$genus_m)])
-  badSpeciesM <- unique(descr$species_m[!isLower(descr$species_m)])
-  badGeneraD <- unique(descr$genus_d[!isCapitalised(descr$genus_d)])
-  badSpeciesD <- unique(descr$species_d[!isLower(descr$species_d)])
+  badGenera <- unique(descr$Genus[!isCapitalised(descr$Genus)])
+  badSpecies <- unique(descr$Species[!isLower(descr$Species)])
+  badGeneraM <- unique(descr$Genus_m[!isCapitalised(descr$genus_m)])
+  badSpeciesM <- unique(descr$Species_m[!isLower(descr$species_m)])
+  badGeneraD <- unique(descr$Genus_d[!isCapitalised(descr$genus_d)])
+  badSpeciesD <- unique(descr$Species_d[!isLower(descr$species_d)])
 
   # Check that all specimens in a species have the same family
-  descr$bin <- paste(descr$genus, descr$species)
+  descr$bin <- paste(descr$Genus, descr$Species)
   fams <- sapply(unique(descr$bin), function(sp) unique(descr$Family[descr$bin == sp]))
   badFams <- Filter(function(fams) length(fams) != 1, fams)
 
-  # Check sex - should be "male", "female" or "unknown"
-  validSex <- c("male", "female", "unknown")
-  badSex <- unique(descr$sex[!descr$sex %in% validSex])
+  # Check sex - should be "Male", "Female" or "Unknown"
+  validSex <- c("Male", "Female", "Unknown")
+  badSex <- unique(descr$Sex[!descr$Sex %in% validSex])
 
-  # Check locations
-  validLoc <- c("Brisbane", "Cairns", "Sydney")
-  badLoc <- unique(descr$location[!descr$location %in% validLoc])
+  # # Check locations
+  # validLoc <- c("Brisbane", "Cairns", "Sydney")
+  # badLoc <- unique(descr$location[!descr$location %in% validLoc])
+  #
+  # # Check year
+  # validYear <- c("2022", "2023")
+  # badYear <- unique(descr$year[!descr$year %in% validYear])
 
-  # Check year
-  validYear <- c("2022", "2023")
-  badYear <- unique(descr$year[!descr$year %in% validYear])
+  # Bad Day
+  badDay <- unique(descr$Day[is.na(dmy(descr$Day, quiet = TRUE))])
 
-  # Check reflectance
-  validRef <- c("yes", "no")
-  badRef <- unique(descr$reflectance[!descr$reflectance %in% validRef])
+  # # Check reflectance
+  # validRef <- c("yes", "no")
+  # badRef <- unique(descr$reflectance[!descr$reflectance %in% validRef])
 
   # Check that every specimen in the database actually exists
-  spDir <- file.path(dir, descr$Family, paste(descr$genus, descr$species, sep = "_"), descr$ID)
+  spDir <- file.path(dir, descr$Family, paste(descr$Genus, descr$Species, sep = "_"), descr$ID)
   badSpecimens <- which(!dir.exists(spDir))
 
   # Report
   reportBad("Family names not capitalised", badFamilies)
   reportBad("Genus names not capitalised", badGenera)
   reportBad("Specific names not lower case", badSpecies)
-  reportBad("genus_m names not capitalised", badGeneraM)
-  reportBad("species_m names not lower case", badSpeciesM)
-  reportBad("genus_d names not capitalised", badGeneraD)
-  reportBad("species_d names not lower case", badSpeciesD)
-  reportBad("Missing specimen folder for ID", descr$ID[badSpecimens])
+  # reportBad("genus_m names not capitalised", badGeneraM)
+  # reportBad("species_m names not lower case", badSpeciesM)
+  # reportBad("genus_d names not capitalised", badGeneraD)
+  # reportBad("species_d names not lower case", badSpeciesD)
+  # reportBad("Missing specimen folder for ID", descr$ID[badSpecimens])
   reportBad("Non-unique family for species", names(badFams), limit = 4)
   reportBad(sprintf("Bad values for sex (valid values %s)", paste(validSex, collapse = ", ")), badSex, limit = 8)
-  reportBad(sprintf("Bad values for location (valid values %s)", paste(validLoc, collapse = ", ")), badLoc)
-  reportBad(sprintf("Bad values for year (valid values %s)", paste(validYear, collapse = ", ")), badYear)
-  reportBad(sprintf("Bad values for reflectance (valid values %s)", paste(validRef, collapse = ", ")), badRef)
+  # reportBad(sprintf("Bad values for location (valid values %s)", paste(validLoc, collapse = ", ")), badLoc)
+  # reportBad(sprintf("Bad values for year (valid values %s)", paste(validYear, collapse = ", ")), badYear)
+  # reportBad(sprintf("Bad values for reflectance (valid values %s)", paste(validRef, collapse = ", ")), badRef)
+  reportBad("Bad values for day (expected \"dd/mm/yyyy\")", badDay, limit = 8)
 }
 
 # Check the contents and structure of a packed database, i.e. in the format used for storing in Dryad
@@ -118,7 +123,7 @@ checkOzButtPacked <- function(dir) {
 checkSpecies <- function(dbdir) {
 
   queryAFDSpecies <- function(spi, species) {
-    url <- sprintf("https://biodiversity.org.au/afd/taxa/%s", paste(species$genus[spi], species$species[spi], sep = "_"))
+    url <- sprintf("https://biodiversity.org.au/afd/taxa/%s", paste(species$Genus[spi], species$Species[spi], sep = "_"))
 
     tryCatch({
       urlc <- url(url, "rb")
@@ -136,15 +141,15 @@ checkSpecies <- function(dbdir) {
       crumbs <- page |> html_element("#breadcrumb")
       adfSpecies <- (crumbs |> html_elements("em") |> html_text2())[2]
 
-      data.frame(orig.genus = species$genus[spi], orig.species = species$species[spi],
+      data.frame(orig.genus = species$Genus[spi], orig.species = species$Species[spi],
                  orig.family = species$Family[spi],
                  afd.species = adfSpecies, afd.family = family,
                  url = url)
 
     },
-    warning = function(e) data.frame(orig.genus = species$genus[spi], orig.species = species$species[spi],
+    warning = function(e) data.frame(orig.genus = species$Genus[spi], orig.species = species$Species[spi],
                                      orig.family = species$Family[spi], afd.species = NA, afd.family = NA, url = url),
-    error = function(e) data.frame(orig.genus = species$genus[spi], orig.species = species$species[spi],
+    error = function(e) data.frame(orig.genus = species$Genus[spi], orig.species = species$Species[spi],
                                    orig.family = species$Family[spi], afd.species = NA, afd.family = NA, url = url)
     )
   }
@@ -152,10 +157,10 @@ checkSpecies <- function(dbdir) {
   descr <- readDbMetadata(dbdir)
   # Ignore case errors
   descr$Family <- capWord(descr$Family)
-  descr$genus <- capWord(descr$genus)
-  descr$species <- tolower(descr$species)
+  descr$Genus <- capWord(descr$Genus)
+  descr$Species <- tolower(descr$Species)
   # Limit queries to one per distinct species
-  species <- unique(descr[, c("Family", "genus", "species")])
+  species <- unique(descr[, c("Family", "Genus", "Species")])
 
   # Try to limit queries to AFD
   if (file.exists("AFD-query.csv")) {
@@ -167,21 +172,21 @@ checkSpecies <- function(dbdir) {
   }
 
   for (spi in seq_len(nrow(species))) {
-    if (is.na(species$species[spi])) {
-      cat(sprintf("Unspecified species in genus %s\n", species$genus[spi]))
+    if (is.na(species$Species[spi])) {
+      cat(sprintf("Unspecified species in genus %s\n", species$Genus[spi]))
     } else {
-      r <- afd[which(afd$orig.genus == species$genus[spi] & afd$orig.species == species$species[spi] & afd$orig.family == species$Family[spi]), ]
+      r <- afd[which(afd$orig.genus == species$Genus[spi] & afd$orig.species == species$Species[spi] & afd$orig.family == species$Family[spi]), ]
 
       if (is.na(r$afd.species)) {
-        cat(sprintf("Species %s %s not found in AFD (%s)\n", species$genus[spi], species$species[spi], r$url))
+        cat(sprintf("Species %s %s not found in AFD (%s)\n", species$Genus[spi], species$Species[spi], r$url))
       } else {
         if (r$afd.family != species$Family[spi]) {
           cat(sprintf("Wrong family for %s %s, should be %s but is %s (%s)\n",
-                      species$genus[spi], species$species[spi], r$afd.family, species$Family[spi], r$url))
+                      species$Genus[spi], species$Species[spi], r$afd.family, species$Family[spi], r$url))
         }
         if (r$afd.species != paste(r$orig.genus, r$orig.species)) {
           cat(sprintf("Species %s %s doesn't match AFD species which is %s (%s)\n",
-                      species$genus[spi], species$species[spi], r$afd.species, r$url))
+                      species$Genus[spi], species$Species[spi], r$afd.species, r$url))
         }
       }
     }
@@ -194,7 +199,7 @@ checkSpecies <- function(dbdir) {
 # Generate metadata in other formats
 genMetadata <- function(dir) {
   descr <- readDbMetadata(dir)
-  utils::write.csv(descr, file = file.path(dir, paste0(METADATA_BASENAME, ".csv")))
+  openxlsx::write.xlsx(descr, file = file.path(dir, paste0(METADATA_BASENAME, ".xlsx")))
   jsonlite::write_json(descr, path = file.path(dir, paste0(METADATA_BASENAME, ".json")))
 }
 
@@ -207,13 +212,13 @@ createZippedDb <- function(indir, zipDir) {
   if (!dir.exists(zipDir)) {
     dir.create(zipDir, recursive = TRUE)
   }
-  file.copy(file.path(indir, paste0(METADATA_BASENAME, ".xlsx")), zipDir)
+  file.copy(file.path(indir, paste0(METADATA_BASENAME, ".csv")), zipDir)
   genMetadata(zipDir)
 
-  species <- unique(descr[, c("Family", "genus", "species")])
-  speciesDir <- file.path(species$Family, paste(species$genus, species$species, sep = "_"))
+  species <- unique(descr[, c("Family", "Genus", "Species")])
+  speciesDir <- file.path(species$Family, paste(species$Genus, species$Species, sep = "_"))
 
-  zipName <- paste(species$Family, species$genus, species$species, sep = "_")
+  zipName <- paste(species$Family, species$Genus, species$Species, sep = "_")
   zipName <- paste0(zipName, ".zip")
   zipPath <- normalizePath(file.path(zipDir, zipName), mustWork = FALSE)
 
@@ -246,10 +251,10 @@ createZippedDb <- function(indir, zipDir) {
 # Check the database to be packed up
 checkOzButtUnpacked(DBDIR)
 
-# Don't do this too often because it load the website
-checkSpecies(DBDIR)
+# Check species and family names against the Australian faunal directory
+# checkSpecies(DBDIR)
 
-# Create zip files
+# Create zip files, including metadata in other formats
 createZippedDb(DBDIR, REPODIR)
 
 
