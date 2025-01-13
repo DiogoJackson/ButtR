@@ -38,7 +38,13 @@ downloadFiles <- function(files, subset, destDir) {
   }
 }
 
-#' Downloads all or part of the Oz butterflies database to a local folder.
+#' Downloads all or part of the Oz butterflies database to a local folder
+#'
+#' Simplifies downloading the Oz butterflies database to a local folder. Since
+#' the database is quite large, download times are long and the database
+#' requires substantial local storage space. If the entire database is nto
+#' needed, then this function saves time and local storage space by only
+#' downloading the required parts of the database.
 #'
 #' @param species Optional vector of binomial names of species of interest. If
 #'   specified, only species from this list will be included in the local
@@ -60,8 +66,11 @@ downloadFiles <- function(files, subset, destDir) {
 #' @param sampleIDs If specified, only specimens with the specified IDs will be
 #'   installed.
 #' @param download_images Specifies whether \code{"raw"} and/or \code{"jpeg"}
-#'   images should be downloaded.
+#'   images should be downloaded. Only images with the specified type(s) will be
+#'   downloaded.
 #' @param db_folder Path of folder that will contain the downloaded database.
+#'
+#' @returns Path of the downloaded folder (invisibly).
 #'
 #' @export
 get_species <- function(species = NULL,
@@ -87,7 +96,11 @@ get_species <- function(species = NULL,
   files <- ListDbsFiles()
 
   # Download the metadata spreadsheet in all formats
-  downloadFiles(files, grep("Oz_butterflies\\.", files$file), db_folder)
+  metadata <- grep("Oz_butterflies\\.", files$file)
+  if (length(metadata) == 0) {
+    stop("Unable to locate Oz butterflies metadata file in repository")
+  }
+  downloadFiles(files, metadata, db_folder)
 
   # Identify the local spreadsheet file path
   spread_sheet <- file.path(db_folder, "Oz_butterflies.csv")

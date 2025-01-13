@@ -1,5 +1,8 @@
 # Test the get_species function
 
+# To manually check test coverage, run
+# covr::report()
+
 test_that("test get_species", {
   # IMPORTANT: since the dryad repository doesn't exist yet, download from a local copy in the test data
   testthat::local_mocked_bindings(ListDbsFiles = function() {
@@ -27,7 +30,11 @@ test_that("test get_species", {
   expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.arw")))
 
   # Unrequested species should not have been downloaded
-  expect_true(!dir.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis")))
+  expect_false(dir.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis")))
+  gotFams <- list.dirs(dbDir, full.names = FALSE, recursive = FALSE)
+  expect_equal(gotFams, c("Hesperiidae", "Papilionidae"))
+  gotSp <- sapply(gotFams, function(fam) list.dirs(file.path(dbDir, fam), full.names = FALSE, recursive = FALSE))
+  expect_equal(sort(unname(gotSp)), sort(c("Papilio_aegeus", "Telicota_mesoptis")))
 })
 
 test_that("image types 1", {
@@ -49,8 +56,8 @@ test_that("image types 1", {
   expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.jpg")))
   expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.jpg")))
   # Raw files shouldn't be downloaded
-  expect_true(!file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.arw")))
-  expect_true(!file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.arw")))
+  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.arw")))
+  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.arw")))
 })
 
 test_that("image types 2", {
@@ -65,13 +72,29 @@ test_that("image types 2", {
   get_species(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "raw", db_folder = dbDir)
 
   # Only raw files should be downloaded
-  expect_true(!file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16RGB.jpg")))
-  expect_true(!file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16UV.jpg")))
-  expect_true(!file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19RGB.jpg")))
-  expect_true(!file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19UV.jpg")))
+  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16RGB.jpg")))
+  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16UV.jpg")))
+  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19RGB.jpg")))
+  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19UV.jpg")))
 
-  expect_true(!file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.jpg")))
-  expect_true(!file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.jpg")))
+  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.jpg")))
+  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.jpg")))
   expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.arw")))
   expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.arw")))
+})
+
+test_that("get family", {
+  # IMPORTANT: since the dryad repository doesn't exist yet, download from a local copy in the test data
+  testthat::local_mocked_bindings(ListDbsFiles = function() {
+    listLocalFiles(testthat::test_path("testdata/repo"))
+  })
+
+  dbDir <- testthat::test_path("tempdb")
+  withr::defer(unlink(dbDir, recursive = TRUE)) # Cleanup after running the test
+
+  fams <- c("Hesperiidae", "Nymphalidae")
+  get_species(family = fams, db_folder = dbDir)
+  got <- list.dirs(dbDir, full.names = FALSE, recursive = FALSE)
+  expect_equal(got, fams)
+
 })

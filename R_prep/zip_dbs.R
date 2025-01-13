@@ -8,6 +8,14 @@
 # subsequent runs. Results are saved in AFD-query.csv in the top level package
 # directory.
 
+# TODO
+# Add column has DNA? based on existence of DNA file
+# Add column Pinned? based on presence of additional image files
+
+FOR_TESTING_ONLY <- FALSE
+if (FOR_TESTING_ONLY) {
+  message("Generating a truncated repository for testing only")
+}
 
 # Location of the source (unpacked) database to be checked
 DBDIR <- "tests/testthat/testdata/db"
@@ -17,6 +25,9 @@ REPODIR <- "tests/testthat/testdata/repo"
 
 # Basename of the metadata spreadsheet file
 METADATA_BASENAME <- "Oz_butterflies"
+
+# List of file extensions in database
+ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec")
 
 library(openxlsx)
 library(lubridate)
@@ -43,6 +54,8 @@ capWord <- function(word) {
   paste0(toupper(substring(word, 1, 1)),
          tolower(substring(word, 2)))
 }
+
+trim <- function(w) { sub("^ +", "", sub(" +$", "", w)) }
 
 reportBad <- function(msg, errs, limit = 5) {
   if (length(errs) > limit) {
@@ -94,9 +107,25 @@ checkOzButtUnpacked <- function(dir) {
   spDir <- file.path(dir, descr$Family, paste(descr$Genus, descr$Species, sep = "_"), descr$ID)
   badSpecimens <- which(!dir.exists(spDir))
 
+  # Check that every folder corresponds to something in the database
+  famDirs <- list.dirs(dir, recursive = FALSE, full.names = FALSE)
+  badFamDirs <- famDirs[!famDirs %in% unique(descr$Family)]
+  specDirs <- list.dirs(file.path(dir, famDirs), recursive = FALSE, full.names = FALSE)
+  badSpecDirs <- specDirs[!sub("_", " ", specDirs) %in% unique(descr$bin)]
+  # Expand bad directories so we can report family folder
+  fullSpDirs <- apply(expand.grid(file.path(dir, famDirs), badSpecDirs), 1, paste, collapse = "/")
+  badSpecDirs <- fullSpDirs[file.exists(fullSpDirs)]
+  # Remove DBS directory from path
+  badSpecDirs <- substring(badSpecDirs, nchar(dir) + 2)
+
+  # Check file names
+  files <- list.files(file.path(dir, famDirs), recursive = TRUE)
+  exts <- tools::file_ext(files)
+  badExts <- files[!exts %in% ALLOWED_EXTENSIONS]
+
   # Report
   reportBad("Family names not capitalised", badFamilies)
-  reportBad("Genus names not capitalised", badGenera)
+  reportBad("Genus names not capitalised", badGenera, limit = 10)
   reportBad("Specific names not lower case", badSpecies)
   # reportBad("genus_m names not capitalised", badGeneraM)
   # reportBad("species_m names not lower case", badSpeciesM)
@@ -109,6 +138,10 @@ checkOzButtUnpacked <- function(dir) {
   # reportBad(sprintf("Bad values for year (valid values %s)", paste(validYear, collapse = ", ")), badYear)
   # reportBad(sprintf("Bad values for reflectance (valid values %s)", paste(validRef, collapse = ", ")), badRef)
   reportBad("Bad values for day (expected \"dd/mm/yyyy\")", badDay, limit = 8)
+
+  reportBad("Invalid folders at family level in DBS", badFamDirs)
+  reportBad("Invalid species folders in DBS", badSpecDirs)
+  reportBad("File with invalid extensions", badExts)
 }
 
 # Check the contents and structure of a packed database, i.e. in the format used for storing in Dryad
@@ -193,27 +226,40 @@ checkSpecies <- function(dbdir) {
   }
 }
 
-
 #######
 
+# Remove lines from metadata that don't have matching specimens. This is ONLY
+# intended for generating a testing data set.
+trimMetadataForTesting <- function(dir, descr) {
+  spDir <- file.path(dir, descr$Family, paste(descr$Genus, descr$Species, sep = "_"), descr$ID)
+  good <- dir.exists(spDir)
+  descr[good, ]
+}
+
 # Generate metadata in other formats
-genMetadata <- function(dir) {
-  descr <- readDbMetadata(dir)
-  openxlsx::write.xlsx(descr, file = file.path(dir, paste0(METADATA_BASENAME, ".xlsx")))
-  jsonlite::write_json(descr, path = file.path(dir, paste0(METADATA_BASENAME, ".json")))
+genMetadata <- function(indir, zipdir, testingData = FALSE) {
+  descr <- readDbMetadata(indir)
+  if (testingData) {
+    descr <- trimMetadataForTesting(indir, descr)
+    # Overwrite the destination CSV file
+    utils::write.csv(descr, file = file.path(zipdir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
+  }
+  openxlsx::write.xlsx(descr, file = file.path(zipdir, paste0(METADATA_BASENAME, ".xlsx")))
+  jsonlite::write_json(descr, path = file.path(zipdir, paste0(METADATA_BASENAME, ".json")))
+
+  descr
 }
 
 
 # Create repo structure, metadata files and species zip files
 createZippedDb <- function(indir, zipDir) {
-  descr <- readDbMetadata(indir)
 
   # Copy (and generate) meta data files
   if (!dir.exists(zipDir)) {
     dir.create(zipDir, recursive = TRUE)
   }
   file.copy(file.path(indir, paste0(METADATA_BASENAME, ".csv")), zipDir)
-  genMetadata(zipDir)
+  descr <- genMetadata(indir, zipDir, FOR_TESTING_ONLY)
 
   species <- unique(descr[, c("Family", "Genus", "Species")])
   speciesDir <- file.path(species$Family, paste(species$Genus, species$Species, sep = "_"))
