@@ -181,7 +181,7 @@ get_species <- function(species = NULL,
 
     # Get the URL of the corresponding zip file
     if (!zip %in% files$file) {
-      stop(sprintf("Internal error: zip file %s not found in repository", zip))
+      stop(sprintf("Internal error: zip file %s not found in repository: files in repo are %s", zip, paste(files$file, collapse = ", ")))
     }
     url <- files$url[files$file == zip]
 
