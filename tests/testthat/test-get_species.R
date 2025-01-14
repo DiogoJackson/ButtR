@@ -2,15 +2,38 @@
 
 # To manually check test coverage, run
 # covr::report()
+# You might need to clear the environment and restart the R session first.
 
-test_that("test get_species", {
-  # IMPORTANT: since the dryad repository doesn't exist yet, download from a local copy in the test data
+# Sets up the environment in preparation for a test.
+# 1. Makes buttR use a local testing repository rather than the Dryad repository
+# 2. Returns the name of a directory to be used to install into. The directory
+# will be deleted once the test is complete
+prepareTest <- function(env = parent.frame()) {
   testthat::local_mocked_bindings(ListDbsFiles = function() {
     listLocalFiles(testthat::test_path("testdata/repo"))
-  })
+  }, .env = env)
 
   dbDir <- testthat::test_path("tempdb")
-  withr::defer(unlink(dbDir, recursive = TRUE)) # Cleanup after running the test
+  withr::defer_parent(unlink(dbDir, recursive = TRUE)) # Cleanup after running the test
+  dbDir
+}
+
+# Returns a sorted vector of the names of directories contained some number of
+# levels down a directory hierarchy.
+dirsAtLevel <- function(dir, level) {
+  while (level > 0) {
+    level <- level - 1
+
+    dir <- list.dirs(dir, full.names = level > 0, recursive = FALSE)
+  }
+  sort(dir)
+}
+
+
+#############################################################
+# tests start here
+test_that("test get_species", {
+  dbDir <- prepareTest()
 
   get_species(species = c("Telicota mesoptis", "Papilio aegeus"), db_folder = dbDir)
 
@@ -38,13 +61,7 @@ test_that("test get_species", {
 })
 
 test_that("image types 1", {
-  # IMPORTANT: since the dryad repository doesn't exist yet, download from a local copy in the test data
-  testthat::local_mocked_bindings(ListDbsFiles = function() {
-    listLocalFiles(testthat::test_path("testdata/repo"))
-  })
-
-  dbDir <- testthat::test_path("tempdb")
-  withr::defer(unlink(dbDir, recursive = TRUE)) # Cleanup after running the test
+  dbDir <- prepareTest()
 
   get_species(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "jpeg", db_folder = dbDir)
 
@@ -61,13 +78,7 @@ test_that("image types 1", {
 })
 
 test_that("image types 2", {
-  # IMPORTANT: since the dryad repository doesn't exist yet, download from a local copy in the test data
-  testthat::local_mocked_bindings(ListDbsFiles = function() {
-    listLocalFiles(testthat::test_path("testdata/repo"))
-  })
-
-  dbDir <- testthat::test_path("tempdb")
-  withr::defer(unlink(dbDir, recursive = TRUE)) # Cleanup after running the test
+  dbDir <- prepareTest()
 
   get_species(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "raw", db_folder = dbDir)
 
@@ -84,17 +95,40 @@ test_that("image types 2", {
 })
 
 test_that("get family", {
-  # IMPORTANT: since the dryad repository doesn't exist yet, download from a local copy in the test data
-  testthat::local_mocked_bindings(ListDbsFiles = function() {
-    listLocalFiles(testthat::test_path("testdata/repo"))
-  })
+  dbDir <- prepareTest()
 
-  dbDir <- testthat::test_path("tempdb")
-  withr::defer(unlink(dbDir, recursive = TRUE)) # Cleanup after running the test
+  # Invalid family name should fail
+  expect_error(get_species(family = "Bad one", db_folder = dbDir), "requested family does not")
+  expect_error(get_species(family = c("Bad one", "Bad two"), db_folder = dbDir), "requested families do not")
 
   fams <- c("Hesperiidae", "Nymphalidae")
   get_species(family = fams, db_folder = dbDir)
-  got <- list.dirs(dbDir, full.names = FALSE, recursive = FALSE)
+  got <- dirsAtLevel(dbDir, 1)
   expect_equal(got, fams)
 
+})
+
+# test_that("get genus", {
+#   dbDir <- prepareTest()
+#
+#   # Invalid genus name should fail
+#   expect_error(get_species(genus = "Bad one", db_folder = dbDir))
+#
+#   genera <- c("Notocrypta", "Telicota", "Euploea")
+#   get_species(genus = genera, db_folder = dbDir)
+#   got <- dirsAtLevel(dbDir, 2)
+#   expect_equal(sort(got), sort(c("Notocrypta_waigensis", "Telicota_mesoptis", "Euploea_darchia")))
+#
+# })
+
+test_that("get combines", {
+  # Test that calling get_species twice combines the data from both calls into the local database
+  dbDir <- prepareTest()
+  # Get one species
+  get_species(species = "Suniana sunias", db_folder = dbDir)
+  expect_equal(dirsAtLevel(dbDir, 2), "Suniana_sunias")
+  # Now get a second species
+  get_species(species = "Papilio aegeus", db_folder = dbDir)
+  # Both species should now be in the database
+  expect_equal(dirsAtLevel(dbDir, 2), sort(c("Suniana_sunias", "Papilio_aegeus")))
 })

@@ -38,11 +38,24 @@ downloadFiles <- function(files, subset, destDir) {
   }
 }
 
+# Checks whether requested values for some parameter exist in the database. Throws an error if not
+checkValuesInSet <- function(what1, whatn, requested, available) {
+  badVals <- !tolower(requested) %in% unique(tolower(available))
+  if (any(badVals)) {
+    if (sum(badVals) == 1)
+      stop(sprintf("The following requested %s does not exist in the Oz butterflies database: %s",
+                   what1, requested[badVals]))
+    else
+      stop(sprintf("The following requested %s do not exist in the Oz butterflies database: %s",
+                 whatn, paste(requested[badVals], collapse = ", ")))
+  }
+}
+
 #' Downloads all or part of the Oz butterflies database to a local folder
 #'
 #' Simplifies downloading the Oz butterflies database to a local folder. Since
 #' the database is quite large, download times are long and the database
-#' requires substantial local storage space. If the entire database is nto
+#' requires substantial local storage space. If the entire database is not
 #' needed, then this function saves time and local storage space by only
 #' downloading the required parts of the database.
 #'
@@ -98,7 +111,7 @@ get_species <- function(species = NULL,
   # Download the metadata spreadsheet in all formats
   metadata <- grep("Oz_butterflies\\.", files$file)
   if (length(metadata) == 0) {
-    stop("Unable to locate Oz butterflies metadata file in repository")
+    stop("Internal error: Unable to locate Oz butterflies metadata file in repository")
   }
   downloadFiles(files, metadata, db_folder)
 
@@ -125,21 +138,18 @@ get_species <- function(species = NULL,
   # The '&' operator is used to combine this condition with any previously applied,
   # ensuring that the final set of rows meets all specified criteria.
   if (length(family) > 0) {
+    checkValuesInSet("family", "families", tolower(family), tolower(meta_data$Family))
     rows <- rows & tolower(meta_data$Family) %in% tolower(family)
   }
 
   # If genus is specified, update the filtering
   if (length(genus) > 0) {
-    rows <- rows & tolower(meta_data$genus) %in% tolower(genus)
+    rows <- rows & tolower(meta_data$Genus) %in% tolower(genus)
   }
 
   # If species is specified, update the filtering
   if (length(species) > 0) {
-    badSpecies <- !tolower(species) %in% unique(tolower(meta_data$full_species))
-    if (any(badSpecies)) {
-      stop(sprintf("The following requested species do not exist in the Oz butterflies database: %s",
-                   paste(species[badSpecies], collapse = ", ")))
-    }
+    checkValuesInSet("species", "species", tolower(species), tolower(meta_data$full_species))
     rows <- rows & tolower(meta_data$full_species) %in% tolower(species)
   }
 

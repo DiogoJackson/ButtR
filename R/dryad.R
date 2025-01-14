@@ -73,5 +73,5 @@ ListDbsFiles <- function() listFilesInDryad(BUTTR_DOI)
 
 
 #Uncomment this for debugging/development using local repository. For unit
-#tests, use testthat::local_mocked_bindings instead ListDbsFiles = function()
-#listLocalFiles(testthat::test_path("testdata/repo"))
+#tests, use testthat::local_mocked_bindings instead
+# ListDbsFiles = function() listLocalFiles(testthat::test_path("testdata/repo"))

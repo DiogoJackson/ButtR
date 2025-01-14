@@ -20,6 +20,11 @@ TODO
 
     $ install.packages("buttR")
 
+Or to install the latest development version directly from Github:
+
+    $ install.packages("devtools") # only if not already installed
+    $ devtools::install_github("DiogoJackson/ButtR")
+
 ## Summary of database contents
 
 * Folder structure

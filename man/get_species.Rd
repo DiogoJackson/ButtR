@@ -56,7 +56,7 @@ Path of the downloaded folder (invisibly).
 \description{
 Simplifies downloading the Oz butterflies database to a local folder. Since
 the database is quite large, download times are long and the database
-requires substantial local storage space. If the entire database is nto
+requires substantial local storage space. If the entire database is not
 needed, then this function saves time and local storage space by only
 downloading the required parts of the database.
 }
