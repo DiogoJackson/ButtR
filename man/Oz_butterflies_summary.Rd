@@ -6,6 +6,9 @@
 \usage{
 Oz_butterflies_summary(db_folder = "Oz_butterflies")
 }
+\arguments{
+\item{db_folder}{Path of folder that contains the Oz_butterflies database.}
+}
 \description{
 Summarise contents of Oz butterflies database
 }

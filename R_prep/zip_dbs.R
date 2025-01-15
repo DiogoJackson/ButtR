@@ -15,7 +15,7 @@ source("R/summarise.R")
 # What about has DNA & has spectra columns?
 # Summary file: no. males, no. females, combine with manually created inventory data
 
-FOR_TESTING_ONLY <- T
+FOR_TESTING_ONLY <- FALSE
 if (FOR_TESTING_ONLY) {
   message("Generating a truncated repository for testing only")
 }
