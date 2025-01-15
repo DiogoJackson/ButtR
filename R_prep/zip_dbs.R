@@ -15,7 +15,7 @@ source("R/summarise.R")
 # What about has DNA & has spectra columns?
 # Summary file: no. males, no. females, combine with manually created inventory data
 
-FOR_TESTING_ONLY <- FALSE
+FOR_TESTING_ONLY <- T
 if (FOR_TESTING_ONLY) {
   message("Generating a truncated repository for testing only")
 }
@@ -83,7 +83,7 @@ sampleDirectory <- function(descr) {
 }
 
 # Check that the image ID in the file names matches the containing folder for each image
-imgMatchesSpecimen <- function(imgFiles) {
+fileMatchesSpecimen <- function(imgFiles) {
     fileId <- sub("-.*", "", basename(imgFiles))
     dirId <- basename(dirname(imgFiles))
     fileId == dirId
@@ -149,7 +149,11 @@ checkOzButtUnpacked <- function(dir) {
 
   # Image files should start with the specimen ID, which should be the same as the containing folder
   imgs <- list.files(dir, pattern = "\\.ARW", recursive = TRUE, full.names = TRUE)
-  badImgFiles <- imgs[!imgMatchesSpecimen(imgs)]
+  badImgFiles <- imgs[!fileMatchesSpecimen(imgs)]
+
+  # ProcSpec files should start with their specimen IDs
+  specs <- list.files(dir, pattern = "\\.ProcSpec", recursive = TRUE, full.names = TRUE)
+  badSpecFiles <- specs[!fileMatchesSpecimen(specs)]
 
   # Report
   reportBad("Family names not capitalised", badFamilies)
@@ -167,6 +171,7 @@ checkOzButtUnpacked <- function(dir) {
   # reportBad(sprintf("Bad values for reflectance (valid values %s)", paste(validRef, collapse = ", ")), badRef)
   reportBad("Bad values for day (expected \"dd/mm/yyyy\")", badDay, limit = 8)
   reportBad("Specimen ID in image files don't match containing folder", badImgFiles, limit = 4)
+  reportBad("Specimen ID in spec files don't match containing folder", badSpecFiles, limit = 4)
 
   reportBad("Invalid folders at family level in DBS", badFamDirs)
   reportBad("Invalid species folders in DBS", badSpecDirs)
