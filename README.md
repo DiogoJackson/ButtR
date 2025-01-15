@@ -34,3 +34,9 @@ Or to install the latest development version directly from Github:
 ## Examples of use
 
 TODO
+
+## R_prep folder
+
+This repository also contains R code used during the construction of 
+the database, which is not part of the R package. It is included here 
+so that all R code is maintained in a single repository.
