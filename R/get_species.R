@@ -59,6 +59,10 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' needed, then this function saves time and local storage space by only
 #' downloading the required parts of the database.
 #'
+#' The metadata files in the database (Oz_butterflies.csv, Oz_butterflies.xslx
+#' and Oz_butterflies.json) always describe the entire database, regardless of
+#' whether the entire database or a subset is installed locally.
+#'
 #' @param species Optional vector of binomial names of species of interest. If
 #'   specified, only species from this list will be included in the local
 #'   database.

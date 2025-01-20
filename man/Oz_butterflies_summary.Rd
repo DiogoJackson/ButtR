@@ -2,13 +2,19 @@
 % Please edit documentation in R/summarise.R
 \name{Oz_butterflies_summary}
 \alias{Oz_butterflies_summary}
-\title{Summarise contents of Oz butterflies database}
+\title{Summarise contents of the Oz butterflies database}
 \usage{
 Oz_butterflies_summary(db_folder = "Oz_butterflies")
 }
 \arguments{
 \item{db_folder}{Path of folder that contains the Oz_butterflies database.}
 }
+\value{
+Data frame with 1 row and columns that summarise the database
+  contents. All summary statistics, apart from the `Images` count, describe
+  the entire database, regardless of whether the entire database or a subset
+  is installed locally.
+}
 \description{
-Summarise contents of Oz butterflies database
+Summarise contents of the Oz butterflies database
 }

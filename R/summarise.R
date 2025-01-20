@@ -1,8 +1,13 @@
 
 
-#' Summarise contents of Oz butterflies database
+#' Summarise contents of the Oz butterflies database
 #'
 #' @param db_folder Path of folder that contains the Oz_butterflies database.
+#'
+#' @returns Data frame with 1 row and columns that summarise the database
+#'   contents. All summary statistics, apart from the `Images` count, describe
+#'   the entire database, regardless of whether the entire database or a subset
+#'   is installed locally.
 #'
 #' @export
 Oz_butterflies_summary <- function(db_folder = "Oz_butterflies") {
