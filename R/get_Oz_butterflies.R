@@ -15,7 +15,7 @@
 # May contain
 # Sequence file
 # 2 x linear TIFFs (with corrected specimen IDs), named as for raw files
-# 1 x TIFF with spec locations highlighted (name TBD)
+# 1 x TIFF with spec sites highlighted (name TBD)
 # Spec files ("<ID><species initials><a|n><spot ID>.rspec") (a|n = angle or normal))
 # CSV equivalent of all spec files
 
@@ -75,7 +75,7 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   installed.
 #' @param year If specified, only specimens collected during these years will be
 #'   installed (options are 2022 or 2023).
-#' @param location If specified, only specimens collected at these locations
+#' @param site If specified, only specimens collected at these sites
 #'   will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and
 #'   \code{"Sydney"}).
 #' @param reflectance If specified, only specimens with the specified
@@ -90,12 +90,12 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' @returns Path of the downloaded folder (invisibly).
 #'
 #' @export
-get_species <- function(species = NULL,
+get_Oz_butterflies <- function(species = NULL,
                         genus = NULL,
                         family = NULL,
                         sex = NULL,
                         year = NULL,
-                        location = NULL,
+                        site = NULL,
                         reflectance = NULL,
                         sampleIDs = NULL,
                         download_images = c("raw", "jpeg"),
@@ -157,9 +157,9 @@ get_species <- function(species = NULL,
     rows <- rows & tolower(meta_data$full_species) %in% tolower(species)
   }
 
-  # If location is specified, update the filtering
-  if (length(location) > 0) {
-    rows <- rows & meta_data$location %in% location
+  # If site is specified, update the filtering
+  if (length(site) > 0) {
+    rows <- rows & meta_data$site %in% site
   }
 
   # If spectra is specified, update the filtering

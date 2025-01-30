@@ -1,4 +1,4 @@
-# Test the get_species function
+# Test the get_Oz_butterflies function
 
 # To manually check test coverage, run
 # covr::report()
@@ -32,10 +32,10 @@ dirsAtLevel <- function(dir, level) {
 
 #############################################################
 # tests start here
-test_that("test get_species", {
+test_that("test get_Oz_butterflies", {
   dbDir <- prepareTest()
 
-  get_species(species = c("Telicota mesoptis", "Papilio aegeus"), db_folder = dbDir)
+  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus"), db_folder = dbDir)
 
   expect_true(dir.exists(dbDir))
   expect_true(file.exists(file.path(dbDir, "Oz_butterflies.xlsx")))
@@ -63,7 +63,7 @@ test_that("test get_species", {
 test_that("image types 1", {
   dbDir <- prepareTest()
 
-  get_species(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "jpeg", db_folder = dbDir)
+  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "jpeg", db_folder = dbDir)
 
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16RGB.jpg")))
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16UV.jpg")))
@@ -80,7 +80,7 @@ test_that("image types 1", {
 test_that("image types 2", {
   dbDir <- prepareTest()
 
-  get_species(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "raw", db_folder = dbDir)
+  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "raw", db_folder = dbDir)
 
   # Only raw files should be downloaded
   expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16RGB.jpg")))
@@ -98,11 +98,11 @@ test_that("get family", {
   dbDir <- prepareTest()
 
   # Invalid family name should fail
-  expect_error(get_species(family = "Bad one", db_folder = dbDir), "requested family does not")
-  expect_error(get_species(family = c("Bad one", "Bad two"), db_folder = dbDir), "requested families do not")
+  expect_error(get_Oz_butterflies(family = "Bad one", db_folder = dbDir), "requested family does not")
+  expect_error(get_Oz_butterflies(family = c("Bad one", "Bad two"), db_folder = dbDir), "requested families do not")
 
   fams <- c("Hesperiidae", "Nymphalidae")
-  get_species(family = fams, db_folder = dbDir)
+  get_Oz_butterflies(family = fams, db_folder = dbDir)
   got <- dirsAtLevel(dbDir, 1)
   expect_equal(got, fams)
 
@@ -112,23 +112,23 @@ test_that("get family", {
 #   dbDir <- prepareTest()
 #
 #   # Invalid genus name should fail
-#   expect_error(get_species(genus = "Bad one", db_folder = dbDir))
+#   expect_error(get_Oz_butterflies(genus = "Bad one", db_folder = dbDir))
 #
 #   genera <- c("Notocrypta", "Telicota", "Euploea")
-#   get_species(genus = genera, db_folder = dbDir)
+#   get_Oz_butterflies(genus = genera, db_folder = dbDir)
 #   got <- dirsAtLevel(dbDir, 2)
 #   expect_equal(sort(got), sort(c("Notocrypta_waigensis", "Telicota_mesoptis", "Euploea_darchia")))
 #
 # })
 
 test_that("get combines", {
-  # Test that calling get_species twice combines the data from both calls into the local database
+  # Test that calling get_Oz_butterflies twice combines the data from both calls into the local database
   dbDir <- prepareTest()
   # Get one species
-  get_species(species = "Suniana sunias", db_folder = dbDir)
+  get_Oz_butterflies(species = "Suniana sunias", db_folder = dbDir)
   expect_equal(dirsAtLevel(dbDir, 2), "Suniana_sunias")
   # Now get a second species
-  get_species(species = "Papilio aegeus", db_folder = dbDir)
+  get_Oz_butterflies(species = "Papilio aegeus", db_folder = dbDir)
   # Both species should now be in the database
   expect_equal(dirsAtLevel(dbDir, 2), sort(c("Suniana_sunias", "Papilio_aegeus")))
 })
