@@ -36,10 +36,10 @@ Or to install the latest development version directly from Github:
 TODO
 
     $ # Install the entire Oz butterflies database in a folder called Oz_butterflies
-    $ get_species()
+    $ get_Oz_butterflies()
     
     $ Download all data on specimens with species "Zizina otis"
-    $ get_species(species = "Zizina otis")
+    $ get_Oz_butterflies(species = "Zizina otis")
 
 ## R_prep folder
 

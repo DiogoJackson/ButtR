@@ -11,9 +11,9 @@ Oz_butterflies_summary(db_folder = "Oz_butterflies")
 }
 \value{
 Data frame with 1 row and columns that summarise the database
-  contents. All summary statistics, apart from the `Images` count, describe
-  the entire database, regardless of whether the entire database or a subset
-  is installed locally.
+contents. All summary statistics, apart from the \code{Images} count, describe
+the entire database, regardless of whether the entire database or a subset
+is installed locally.
 }
 \description{
 Summarise contents of the Oz butterflies database
