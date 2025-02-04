@@ -18,7 +18,8 @@ Species			Binomial species names
 Specimens		Number of specimens of the species in the database
 Females 		Number of female specimens of the species in the database
 Males 			Number of male specimens of the species in the database
-TODO
+Dimorphic		"y" if clear sexual dimorphism in visible or UV, "n" if difficult to ID sexes in visible or UV
+Irridescent		"y" if obvious irridescent patches as measured in different angles, "n" if irridescence not clear
 
 Specimen spreadsheet
 --------------------
@@ -28,21 +29,21 @@ Family                  Specimen family
 Genus                   Specimen genus
 Species                 Specimen specific name (i.e. not the binomial species name)
 Sex                     "Female" or "Male"
-Exclude                 TODO
+Body			"y" or "n" for if body has visible damage
+Forewing.left		"y" or "n" for if forewing dorsal has visible damage
+Forewing.right		"y" or "n" for if forewing ventral has visible damage
+Hindwing.left		"y" or "n" for if hinwing dorsal has visible damage
+Hindwing.right		"y" or "n" for if hindwing ventral has visible damage
+Site			site code
+Latitude		Latitude of site
+Longitude		Longitude of site
+Climate			"temperate", "subtropical or "tropical"
+Date			date of collection in day/month/year format
+Collector		Initials of collector
+Binomial		Full species name
 Pinned                  "y" if specimen is pinned (i.e. intact), "n" if wings are separated from body
-Body
-Forewing.left
-Forewing.right
-Hindwing.left
-Hindwing.right
-Site
-Latitude
-Longitude
-Climate
-Date
-Collector
-X
-Binomial
+Speced			"y" if specimen was speced, "n" if it was not
+DNA			"y" if specimen has CO1 sequence in the database, "n" if it does not
 
 Specimen data
 -------------
@@ -61,7 +62,11 @@ Photographs of non-pinned specimens (wings separated from body):
 <ID>-UV.ARW    Dorsal and ventral wing surfaces photographed in ultraviolet light
 
 Specimens with DNA include the following files:
-TODO
+<ID>-f.gb	CO1 gene gene sequenced forward
 
 Spectroscoped specimens include the following files:
-TODO
+<ID>-side-patch number-angle.procspec	where ID is the sample number; side is either "d" (dorsal), "v" (ventra), or "b" (both) that refers to the reference picture; patch number is equivalent to one of the circled patched in the reference photo, and angle is either "s" for standard 45° or "a", 60° or "a2" if the 60° inclination was not enought to show iridescence	
+<ID>.csv	csv files containing all procspec measures
+<ID>-side.jpeg	reference image for speced patch number. Side can be "d" (dorsal), "v" ventral or NULL for both sides in the same picture 
+<ID>-s.png	Ploted specs measured at 45°
+<ID>-a.png	Ploted specs measured at 60° or more
