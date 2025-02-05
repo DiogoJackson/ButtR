@@ -1,31 +1,3 @@
-# Database structure (unpacked)
-# Oz_butterflies.csv
-# Oz_butterflies.xlsx
-# Oz_butterflies.json
-# Folder for each family, which contains
-# Folder for each species, which contains
-# Folder for each specimen
-#
-# Specimen folder = 1, 2 ... 13, etc...
-# Family/species/specimen
-# Within each specimen folder:
-# Always contains
-# "<ID>RGB.arw"
-# "<ID>UV.arw"
-# May contain
-# Sequence file
-# 2 x linear TIFFs (with corrected specimen IDs), named as for raw files
-# 1 x TIFF with spec sites highlighted (name TBD)
-# Spec files ("<ID><species initials><a|n><spot ID>.rspec") (a|n = angle or normal))
-# CSV equivalent of all spec files
-
-# In Dryad:
-# Oz_butterflies.csv
-# Oz_butterflies.xlsx
-# Oz_butterflies.json
-# Lots of species zip files
-#
-
 # Download one or more files from the repository
 downloadFiles <- function(files, subset, destDir) {
   # Download them one at a time
@@ -50,7 +22,8 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
                  whatn, paste(requested[badVals], collapse = ", ")))
   }
 }
-
+#' @title ButtR - Oz butterflies database
+#' @description The Oz butterflies database contains reflectance spectra and images of Australian butterflies.
 #' Downloads all or part of the Oz butterflies database to a local folder
 #'
 #' Simplifies downloading the Oz butterflies database to a local folder. Since
@@ -88,6 +61,19 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' @param db_folder Path of folder that will contain the downloaded database.
 #'
 #' @returns Path of the downloaded folder (invisibly).
+#'
+#'#' @examples
+#' # Download the entire database
+#' get_Oz_butterflies()
+#'
+#' # Download only specimens from the genus "Papilio"
+#' get_Oz_butterflies(genus = "Papilio")
+#'
+#' # Download only specimens collected in Brisbane in 2023
+#' get_Oz_butterflies(site = "Brisbane", year = 2023)
+#'
+#' # Download only JPEG images
+#' get_Oz_butterflies(download_images = "jpeg")
 #'
 #' @export
 get_Oz_butterflies <- function(species = NULL,
