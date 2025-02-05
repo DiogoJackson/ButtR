@@ -32,7 +32,7 @@ METADATA_BASENAME <- "Oz_butterflies"
 SUMMARY_BASENAME <- "Oz_butterflies_summary"
 
 # List of file extensions in database
-ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec") # DNA extension?
+ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "gb") # DNA extension?
 
 library(openxlsx)
 library(lubridate)
@@ -277,7 +277,7 @@ hasPinnedImages <- function(sampleDirs) {
 
 hasDNA <- function(sampleDirs) {
   sapply(sampleDirs, function(d) {
-    nf <- length(list.files(d, pattern = "\\.ab1"))
+    nf <- length(list.files(d, pattern = "\\.gb"))
     nf > 0
   })
 }
@@ -322,11 +322,23 @@ genMetadata <- function(indir, zipdir = NULL, testingData = FALSE) {
   samp <- setNames(as.data.frame(table(descr$Binomial)), c("Species", "Specimens"))
   females <- setNames(as.data.frame(table(descr$Binomial[descr$Sex == "Female"])), c("Species", "Females"))
   males <- setNames(as.data.frame(table(descr$Binomial[descr$Sex == "Male"])), c("Species", "Males"))
-  md <- merge(samp, merge(females, males))
+  md <- merge(samp, merge(females, males, all = TRUE), all = TRUE)
+  md[is.na(md)] <- 0
 
   # Combine with manually constructed species info, e.g. sexually dimorphic etc...
-  # man <- read.csv(file.path(indir, "XXX.csv"))
-  # md <- merge(md, man)
+  man <- read.csv(file.path(indir, "Oz_butterflies_summary.csv"))
+  # Sanity checks
+  badSumSp <- !man$Species %in% unique(descr$Binomial)
+  if (any(badSumSp)) {
+    reportBad("Invalid species in summary file", man$Species[badSumSp])
+    stop("Bad summary file")
+  }
+  md <- merge(md, man, all = TRUE)
+  badMeta <- is.na(md$Dimorphic) | is.na(md$Iridescent)
+  if (any(badMeta)) {
+    reportBad("Missing summary data for species", md$Species[badMeta])
+    stop("Bad summary file")
+  }
 
   # Write repo files
   utils::write.csv(md, file = file.path(zipdir, paste0(SUMMARY_BASENAME, ".csv")), row.names = FALSE)
