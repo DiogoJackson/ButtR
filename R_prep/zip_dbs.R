@@ -16,16 +16,20 @@ source("R/summarise.R")
 # What about has DNA & has spectra columns?
 # Summary file: no. males, no. females, combine with manually created inventory data
 
-FOR_TESTING_ONLY <- FALSE
-if (FOR_TESTING_ONLY) {
-  message("Generating a truncated repository for testing only")
-}
-
 # Location of the source (unpacked) database to be checked
 DBDIR <- "D:\\Oz_Butterflies"
-
 # Directory where the packed database will be created
 REPODIR <- "D:\\Oz_zips"
+
+
+FOR_TESTING_ONLY <- TRUE
+if (FOR_TESTING_ONLY) {
+  message("Generating a truncated repository for testing only")
+
+  DBDIR <- "tests/testthat/testdata/db"
+  REPODIR <- "tests/testthat/testdata/repo"
+}
+
 
 # Basename of the metadata spreadsheet file
 METADATA_BASENAME <- "Oz_butterflies"
@@ -332,17 +336,25 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   badSumSp <- !man$Species %in% unique(descr$Binomial)
   if (any(badSumSp)) {
     reportBad("Invalid species in summary file", man$Species[badSumSp])
-    stop("Bad summary file")
+    if (testingData) {
+      cat("Ignoring error as this is only testing data\n")
+    } else {
+      stop("Bad summary file")
+    }
   }
   md <- merge(md, man, all = TRUE)
   badMeta <- is.na(md$Dimorphic) | is.na(md$Iridescent)
   if (any(badMeta)) {
     reportBad("Missing summary data for species", md$Species[badMeta])
-    stop("Bad summary file")
+    if (testingData) {
+      cat("Ignoring error as this is only testing data\n")
+    } else {
+      stop("Bad summary file")
+    }
   }
   md <- md[, c("Family", "Species", "Females", "Males", "Specimens", "Dimorphic", "Iridescent")]
   md <- md[order(md$Family, md$Species), ]
-  if (!all.equal(md$Specimens, md$Females + md$Males)) { stop("Specimens != Females + Males") }
+  if (!testingData && !all.equal(md$Specimens, md$Females + md$Males)) { stop("Specimens != Females + Males") }
 
   # Write repo files
   utils::write.csv(md, file = file.path(zipDir, paste0(SUMMARY_BASENAME, ".csv")), row.names = FALSE)
