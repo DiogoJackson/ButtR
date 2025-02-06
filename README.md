@@ -76,15 +76,15 @@ get_Oz_butterflies()
 Download data for a specific species:
 
 ``` r
-# Get data only for Zizina otis
-get_Oz_butterflies(species = "Zizina otis")
+# Get data only for Delias aganippe
+get_Oz_butterflies(species = "Delias aganippe")
 ```
 
 Download data for a specific genus:
 
 ``` r
-# Get data only for Zizina otis
-get_Oz_butterflies(genus = "Zizina")
+# Get data for all species of the genus Delias
+get_Oz_butterflies(genus = "Delias")
 ```
 
 Download data for a specific family:
@@ -101,12 +101,12 @@ Download data by site:
 get_Oz_butterflies(site = "Sydney")
 ```
 
-Download data for male *Zizina otis* and *Zizina labradus* from Brisbane
+Download data for male *Delias aganippe* and *Delias mysis* from Brisbane
 and Sydney:
 
 ``` r
 # Get data with multiple filters 
-get_Oz_butterflies(sex = "male", species = c("Zizina otis", "Zizina labradus"), site = c("Brisbane", "Sydney")
+get_Oz_butterflies(sex = "male", species = c("Delias aganippe", "Delias mysis"), site = c("Brisbane", "Sydney")
 ```
 
 ------------------------------------------------------------------------
