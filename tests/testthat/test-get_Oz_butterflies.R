@@ -42,15 +42,13 @@ test_that("test get_Oz_butterflies", {
   expect_true(file.exists(file.path(dbDir, "Oz_butterflies.csv")))
   expect_true(file.exists(file.path(dbDir, "Oz_butterflies.json")))
 
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16RGB.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16UV.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19RGB.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19UV.jpg")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_UV.ARW")))
 
-  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.arw")))
-  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.arw")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_UV.ARW")))
 
   # Unrequested species should not have been downloaded
   expect_false(dir.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis")))
@@ -63,35 +61,28 @@ test_that("test get_Oz_butterflies", {
 test_that("image types 1", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "jpeg", db_folder = dbDir)
+  get_Oz_butterflies(species = c("Suniana sunias", "Papilio aegeus"), download_images = "jpeg", db_folder = dbDir)
 
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16RGB.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16UV.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19RGB.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19UV.jpg")))
-
-  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.jpg")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186L.jpg")))
   # Raw files shouldn't be downloaded
-  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.arw")))
-  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.arw")))
+  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.ARW")))
+  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.ARW")))
 })
 
 test_that("image types 2", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus"), download_images = "raw", db_folder = dbDir)
+  get_Oz_butterflies(species = c("Suniana sunias", "Telicota mesoptis", "Papilio aegeus"), download_images = "raw", db_folder = dbDir)
 
   # Only raw files should be downloaded
-  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16RGB.jpg")))
-  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16UV.jpg")))
-  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19RGB.jpg")))
-  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19UV.jpg")))
+  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186L.jpg")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_UV.ARW")))
 
-  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.jpg")))
-  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.jpg")))
-  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361RGB.arw")))
-  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361UV.arw")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_UV.ARW")))
 })
 
 test_that("get family", {
