@@ -8,6 +8,8 @@
 #'   contents. All summary statistics, apart from the `Images` count, describe
 #'   the entire database, regardless of whether the entire database or a subset
 #'   is installed locally.
+#' @importFrom utils read.csv
+#' @importFrom stats aggregate median
 #'
 #' @export
 Oz_butterflies_summary <- function(db_folder = "Oz_butterflies") {

@@ -8,6 +8,7 @@
 # subsequent runs. Results are saved in AFD-query.csv in the top level package
 # directory.
 
+library(JUtils)
 source("R/summarise.R")
 
 # TODO
@@ -15,16 +16,20 @@ source("R/summarise.R")
 # What about has DNA & has spectra columns?
 # Summary file: no. males, no. females, combine with manually created inventory data
 
-FOR_TESTING_ONLY <- FALSE
+# Location of the source (unpacked) database to be checked
+DBDIR <- "D:\\Oz_Butterflies"
+# Directory where the packed database will be created
+REPODIR <- "D:\\Oz_zips"
+
+
+FOR_TESTING_ONLY <- TRUE
 if (FOR_TESTING_ONLY) {
   message("Generating a truncated repository for testing only")
+
+  DBDIR <- "tests/testthat/testdata/db"
+  REPODIR <- "tests/testthat/testdata/repo"
 }
 
-# Location of the source (unpacked) database to be checked
-DBDIR <- "tests/testthat/testdata/db"
-
-# Directory where the packed database will be created
-REPODIR <- "tests/testthat/testdata/repo"
 
 # Basename of the metadata spreadsheet file
 METADATA_BASENAME <- "Oz_butterflies"
@@ -32,7 +37,7 @@ METADATA_BASENAME <- "Oz_butterflies"
 SUMMARY_BASENAME <- "Oz_butterflies_summary"
 
 # List of file extensions in database
-ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec") # DNA extension?
+ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "gb", "csv") # DNA extension?
 
 library(openxlsx)
 library(lubridate)
@@ -84,7 +89,7 @@ sampleDirectory <- function(descr) {
 
 # Check that the image ID in the file names matches the containing folder for each image
 fileMatchesSpecimen <- function(imgFiles) {
-    fileId <- sub("-.*", "", basename(imgFiles))
+    fileId <- sub("_.*", "", basename(imgFiles))
     dirId <- basename(dirname(imgFiles))
     fileId == dirId
 }
@@ -264,7 +269,7 @@ checkSpecies <- function(dbdir) {
 
 hasPinnedImages <- function(sampleDirs) {
   sapply(sampleDirs, function(d) {
-    pinnedFiles <- list.files(d, pattern = "-[d|v]-")
+    pinnedFiles <- list.files(d, pattern = "_[d|v]_.*\\.ARW$")
     # There should be 0 or an even number of files
     nf <- length(pinnedFiles)
     if (nf != 0 && nf %% 2 != 0) {
@@ -277,7 +282,7 @@ hasPinnedImages <- function(sampleDirs) {
 
 hasDNA <- function(sampleDirs) {
   sapply(sampleDirs, function(d) {
-    nf <- length(list.files(d, pattern = "\\.ab1"))
+    nf <- length(list.files(d, pattern = "\\.gb"))
     nf > 0
   })
 }
@@ -298,7 +303,7 @@ trimMetadataForTesting <- function(dir, descr) {
 }
 
 # Update and generate metadata in other formats
-genMetadata <- function(indir, zipdir = NULL, testingData = FALSE) {
+genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   descr <- readDbMetadata(indir)
 
   if (testingData) {
@@ -309,29 +314,55 @@ genMetadata <- function(indir, zipdir = NULL, testingData = FALSE) {
   descr$Pinned <- ifelse(hasPinnedImages(file.path(indir, sampleDirectory(descr))), "y", "n")
   # Add a DNA column
   descr$DNA <- ifelse(hasDNA(file.path(indir, sampleDirectory(descr))), "y", "n")
-  # Has a Spec file
-  descr$Spec <- ifelse(hasSpec(file.path(indir, sampleDirectory(descr))), "y", "n")
+  ## Has a Spec file (already in metadata)
+  #descr$Spec <- ifelse(hasSpec(file.path(indir, sampleDirectory(descr))), "y", "n")
 
   # Write repo files
-  utils::write.csv(descr, file = file.path(zipdir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
-  openxlsx::write.xlsx(descr, file = file.path(zipdir, paste0(METADATA_BASENAME, ".xlsx")))
-  jsonlite::write_json(descr, path = file.path(zipdir, paste0(METADATA_BASENAME, ".json")))
+  utils::write.csv(descr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
+  openxlsx::write.xlsx(descr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".xlsx")))
+  jsonlite::write_json(descr, path = file.path(zipDir, paste0(METADATA_BASENAME, ".json")))
 
   ### Summary spreadsheet
   # Summarise dbs contents
   samp <- setNames(as.data.frame(table(descr$Binomial)), c("Species", "Specimens"))
   females <- setNames(as.data.frame(table(descr$Binomial[descr$Sex == "Female"])), c("Species", "Females"))
   males <- setNames(as.data.frame(table(descr$Binomial[descr$Sex == "Male"])), c("Species", "Males"))
-  md <- merge(samp, merge(females, males))
+  md <- merge(samp, merge(females, males, all = TRUE), all = TRUE)
+  md[is.na(md)] <- 0
 
   # Combine with manually constructed species info, e.g. sexually dimorphic etc...
-  # man <- read.csv(file.path(indir, "XXX.csv"))
-  # md <- merge(md, man)
+  man <- read.csv(file.path(indir, "Oz_butterflies_summary.csv"))
+  # Sanity checks
+  badSumSp <- !man$Species %in% unique(descr$Binomial)
+  if (any(badSumSp)) {
+    reportBad("Invalid species in summary file", man$Species[badSumSp])
+    if (testingData) {
+      cat("Ignoring error as this is only testing data\n")
+    } else {
+      stop("Bad summary file")
+    }
+  }
+  md <- merge(md, man, all = TRUE)
+  badMeta <- is.na(md$Dimorphic) | is.na(md$Iridescent)
+  if (any(badMeta)) {
+    reportBad("Missing summary data for species", md$Species[badMeta])
+    if (testingData) {
+      cat("Ignoring error as this is only testing data\n")
+    } else {
+      stop("Bad summary file")
+    }
+  }
+  md <- md[, c("Family", "Species", "Females", "Males", "Specimens", "Dimorphic", "Iridescent")]
+  md <- md[order(md$Family, md$Species), ]
+  if (!testingData && !all.equal(md$Specimens, md$Females + md$Males)) { stop("Specimens != Females + Males") }
 
   # Write repo files
-  utils::write.csv(md, file = file.path(zipdir, paste0(SUMMARY_BASENAME, ".csv")), row.names = FALSE)
-  openxlsx::write.xlsx(md, file = file.path(zipdir, paste0(SUMMARY_BASENAME, ".xlsx")))
-  jsonlite::write_json(md, path = file.path(zipdir, paste0(SUMMARY_BASENAME, ".json")))
+  utils::write.csv(md, file = file.path(zipDir, paste0(SUMMARY_BASENAME, ".csv")), row.names = FALSE)
+  openxlsx::write.xlsx(md, file = file.path(zipDir, paste0(SUMMARY_BASENAME, ".xlsx")))
+  jsonlite::write_json(md, path = file.path(zipDir, paste0(SUMMARY_BASENAME, ".json")))
+
+  # Copy the README
+  file.copy(file.path(indir, "README.txt"), zipDir)
 
   descr
 }
@@ -359,6 +390,7 @@ createZippedDb <- function(indir, zipDir) {
   # the relative paths in the zip file that we want
   setwd(indir)
 
+  pb <- JBuildProgressBar(progressBar = "win", numItems = nrow(species), title = "")
   skippedDirs <- 0
   for (spi in seq_len(nrow(species))) {
     if (!dir.exists(speciesDir[spi])) {
@@ -368,12 +400,15 @@ createZippedDb <- function(indir, zipDir) {
       zip <- zipPath[spi]
       # Delete old zip file
       unlink(zip)
-      utils::zip(zip, files)
+      x <- utils::zip(zip, files)
+      if (x != 0) stop(sprintf("Zip failed with status %d", x))
+      pb()
     }
   }
   if (skippedDirs > 0) {
     cat(sprintf("Skipped %d species folders because they don't exist\n", skippedDirs))
   }
+  pb(close = TRUE, printElapsed = TRUE)
 }
 
 

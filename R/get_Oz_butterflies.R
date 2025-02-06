@@ -22,9 +22,10 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
                  whatn, paste(requested[badVals], collapse = ", ")))
   }
 }
+
 #' @title ButtR - Oz butterflies database
 #' @description The Oz butterflies database contains reflectance spectra and images of Australian butterflies.
-#' Downloads all or part of the Oz butterflies database to a local folder
+#' Downloads all or part of the Oz butterflies database to a local folder.
 #'
 #' Simplifies downloading the Oz butterflies database to a local folder. Since
 #' the database is quite large, download times are long and the database
@@ -60,20 +61,23 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   downloaded.
 #' @param db_folder Path of folder that will contain the downloaded database.
 #'
-#' @returns Path of the downloaded folder (invisibly).
-#'
-#'#' @examples
-#' # Download the entire database
+#' @examples
+#' \dontrun{
+#' # Download the full Oz Butterflies Database
 #' get_Oz_butterflies()
 #'
-#' # Download only specimens from the genus "Papilio"
-#' get_Oz_butterflies(genus = "Papilio")
+#' # Get data only for Delias aganippe
+#' get_Oz_butterflies(species = "Delias aganippe")
 #'
-#' # Download only specimens collected in Brisbane in 2023
-#' get_Oz_butterflies(site = "Brisbane", year = 2023)
+#' # Get data for all species of the genus Delias
+#' get_Oz_butterflies(genus = "Delias")
 #'
-#' # Download only JPEG images
-#' get_Oz_butterflies(download_images = "jpeg")
+#' # Get all species within the Nymphalidae family
+#' get_Oz_butterflies(family = "Nymphalidae")
+#'
+#' # Get data with multiple filters
+#' get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"), site = c("Brisbane", "Sydney")
+#' }
 #'
 #' @export
 get_Oz_butterflies <- function(species = NULL,
