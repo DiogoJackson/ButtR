@@ -114,7 +114,7 @@ organiseDB <- function(indir, outdir) {
 
   # Now create the correctly structured database
   maybeCreateDir(outdir)
-  write.csv(md, file = file.path(outdir, paste0(METADATA_BASENAME, ".csv")))
+  write.csv(md, file = file.path(outdir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
 
   pb <- JBuildProgressBar("win", numItems = length(unique(md$ID)), title = "Progress")
   on.exit(pb(close = TRUE))

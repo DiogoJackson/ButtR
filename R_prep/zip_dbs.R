@@ -8,6 +8,7 @@
 # subsequent runs. Results are saved in AFD-query.csv in the top level package
 # directory.
 
+library(JUtils)
 source("R/summarise.R")
 
 # TODO
@@ -21,10 +22,10 @@ if (FOR_TESTING_ONLY) {
 }
 
 # Location of the source (unpacked) database to be checked
-DBDIR <- "tests/testthat/testdata/db"
+DBDIR <- "D:\\Oz_Butterflies"
 
 # Directory where the packed database will be created
-REPODIR <- "tests/testthat/testdata/repo"
+REPODIR <- "D:\\Oz_zips"
 
 # Basename of the metadata spreadsheet file
 METADATA_BASENAME <- "Oz_butterflies"
@@ -32,7 +33,7 @@ METADATA_BASENAME <- "Oz_butterflies"
 SUMMARY_BASENAME <- "Oz_butterflies_summary"
 
 # List of file extensions in database
-ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "gb") # DNA extension?
+ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "gb", "csv") # DNA extension?
 
 library(openxlsx)
 library(lubridate)
@@ -84,7 +85,7 @@ sampleDirectory <- function(descr) {
 
 # Check that the image ID in the file names matches the containing folder for each image
 fileMatchesSpecimen <- function(imgFiles) {
-    fileId <- sub("-.*", "", basename(imgFiles))
+    fileId <- sub("_.*", "", basename(imgFiles))
     dirId <- basename(dirname(imgFiles))
     fileId == dirId
 }
@@ -264,7 +265,7 @@ checkSpecies <- function(dbdir) {
 
 hasPinnedImages <- function(sampleDirs) {
   sapply(sampleDirs, function(d) {
-    pinnedFiles <- list.files(d, pattern = "-[d|v]-")
+    pinnedFiles <- list.files(d, pattern = "_[d|v]_.*\\.ARW$")
     # There should be 0 or an even number of files
     nf <- length(pinnedFiles)
     if (nf != 0 && nf %% 2 != 0) {
@@ -298,7 +299,7 @@ trimMetadataForTesting <- function(dir, descr) {
 }
 
 # Update and generate metadata in other formats
-genMetadata <- function(indir, zipdir = NULL, testingData = FALSE) {
+genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   descr <- readDbMetadata(indir)
 
   if (testingData) {
@@ -309,13 +310,13 @@ genMetadata <- function(indir, zipdir = NULL, testingData = FALSE) {
   descr$Pinned <- ifelse(hasPinnedImages(file.path(indir, sampleDirectory(descr))), "y", "n")
   # Add a DNA column
   descr$DNA <- ifelse(hasDNA(file.path(indir, sampleDirectory(descr))), "y", "n")
-  # Has a Spec file
-  descr$Spec <- ifelse(hasSpec(file.path(indir, sampleDirectory(descr))), "y", "n")
+  ## Has a Spec file (already in metadata)
+  #descr$Spec <- ifelse(hasSpec(file.path(indir, sampleDirectory(descr))), "y", "n")
 
   # Write repo files
-  utils::write.csv(descr, file = file.path(zipdir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
-  openxlsx::write.xlsx(descr, file = file.path(zipdir, paste0(METADATA_BASENAME, ".xlsx")))
-  jsonlite::write_json(descr, path = file.path(zipdir, paste0(METADATA_BASENAME, ".json")))
+  utils::write.csv(descr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
+  openxlsx::write.xlsx(descr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".xlsx")))
+  jsonlite::write_json(descr, path = file.path(zipDir, paste0(METADATA_BASENAME, ".json")))
 
   ### Summary spreadsheet
   # Summarise dbs contents
@@ -339,11 +340,17 @@ genMetadata <- function(indir, zipdir = NULL, testingData = FALSE) {
     reportBad("Missing summary data for species", md$Species[badMeta])
     stop("Bad summary file")
   }
+  md <- md[, c("Family", "Species", "Females", "Males", "Specimens", "Dimorphic", "Iridescent")]
+  md <- md[order(md$Family, md$Species), ]
+  if (!all.equal(md$Specimens, md$Females + md$Males)) { stop("Specimens != Females + Males") }
 
   # Write repo files
-  utils::write.csv(md, file = file.path(zipdir, paste0(SUMMARY_BASENAME, ".csv")), row.names = FALSE)
-  openxlsx::write.xlsx(md, file = file.path(zipdir, paste0(SUMMARY_BASENAME, ".xlsx")))
-  jsonlite::write_json(md, path = file.path(zipdir, paste0(SUMMARY_BASENAME, ".json")))
+  utils::write.csv(md, file = file.path(zipDir, paste0(SUMMARY_BASENAME, ".csv")), row.names = FALSE)
+  openxlsx::write.xlsx(md, file = file.path(zipDir, paste0(SUMMARY_BASENAME, ".xlsx")))
+  jsonlite::write_json(md, path = file.path(zipDir, paste0(SUMMARY_BASENAME, ".json")))
+
+  # Copy the README
+  file.copy(file.path(indir, "README.txt"), zipDir)
 
   descr
 }
@@ -371,6 +378,7 @@ createZippedDb <- function(indir, zipDir) {
   # the relative paths in the zip file that we want
   setwd(indir)
 
+  pb <- JBuildProgressBar(progressBar = "win", numItems = nrow(species), title = "")
   skippedDirs <- 0
   for (spi in seq_len(nrow(species))) {
     if (!dir.exists(speciesDir[spi])) {
@@ -380,12 +388,15 @@ createZippedDb <- function(indir, zipDir) {
       zip <- zipPath[spi]
       # Delete old zip file
       unlink(zip)
-      utils::zip(zip, files)
+      x <- utils::zip(zip, files)
+      if (x != 0) stop(sprintf("Zip failed with status %d", x))
+      pb()
     }
   }
   if (skippedDirs > 0) {
     cat(sprintf("Skipped %d species folders because they don't exist\n", skippedDirs))
   }
+  pb(close = TRUE, printElapsed = TRUE)
 }
 
 
