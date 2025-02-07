@@ -153,12 +153,14 @@ get_Oz_butterflies <- function(species = NULL,
 
   # If spectra is specified, update the filtering
   if (length(reflectance) > 0) {
-    rows <- rows & meta_data$reflectance %in% reflectance
+    checkValuesInSet("reflectance", "reflectances", tolower(reflectance), tolower(meta_data$Speced))
+    rows <- rows & meta_data$Speced %in% reflectance
   }
 
   # If sex is specified, update the filtering
   if (length(sex) > 0) {
-    rows <- rows & tolower(meta_data$sex) %in% tolower(sex)
+    checkValuesInSet("sex", "sexes", tolower(sex), tolower(meta_data$Sex))
+    rows <- rows & tolower(meta_data$Sex) %in% tolower(sex)
   }
 
   # If year is specified, update the filtering

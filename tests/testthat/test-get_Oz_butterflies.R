@@ -131,7 +131,7 @@ test_that("get site", {
   get_Oz_butterflies(site = c("BG"), db_folder = dbDir)
 
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))
-  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_UV.ARW")))
 
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
@@ -145,4 +145,57 @@ test_that("get site", {
   expect_equal(gotFams, c("Hesperiidae"))
   gotSp <- sapply(gotFams, function(fam) list.dirs(file.path(dbDir, fam), full.names = FALSE, recursive = FALSE))
   expect_equal(sort(unname(gotSp)), sort(c("Notocrypta_waigensis", "Telicota_mesoptis")))
+})
+
+test_that("get reflectance", {
+  dbDir <- prepareTest()
+
+  get_Oz_butterflies(reflectance = c("y"), db_folder = dbDir)
+
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_UV.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186")))
+  expect_true(file.exists(file.path(dbDir, "Nymphalidae/Euploea_darchia/551")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361")))
+
+  # Unrequested species should not have been downloaded
+  expect_false(dir.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis")))
+  gotFams <- list.dirs(dbDir, full.names = FALSE, recursive = FALSE)
+  expect_equal(gotFams, c("Hesperiidae", "Nymphalidae", "Papilionidae"))
+
+  gotSp <- sapply(gotFams, function(fam) list.dirs(file.path(dbDir, fam), full.names = FALSE, recursive = FALSE))
+
+  # Correção: garantir que gotSp seja um vetor atômico
+  gotSp <- unlist(gotSp, use.names = FALSE)
+
+  # Debug opcional caso o erro persista
+  print(gotSp)
+
+  expect_equal(sort(gotSp), sort(c("Notocrypta_waigensis", "Suniana_sunias", "Euploea_darchia", "Papilio_aegeus")))
+})
+
+test_that("get sex", {
+  dbDir <- prepareTest()
+
+  get_Oz_butterflies(sex = c("Male"), db_folder = dbDir)
+
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_UV.ARW")))
+
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_UV.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/spec1.txt")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/spec2.txt")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/spec3.txt")))
+
+  # Unrequested species should not have been downloaded
+  expect_false(dir.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis")))
+  expect_false(dir.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias")))
+  expect_false(dir.exists(file.path(dbDir, "Hesperiidae/Euploea_darchia")))
+  gotFams <- list.dirs(dbDir, full.names = FALSE, recursive = FALSE)
+  expect_equal(gotFams, c("Hesperiidae", "Papilionidae"))
+  gotSp <- sapply(gotFams, function(fam) list.dirs(file.path(dbDir, fam), full.names = FALSE, recursive = FALSE))
+  expect_equal(sort(unname(gotSp)), sort(c("Papilio_aegeus", "Telicota_mesoptis")))
 })
