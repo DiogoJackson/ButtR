@@ -163,13 +163,15 @@ get_Oz_butterflies <- function(species = NULL,
     rows <- rows & tolower(meta_data$Sex) %in% tolower(sex)
   }
 
-  # If year is specified, update the filtering
+  # Filtrando apenas os anos especificados
   if (length(year) > 0) {
-    rows <- rows & meta_data$year %in% year
+    meta_data$Date <- substr(meta_data$Date, 7, 10)  # extract year from date
+    rows <- rows & meta_data$Date %in% as.character(year)  # string
   }
 
   # If sample ID is specified, update the filtering
   if (length(sampleIDs) > 0) {
+    checkValuesInSet("sampleIDs", "sampleID", tolower(sampleIDs), tolower(meta_data$ID))
     rows <- rows & meta_data$ID %in% sampleIDs
   }
 

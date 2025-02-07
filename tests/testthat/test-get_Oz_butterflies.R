@@ -199,3 +199,48 @@ test_that("get sex", {
   gotSp <- sapply(gotFams, function(fam) list.dirs(file.path(dbDir, fam), full.names = FALSE, recursive = FALSE))
   expect_equal(sort(unname(gotSp)), sort(c("Papilio_aegeus", "Telicota_mesoptis")))
 })
+
+#Need expect_error to test invalid year ####
+test_that("get year", {
+  dbDir <- prepareTest()
+
+  get_Oz_butterflies(year = c("2022"), db_folder = dbDir)
+
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_UV.ARW")))
+
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias")))
+  expect_true(file.exists(file.path(dbDir, "Nymphalidae/Euploea_darchia")))
+
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_UV.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/spec1.txt")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/spec2.txt")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/spec3.txt")))
+
+  # Unrequested species should not have been downloaded
+  gotFams <- list.dirs(dbDir, full.names = FALSE, recursive = FALSE)
+  expect_equal(gotFams, c("Hesperiidae","Nymphalidae", "Papilionidae"))
+  gotSp <- unlist(lapply(gotFams, function(fam) list.dirs(file.path(dbDir, fam), full.names = FALSE, recursive = FALSE)))
+  expect_equal(sort(unname(gotSp)), sort(c("Papilio_aegeus",
+                                           "Telicota_mesoptis",
+                                           "Notocrypta_waigensis",
+                                           "Suniana_sunias",
+                                           "Euploea_darchia")))
+})
+
+test_that("get id", {
+  dbDir <- prepareTest()
+
+  # Invalid genus name should fail
+  expect_error(get_Oz_butterflies(sampleIDs = "bad one", db_folder = dbDir))
+
+  ids <- c("16")
+  get_Oz_butterflies(sampleIDs = ids, db_folder = dbDir)
+  got <- dirsAtLevel(dbDir, 3)
+  expect_equal(sort(got), sort(c("16")))
+  expect_false(dir.exists(file.path(dbDir, "19")))
+})
