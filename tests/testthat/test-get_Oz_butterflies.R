@@ -99,18 +99,18 @@ test_that("get family", {
 
 })
 
-# test_that("get genus", {
-#   dbDir <- prepareTest()
-#
-#   # Invalid genus name should fail
-#   expect_error(get_Oz_butterflies(genus = "Bad one", db_folder = dbDir))
-#
-#   genera <- c("Notocrypta", "Telicota", "Euploea")
-#   get_Oz_butterflies(genus = genera, db_folder = dbDir)
-#   got <- dirsAtLevel(dbDir, 2)
-#   expect_equal(sort(got), sort(c("Notocrypta_waigensis", "Telicota_mesoptis", "Euploea_darchia")))
-#
-# })
+test_that("get genus", {
+  dbDir <- prepareTest()
+
+  # Invalid genus name should fail
+  expect_error(get_Oz_butterflies(genus = "Bad one", db_folder = dbDir))
+
+  genera <- c("Notocrypta", "Telicota", "Euploea")
+  get_Oz_butterflies(genus = genera, db_folder = dbDir)
+  got <- dirsAtLevel(dbDir, 2)
+  expect_equal(sort(got), sort(c("Notocrypta_waigensis", "Telicota_mesoptis", "Euploea_darchia")))
+
+})
 
 test_that("get combines", {
   # Test that calling get_Oz_butterflies twice combines the data from both calls into the local database
@@ -122,4 +122,27 @@ test_that("get combines", {
   get_Oz_butterflies(species = "Papilio aegeus", db_folder = dbDir)
   # Both species should now be in the database
   expect_equal(dirsAtLevel(dbDir, 2), sort(c("Suniana_sunias", "Papilio_aegeus")))
+})
+
+
+test_that("get site", {
+  dbDir <- prepareTest()
+
+  get_Oz_butterflies(site = c("BG"), db_folder = dbDir)
+
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))
+
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
+
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_RGB.ARW")))
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_UV.ARW")))
+
+  # Unrequested species should not have been downloaded
+  expect_false(dir.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias")))
+  gotFams <- list.dirs(dbDir, full.names = FALSE, recursive = FALSE)
+  expect_equal(gotFams, c("Hesperiidae"))
+  gotSp <- sapply(gotFams, function(fam) list.dirs(file.path(dbDir, fam), full.names = FALSE, recursive = FALSE))
+  expect_equal(sort(unname(gotSp)), sort(c("Notocrypta_waigensis", "Telicota_mesoptis")))
 })

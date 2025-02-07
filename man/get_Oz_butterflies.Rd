@@ -22,8 +22,7 @@ get_Oz_butterflies(
 specified, only species from this list will be included in the local
 database.}
 
-\item{genus}{If specified, only specimens from these genera will be
-installed.}
+\item{genus}{If specified, only specimens from this genus will be installed.}
 
 \item{family}{If specified, only specimens from this family will be
 installed.}
@@ -35,8 +34,7 @@ installed.}
 installed (options are 2022 or 2023).}
 
 \item{site}{If specified, only specimens collected at these sites
-will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and
-\code{"Sydney"}).}
+will be installed.}
 
 \item{reflectance}{If specified, only specimens with the specified
 reflectance will be installed (\code{"yes"} or \code{"no"}).}
@@ -79,7 +77,7 @@ get_Oz_butterflies(genus = "Delias")
 get_Oz_butterflies(family = "Nymphalidae")
 
 # Get data with multiple filters
-get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"), site = c("Brisbane", "Sydney")
+get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"))
 }
 
 }

@@ -45,13 +45,10 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   installed.
 #' @param sex If specified, only specimens of this sex (\code{"male"},
 #'   \code{"female"} or  \code{"unknown"}) will be installed.
-#' @param genus If specified, only specimens from these genera will be
-#'   installed.
 #' @param year If specified, only specimens collected during these years will be
 #'   installed (options are 2022 or 2023).
 #' @param site If specified, only specimens collected at these sites
-#'   will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and
-#'   \code{"Sydney"}).
+#'   will be installed.
 #' @param reflectance If specified, only specimens with the specified
 #'   reflectance will be installed (\code{"yes"} or \code{"no"}).
 #' @param sampleIDs If specified, only specimens with the specified IDs will be
@@ -76,7 +73,7 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' get_Oz_butterflies(family = "Nymphalidae")
 #'
 #' # Get data with multiple filters
-#' get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"), site = c("Brisbane", "Sydney")
+#' get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"))
 #' }
 #'
 #' @export
@@ -138,6 +135,7 @@ get_Oz_butterflies <- function(species = NULL,
 
   # If genus is specified, update the filtering
   if (length(genus) > 0) {
+    checkValuesInSet("genus", "genus", tolower(genus), tolower(meta_data$Genus))
     rows <- rows & tolower(meta_data$Genus) %in% tolower(genus)
   }
 
@@ -149,7 +147,8 @@ get_Oz_butterflies <- function(species = NULL,
 
   # If site is specified, update the filtering
   if (length(site) > 0) {
-    rows <- rows & meta_data$site %in% site
+    checkValuesInSet("site", "sites", tolower(site), tolower(meta_data$Site))
+    rows <- rows & meta_data$Site %in% site
   }
 
   # If spectra is specified, update the filtering
