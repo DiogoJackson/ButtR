@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_Oz_butterflies.R
 \name{get_Oz_butterflies}
 \alias{get_Oz_butterflies}
-\title{Downloads all or part of the Oz butterflies database to a local folder}
+\title{ButtR - Oz butterflies database}
 \usage{
 get_Oz_butterflies(
   species = NULL,
@@ -22,8 +22,7 @@ get_Oz_butterflies(
 specified, only species from this list will be included in the local
 database.}
 
-\item{genus}{If specified, only specimens from these genera will be
-installed.}
+\item{genus}{If specified, only specimens from this genus will be installed.}
 
 \item{family}{If specified, only specimens from this family will be
 installed.}
@@ -35,8 +34,7 @@ installed.}
 installed (options are 2022 or 2023).}
 
 \item{site}{If specified, only specimens collected at these sites
-will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and
-\code{"Sydney"}).}
+will be installed.}
 
 \item{reflectance}{If specified, only specimens with the specified
 reflectance will be installed (\code{"yes"} or \code{"no"}).}
@@ -50,18 +48,36 @@ downloaded.}
 
 \item{db_folder}{Path of folder that will contain the downloaded database.}
 }
-\value{
-Path of the downloaded folder (invisibly).
-}
 \description{
+The Oz butterflies database contains reflectance spectra and images of Australian butterflies.
+Downloads all or part of the Oz butterflies database to a local folder.
+
 Simplifies downloading the Oz butterflies database to a local folder. Since
 the database is quite large, download times are long and the database
 requires substantial local storage space. If the entire database is not
 needed, then this function saves time and local storage space by only
 downloading the required parts of the database.
-}
-\details{
+
 The metadata files in the database (Oz_butterflies.csv, Oz_butterflies.xslx
 and Oz_butterflies.json) always describe the entire database, regardless of
 whether the entire database or a subset is installed locally.
+}
+\examples{
+\dontrun{
+# Download the full Oz Butterflies Database
+get_Oz_butterflies()
+
+# Get data only for Delias aganippe
+get_Oz_butterflies(species = "Delias aganippe")
+
+# Get data for all species of the genus Delias
+get_Oz_butterflies(genus = "Delias")
+
+# Get all species within the Nymphalidae family
+get_Oz_butterflies(family = "Nymphalidae")
+
+# Get data with multiple filters
+get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"))
+}
+
 }

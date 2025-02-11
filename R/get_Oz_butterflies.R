@@ -22,9 +22,10 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
                  whatn, paste(requested[badVals], collapse = ", ")))
   }
 }
+
 #' @title ButtR - Oz butterflies database
 #' @description The Oz butterflies database contains reflectance spectra and images of Australian butterflies.
-#' Downloads all or part of the Oz butterflies database to a local folder
+#' Downloads all or part of the Oz butterflies database to a local folder.
 #'
 #' Simplifies downloading the Oz butterflies database to a local folder. Since
 #' the database is quite large, download times are long and the database
@@ -44,13 +45,10 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   installed.
 #' @param sex If specified, only specimens of this sex (\code{"male"},
 #'   \code{"female"} or  \code{"unknown"}) will be installed.
-#' @param genus If specified, only specimens from these genera will be
-#'   installed.
 #' @param year If specified, only specimens collected during these years will be
 #'   installed (options are 2022 or 2023).
 #' @param site If specified, only specimens collected at these sites
-#'   will be installed (options are \code{"Brisbane"}, \code{"Cairns"} and
-#'   \code{"Sydney"}).
+#'   will be installed.
 #' @param reflectance If specified, only specimens with the specified
 #'   reflectance will be installed (\code{"yes"} or \code{"no"}).
 #' @param sampleIDs If specified, only specimens with the specified IDs will be
@@ -60,20 +58,23 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   downloaded.
 #' @param db_folder Path of folder that will contain the downloaded database.
 #'
-#' @returns Path of the downloaded folder (invisibly).
-#'
-#'#' @examples
-#' # Download the entire database
+#' @examples
+#' \dontrun{
+#' # Download the full Oz Butterflies Database
 #' get_Oz_butterflies()
 #'
-#' # Download only specimens from the genus "Papilio"
-#' get_Oz_butterflies(genus = "Papilio")
+#' # Get data only for Delias aganippe
+#' get_Oz_butterflies(species = "Delias aganippe")
 #'
-#' # Download only specimens collected in Brisbane in 2023
-#' get_Oz_butterflies(site = "Brisbane", year = 2023)
+#' # Get data for all species of the genus Delias
+#' get_Oz_butterflies(genus = "Delias")
 #'
-#' # Download only JPEG images
-#' get_Oz_butterflies(download_images = "jpeg")
+#' # Get all species within the Nymphalidae family
+#' get_Oz_butterflies(family = "Nymphalidae")
+#'
+#' # Get data with multiple filters
+#' get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"))
+#' }
 #'
 #' @export
 get_Oz_butterflies <- function(species = NULL,
@@ -134,6 +135,7 @@ get_Oz_butterflies <- function(species = NULL,
 
   # If genus is specified, update the filtering
   if (length(genus) > 0) {
+    checkValuesInSet("genus", "genus", tolower(genus), tolower(meta_data$Genus))
     rows <- rows & tolower(meta_data$Genus) %in% tolower(genus)
   }
 
@@ -145,26 +147,31 @@ get_Oz_butterflies <- function(species = NULL,
 
   # If site is specified, update the filtering
   if (length(site) > 0) {
-    rows <- rows & meta_data$site %in% site
+    checkValuesInSet("site", "sites", tolower(site), tolower(meta_data$Site))
+    rows <- rows & meta_data$Site %in% site
   }
 
   # If spectra is specified, update the filtering
   if (length(reflectance) > 0) {
-    rows <- rows & meta_data$reflectance %in% reflectance
+    checkValuesInSet("reflectance", "reflectances", tolower(reflectance), tolower(meta_data$Speced))
+    rows <- rows & meta_data$Speced %in% reflectance
   }
 
   # If sex is specified, update the filtering
   if (length(sex) > 0) {
-    rows <- rows & tolower(meta_data$sex) %in% tolower(sex)
+    checkValuesInSet("sex", "sexes", tolower(sex), tolower(meta_data$Sex))
+    rows <- rows & tolower(meta_data$Sex) %in% tolower(sex)
   }
 
-  # If year is specified, update the filtering
+  # Filtrando apenas os anos especificados
   if (length(year) > 0) {
-    rows <- rows & meta_data$year %in% year
+    meta_data$Date <- substr(meta_data$Date, 7, 10)  # extract year from date
+    rows <- rows & meta_data$Date %in% as.character(year)  # string
   }
 
   # If sample ID is specified, update the filtering
   if (length(sampleIDs) > 0) {
+    checkValuesInSet("sampleIDs", "sampleID", tolower(sampleIDs), tolower(meta_data$ID))
     rows <- rows & meta_data$ID %in% sampleIDs
   }
 
