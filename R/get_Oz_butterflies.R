@@ -49,8 +49,8 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   installed (options are 2022 or 2023).
 #' @param site If specified, only specimens collected at these sites
 #'   will be installed.
-#' @param reflectance If specified, only specimens with the specified
-#'   reflectance will be installed (\code{"yes"} or \code{"no"}).
+#' @param spectra If specified, only specimens with the specified
+#'   spectra value will be installed (\code{"yes"} or \code{"no"}).
 #' @param sampleIDs If specified, only specimens with the specified IDs will be
 #'   installed.
 #' @param download_images Specifies whether \code{"raw"} and/or \code{"jpeg"}
@@ -83,7 +83,7 @@ get_Oz_butterflies <- function(species = NULL,
                         sex = NULL,
                         year = NULL,
                         site = NULL,
-                        reflectance = NULL,
+                        spectra = NULL,
                         sampleIDs = NULL,
                         download_images = c("raw", "jpeg"),
                         db_folder = "Oz_butterflies") {
@@ -152,9 +152,9 @@ get_Oz_butterflies <- function(species = NULL,
   }
 
   # If spectra is specified, update the filtering
-  if (length(reflectance) > 0) {
-    checkValuesInSet("reflectance", "reflectances", tolower(reflectance), tolower(meta_data$Speced))
-    rows <- rows & meta_data$Speced %in% reflectance
+  if (length(spectra) > 0) {
+    checkValuesInSet("spectra", "spectra", tolower(spectra), tolower(meta_data$Spectra))
+    rows <- rows & meta_data$Spectra %in% spectra
   }
 
   # If sex is specified, update the filtering

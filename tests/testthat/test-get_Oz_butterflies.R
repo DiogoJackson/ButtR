@@ -150,7 +150,7 @@ test_that("get site", {
 test_that("get reflectance", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(reflectance = c("y"), db_folder = dbDir)
+  get_Oz_butterflies(spectra = c("y"), db_folder = dbDir)
 
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_UV.ARW")))
