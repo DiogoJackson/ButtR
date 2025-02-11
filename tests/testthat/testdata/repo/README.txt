@@ -32,11 +32,11 @@ Family          Specimen family
 Genus           Specimen genus
 Species         Specimen specific name (i.e. not the binomial species name)
 Sex             "Female" or "Male"
-Body            "y" or "n" if body has visible damage
-Forewing.left   "y" or "n" if dorsal forewing has visible damage
-Forewing.right  "y" or "n" if ventral forewing has visible damage
-Hindwing.left   "y" or "n" if dorsal hindwing has visible damage
-Hindwing.right  "y" or "n" if ventral hindwing has visible damage
+Body.damage     "y" or "n" if body has visible damage
+Forewing.dorsal.damage   "y" or "n" if dorsal forewing has visible damage
+Forewing.ventral.damage  "y" or "n" if ventral forewing has visible damage
+Hindwing.dorsal.damage   "y" or "n" if dorsal hindwing has visible damage
+Hindwing.ventral.damage  "y" or "n" if ventral hindwing has visible damage
 Site            Site code
 Latitude        Latitude of site
 Longitude       Longitude of site
@@ -45,7 +45,7 @@ Date            Date of collection in day/month/year format
 Collector       Initials of collector
 Binomial        Full species name
 Pinned          "y" if specimen is pinned (i.e. intact), "n" if wings are separated from body
-Speced          "y" if specimen was speced, "n" if it was not
+Spectra         "y" if colour patches on the specimen were measured by spectrophotometer, "n" if not
 DNA             "y" if specimen has CO1 sequence in the database, "n" if it does not
 
 Specimen data

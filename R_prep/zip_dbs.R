@@ -11,10 +11,8 @@
 library(JUtils)
 source("R/summarise.R")
 
-# TODO
-# Main spreadsheet: Check that Pinned column is correct (based on presence of differently named image files; <ID>-{d|v}-<suffix>)
-# What about has DNA & has spectra columns?
-# Summary file: no. males, no. females, combine with manually created inventory data
+# If TRUE, only generate metadata, i.e. the two spreadsheets, each in 3 formats
+METADATA_ONLY <- FALSE
 
 # Location of the source (unpacked) database to be checked
 DBDIR <- "D:\\Oz_Butterflies"
@@ -22,7 +20,7 @@ DBDIR <- "D:\\Oz_Butterflies"
 REPODIR <- "D:\\Oz_zips"
 
 
-FOR_TESTING_ONLY <- TRUE
+FOR_TESTING_ONLY <- FALSE
 if (FOR_TESTING_ONLY) {
   message("Generating a truncated repository for testing only")
 
@@ -89,9 +87,9 @@ sampleDirectory <- function(descr) {
 
 # Check that the image ID in the file names matches the containing folder for each image
 fileMatchesSpecimen <- function(imgFiles) {
-    fileId <- sub("_.*", "", basename(imgFiles))
-    dirId <- basename(dirname(imgFiles))
-    fileId == dirId
+  fileId <- sub("_.*", "", basename(imgFiles))
+  dirId <- basename(dirname(imgFiles))
+  fileId == dirId
 }
 
 # Check the contents and structure of an unpacked database
@@ -369,7 +367,7 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
 
 
 # Create repo structure, metadata files and species zip files
-createZippedDb <- function(indir, zipDir) {
+createZippedDb <- function(indir, zipDir, metadataOnly = FALSE) {
 
   # Copy (and generate) meta data files
   if (!dir.exists(zipDir)) {
@@ -377,38 +375,41 @@ createZippedDb <- function(indir, zipDir) {
   }
   descr <- genMetadata(indir, zipDir, FOR_TESTING_ONLY)
 
-  species <- unique(descr[, c("Family", "Genus", "Species")])
-  speciesDir <- speciesDirectory(species)
+  if (!metadataOnly) {
 
-  zipName <- paste(species$Family, species$Genus, species$Species, sep = "_")
-  zipName <- paste0(zipName, ".zip")
-  zipPath <- normalizePath(file.path(zipDir, zipName), mustWork = FALSE)
+    species <- unique(descr[, c("Family", "Genus", "Species")])
+    speciesDir <- speciesDirectory(species)
 
-  origDir <- getwd()
-  on.exit({ setwd(origDir) }, add = TRUE)
-  # Set working directory to the parent of the Family folder so that we get
-  # the relative paths in the zip file that we want
-  setwd(indir)
+    zipName <- paste(species$Family, species$Genus, species$Species, sep = "_")
+    zipName <- paste0(zipName, ".zip")
+    zipPath <- normalizePath(file.path(zipDir, zipName), mustWork = FALSE)
 
-  pb <- JBuildProgressBar(progressBar = "win", numItems = nrow(species), title = "")
-  skippedDirs <- 0
-  for (spi in seq_len(nrow(species))) {
-    if (!dir.exists(speciesDir[spi])) {
-      skippedDirs <- skippedDirs + 1
-    } else {
-      files <- list.files(speciesDir[spi], recursive = TRUE, full.names = TRUE)
-      zip <- zipPath[spi]
-      # Delete old zip file
-      unlink(zip)
-      x <- utils::zip(zip, files)
-      if (x != 0) stop(sprintf("Zip failed with status %d", x))
-      pb()
+    origDir <- getwd()
+    on.exit({ setwd(origDir) }, add = TRUE)
+    # Set working directory to the parent of the Family folder so that we get
+    # the relative paths in the zip file that we want
+    setwd(indir)
+
+    pb <- JBuildProgressBar(progressBar = "win", numItems = nrow(species), title = "")
+    skippedDirs <- 0
+    for (spi in seq_len(nrow(species))) {
+      if (!dir.exists(speciesDir[spi])) {
+        skippedDirs <- skippedDirs + 1
+      } else {
+        files <- list.files(speciesDir[spi], recursive = TRUE, full.names = TRUE)
+        zip <- zipPath[spi]
+        # Delete old zip file
+        unlink(zip)
+        x <- utils::zip(zip, files)
+        if (x != 0) stop(sprintf("Zip failed with status %d", x))
+        pb()
+      }
     }
+    if (skippedDirs > 0) {
+      cat(sprintf("Skipped %d species folders because they don't exist\n", skippedDirs))
+    }
+    pb(close = TRUE, printElapsed = TRUE)
   }
-  if (skippedDirs > 0) {
-    cat(sprintf("Skipped %d species folders because they don't exist\n", skippedDirs))
-  }
-  pb(close = TRUE, printElapsed = TRUE)
 }
 
 
@@ -421,6 +422,6 @@ checkOzButtUnpacked(DBDIR)
 # checkSpecies(DBDIR)
 
 # Create zip files, including metadata in other formats
-createZippedDb(DBDIR, REPODIR)
+createZippedDb(DBDIR, REPODIR, METADATA_ONLY)
 
 

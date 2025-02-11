@@ -96,8 +96,8 @@ organiseDB <- function(indir, outdir) {
 
   # Update metadata to record presence of spec files
   specs <- getFileSamples(file.path(indir, "ProcSpec files"), ".ProcSpec", recursive = TRUE)
-  md$Speced <- ifelse(md$ID %in% specs, "y", "n")
-  if (sum(md$Speced == "y") != length(specs)) stop(sprintf("Speced samples not all found in spreadsheet! Missing from spreadhseet: ",
+  md$Spectra <- ifelse(md$ID %in% specs, "y", "n")
+  if (sum(md$Spectra == "y") != length(specs)) stop(sprintf("Speced samples not all found in spreadsheet! Missing from spreadsheet: ",
                                                            specs[!specs %in% md$ID]))
 
   # Update metadata to record presence of DNA files

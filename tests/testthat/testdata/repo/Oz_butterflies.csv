@@ -1,4 +1,4 @@
-"ID","Family","Genus","Species","Sex","Body","Forewing.left","Forewing.right","Hindwing.left","Hindwing.right","Site","Latitude","Longitude","Climate","Date","Collector","Binomial","Speced","DNA","Pinned"
+"ID","Family","Genus","Species","Sex","Body.damage","Forewing.dorsal.damage","Forewing.ventral.damage","Hindwing.dorsal.damage","Hindwing.ventral.damage","Site","Latitude","Longitude","Climate","Date","Collector","Binomial","Spectra","DNA","Pinned"
 4,"Hesperiidae","Notocrypta","waigensis","Female","n","n","n","n","y","BG",-16.90136852,145.7505777,"Tropical","16/07/2022","MFE","Notocrypta waigensis","y","n","n"
 16,"Hesperiidae","Telicota","mesoptis","Male","n","n","n","n","n","BG",-16.90136852,145.7505777,"Tropical","16/07/2022","MFE","Telicota mesoptis","n","n","n"
 19,"Hesperiidae","Telicota","mesoptis","Male","n","n","n","n","n","BG",-16.90136852,145.7505777,"Tropical","16/07/2022","MFE","Telicota mesoptis","n","n","n"
