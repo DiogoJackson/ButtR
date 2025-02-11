@@ -98,7 +98,7 @@ Download data by site:
 
 ``` r
 # Get all butterfly species from Sydney
-get_Oz_butterflies(site = "Sydney")
+get_Oz_butterflies(site = "BG")
 ```
 
 Download data for male *Delias aganippe* and *Delias mysis* from Brisbane
@@ -106,7 +106,7 @@ and Sydney:
 
 ``` r
 # Get data with multiple filters 
-get_Oz_butterflies(sex = "male", species = c("Delias aganippe", "Delias mysis"), site = c("Brisbane", "Sydney")
+get_Oz_butterflies(sex = "male", species = c("Delias aganippe", "Delias mysis"), site = c("BG", "JCU")
 ```
 
 ------------------------------------------------------------------------
