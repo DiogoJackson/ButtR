@@ -11,7 +11,7 @@ get_Oz_butterflies(
   sex = NULL,
   year = NULL,
   site = NULL,
-  reflectance = NULL,
+  spectra = NULL,
   sampleIDs = NULL,
   download_images = c("raw", "jpeg"),
   db_folder = "Oz_butterflies"
@@ -36,8 +36,8 @@ installed (options are 2022 or 2023).}
 \item{site}{If specified, only specimens collected at these sites
 will be installed.}
 
-\item{reflectance}{If specified, only specimens with the specified
-reflectance will be installed (\code{"yes"} or \code{"no"}).}
+\item{spectra}{If specified, only specimens with the specified
+spectra value will be installed (\code{"yes"} or \code{"no"}).}
 
 \item{sampleIDs}{If specified, only specimens with the specified IDs will be
 installed.}
