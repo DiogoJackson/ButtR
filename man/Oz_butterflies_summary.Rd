@@ -2,15 +2,15 @@
 % Please edit documentation in R/summarise.R
 \name{Oz_butterflies_summary}
 \alias{Oz_butterflies_summary}
-\title{Summarise contents of the Oz butterflies database}
+\title{Summarise contents of the OzButterflies database}
 \usage{
 Oz_butterflies_summary(
-  db_folder = "Oz_butterflies",
+  db_folder = "OzButterflies",
   imgExt = "\\\\.ARW$|\\\\.arw$"
 )
 }
 \arguments{
-\item{db_folder}{Path of folder that contains the Oz_butterflies database.}
+\item{db_folder}{Path of folder that contains the OzButterflies database.}
 
 \item{imgExt}{Regular expression used to identify files to be counted as
 images. Default is \code{.ARW} files which are the RGB and UV photos of
@@ -23,5 +23,5 @@ the entire database, regardless of whether the entire database or a subset
 is installed locally.
 }
 \description{
-Summarise contents of the Oz butterflies database
+Summarise contents of the OzButterflies database
 }

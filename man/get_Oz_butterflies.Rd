@@ -14,7 +14,7 @@ get_Oz_butterflies(
   spectra = NULL,
   sampleIDs = NULL,
   download_images = c("raw", "jpeg"),
-  db_folder = "Oz_butterflies"
+  db_folder = "OzButterflies"
 )
 }
 \arguments{
@@ -49,8 +49,8 @@ downloaded.}
 \item{db_folder}{Path of folder that will contain the downloaded database.}
 }
 \description{
-The OzButterflies database contains reflectance spectra and images of Australian butterflies.
-Downloads all or part of the OzButterflies database to a local folder.
+The OzButterflies database contains reflectance spectra, images and CO1 sequences of Australian butterflies.
+The \code{ButtR} package downloads all or part of the OzButterflies database to a local folder.
 
 Simplifies downloading the OzButterflies database to a local folder. Since
 the database is quite large, download times are long and the database
