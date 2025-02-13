@@ -23,11 +23,11 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
   }
 }
 
-#' @title ButtR - Oz butterflies database
-#' @description The Oz butterflies database contains reflectance spectra and images of Australian butterflies.
+#' @title ButtR - Ozbutterflies database
+#' @description The Ozbutterflies database contains reflectance spectra and images of Australian butterflies.
 #' Downloads all or part of the Oz butterflies database to a local folder.
 #'
-#' Simplifies downloading the Oz butterflies database to a local folder. Since
+#' Simplifies downloading the Ozbutterflies database to a local folder. Since
 #' the database is quite large, download times are long and the database
 #' requires substantial local storage space. If the entire database is not
 #' needed, then this function saves time and local storage space by only
@@ -60,7 +60,7 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'
 #' @examples
 #' \dontrun{
-#' # Download the full Oz Butterflies Database
+#' # Download the full OzButterflies Database
 #' get_Oz_butterflies()
 #'
 #' # Get data only for Delias aganippe
