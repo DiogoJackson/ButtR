@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_Oz_butterflies.R
 \name{get_Oz_butterflies}
 \alias{get_Oz_butterflies}
-\title{ButtR - Oz butterflies database}
+\title{ButtR - Ozbutterflies database}
 \usage{
 get_Oz_butterflies(
   species = NULL,
@@ -49,10 +49,10 @@ downloaded.}
 \item{db_folder}{Path of folder that will contain the downloaded database.}
 }
 \description{
-The Oz butterflies database contains reflectance spectra and images of Australian butterflies.
+The Ozbutterflies database contains reflectance spectra and images of Australian butterflies.
 Downloads all or part of the Oz butterflies database to a local folder.
 
-Simplifies downloading the Oz butterflies database to a local folder. Since
+Simplifies downloading the Ozbutterflies database to a local folder. Since
 the database is quite large, download times are long and the database
 requires substantial local storage space. If the entire database is not
 needed, then this function saves time and local storage space by only
@@ -64,7 +64,7 @@ whether the entire database or a subset is installed locally.
 }
 \examples{
 \dontrun{
-# Download the full Oz Butterflies Database
+# Download the full OzButterflies Database
 get_Oz_butterflies()
 
 # Get data only for Delias aganippe
