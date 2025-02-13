@@ -7,17 +7,17 @@ coverage](https://codecov.io/gh/DiogoJackson/ButtR/graph/badge.svg)](https://app
 ## Overview
 
 `ButtR` is an R package designed to simplify the download and handling
-of the **Oz Butterflies Database**, a large dataset containing
+of the **OzButterflies Database**, a large dataset containing
 comprehensive records of reflectance spectra and photography of
 Australian butterflies.
 
-The Oz butterflies database can be downloaded manually from [Butterfly
+The **OzButterflies database** can be downloaded manually from [OzButterflies
 database site](https://blog.datadryad.org). However, it is simpler to
 use this package to do so. The database is quite large, so if the entire
-database is not required, `buttR` provides an efficient mechanism to
+database is not required, `ButtR` provides an efficient mechanism to
 download and install only the desired parts of the database.
 
-If you use the Oz butterflies database, please cite the paper: \
+If you use the OzButterflies database, please cite: \
 📌 **[Citation to be added]**
 
 ## Why Use `ButtR`?
@@ -97,12 +97,11 @@ get_Oz_butterflies(family = "Nymphalidae")
 Download data by site:
 
 ``` r
-# Get all butterfly species from Sydney
+# Get all butterfly species from BG site
 get_Oz_butterflies(site = "BG")
 ```
 
-Download data for male *Delias aganippe* and *Delias mysis* from Brisbane
-and Sydney:
+Download data for male *Delias aganippe* and *Delias mysis* from BG and JCU sites:
 
 ``` r
 # Get data with multiple filters 
@@ -114,7 +113,7 @@ get_Oz_butterflies(sex = "male", species = c("Delias aganippe", "Delias mysis"),
 ## 📑 Summary of database content
 
 ### Folder structure
-The Oz Butterflies Database has five folders for butterfly families (Papilionidae, Nymphalidae, Lycaenidae, Hesperiidae, Pieridae). Each family folder contains subfolders for each butterfly species. Each species subfolder contains subfolders for each butterfly specimen. Each specimen subfolder contains data and image files for that specimen, as shown in the schema below:
+The OzButterflies Database has five folders for butterfly families (Papilionidae, Nymphalidae, Lycaenidae, Hesperiidae, Pieridae). Each family folder contains subfolders for each butterfly species. Each species subfolder contains subfolders for each butterfly specimen. Each specimen subfolder contains data and image files for that specimen, as shown in the schema below:
 
 -   📁 Pieridae
     -   📁 Eurema_hecabe
@@ -143,10 +142,8 @@ The Oz Butterflies Database has five folders for butterfly families (Papilionida
             -   📄 1-v-2-s.procspec (Spectra measured at 45 degrees -
                 ventral, patch 2)
             -   📄 1.csv (CSV file containing all procspec measures)
-            -   📄 1-s.png (Graph of the spectra measured at 45
+            -   📄 1.png (Graph of the spectra measured at 45
                 degrees)
-            -   📄 1-a.png (Graph of the spectra measured at 60
-                degrees or more)
         -   📁 2
         -   📁 3
     -   📁 Lampides_boeticus
@@ -163,7 +160,7 @@ If you use this database in a publication, please cite it as follows:
 
 ## 🤝 Helping us to improve
 
-We welcome contributions! If you’d like to improve `buttR`, feel free
+We welcome contributions! If you’d like to improve `ButtR`, feel free
 to open an **issue** for bug reports or feature requests.
 
 ------------------------------------------------------------------------
