@@ -6,18 +6,18 @@ coverage](https://codecov.io/gh/DiogoJackson/ButtR/graph/badge.svg)](https://app
 
 ## Overview
 
-`ButtR` is an R package designed to simplify the download and handling
-of the **Oz Butterflies Database**, a large dataset containing
-comprehensive records of reflectance spectra and photography of
-Australian butterflies.
+`ButtR` is an R package designed to simplify the download and extraction
+of the **OzButterflies Database**, a large dataset containing
+comprehensive records of reflectance spectra, calibrated photographs and CO1 sequences
+of Australian butterflies.
 
-The Oz butterflies database can be downloaded manually from [Butterfly
-database site](https://blog.datadryad.org). However, it is simpler to
-use this package to do so. The database is quite large, so if the entire
-database is not required, `buttR` provides an efficient mechanism to
-download and install only the desired parts of the database.
+The OzButterflies database can be downloaded manually from [Dryad](https://blog.datadryad.org), however it is simpler to
+use `ButtR` to do so. The database is quite large, so if the entire
+database is not required, `ButtR` provides an efficient mechanism to
+download and install only the desired parts of the database. It is also much simpler to install
+the entire database using `ButtR` than to download and extract all of the zip files.
 
-If you use the Oz butterflies database, please cite the paper: \
+If you use the OzButterflies database, please cite the paper: \
 📌 **[Citation to be added]**
 
 ## Why Use `ButtR`?
@@ -69,7 +69,7 @@ database or filter specific subsets.
 Download the entire database:
 
 ``` r
-# Download the full Oz Butterflies Database
+# Download the full OzButterflies Database
 get_Oz_butterflies()
 ```
 
@@ -97,16 +97,17 @@ get_Oz_butterflies(family = "Nymphalidae")
 Download data by site:
 
 ``` r
-# Get all butterfly species from Sydney
+# Get all butterfly species from Cairns Botanic Gardens ("BG")
 get_Oz_butterflies(site = "BG")
 ```
 
-Download data for male *Delias aganippe* and *Delias mysis* from Brisbane
-and Sydney:
+Download data for male *Delias aganippe* and *Delias mysis* from all sites with standardised collections in Brisbane:
 
 ``` r
 # Get data with multiple filters 
-get_Oz_butterflies(sex = "male", species = c("Delias aganippe", "Delias mysis"), site = c("BG", "JCU")
+get_Oz_butterflies(sex = "male", 
+    species = c("Delias aganippe", "Delias mysis"), 
+    site = c("BBG", "CC", "OC", "LSP"))
 ```
 
 ------------------------------------------------------------------------
@@ -114,7 +115,7 @@ get_Oz_butterflies(sex = "male", species = c("Delias aganippe", "Delias mysis"),
 ## 📑 Summary of database content
 
 ### Folder structure
-The Oz Butterflies Database has five folders for butterfly families (Papilionidae, Nymphalidae, Lycaenidae, Hesperiidae, Pieridae). Each family folder contains subfolders for each butterfly species. Each species subfolder contains subfolders for each butterfly specimen. Each specimen subfolder contains data and image files for that specimen, as shown in the schema below:
+The OzButterflies Database has five folders for butterfly families (Papilionidae, Nymphalidae, Lycaenidae, Hesperiidae, Pieridae). Each family folder contains subfolders for each butterfly species. Each species subfolder contains subfolders for each butterfly specimen. Each specimen subfolder contains data and image files for that specimen, as shown in the schema below:
 
 -   📁 Pieridae
     -   📁 Eurema_hecabe

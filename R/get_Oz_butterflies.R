@@ -15,19 +15,19 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
   badVals <- !tolower(requested) %in% unique(tolower(available))
   if (any(badVals)) {
     if (sum(badVals) == 1)
-      stop(sprintf("The following requested %s does not exist in the Oz butterflies database: %s",
+      stop(sprintf("The following requested %s does not exist in the OzButterflies database: %s",
                    what1, requested[badVals]))
     else
-      stop(sprintf("The following requested %s do not exist in the Oz butterflies database: %s",
+      stop(sprintf("The following requested %s do not exist in the OzButterflies database: %s",
                  whatn, paste(requested[badVals], collapse = ", ")))
   }
 }
 
-#' @title ButtR - Oz butterflies database
-#' @description The Oz butterflies database contains reflectance spectra and images of Australian butterflies.
-#' Downloads all or part of the Oz butterflies database to a local folder.
+#' @title ButtR - OzButterflies database
+#' @description The OzButterflies database contains reflectance spectra, images and CO1 sequences of Australian butterflies.
+#' The `ButtR` package downloads all or part of the OzButterflies database to a local folder.
 #'
-#' Simplifies downloading the Oz butterflies database to a local folder. Since
+#' Simplifies downloading the OzButterflies database to a local folder. Since
 #' the database is quite large, download times are long and the database
 #' requires substantial local storage space. If the entire database is not
 #' needed, then this function saves time and local storage space by only
@@ -60,7 +60,7 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'
 #' @examples
 #' \dontrun{
-#' # Download the full Oz Butterflies Database
+#' # Download the full OzButterflies Database
 #' get_Oz_butterflies()
 #'
 #' # Get data only for Delias aganippe
@@ -86,7 +86,7 @@ get_Oz_butterflies <- function(species = NULL,
                         spectra = NULL,
                         sampleIDs = NULL,
                         download_images = c("raw", "jpeg"),
-                        db_folder = "Oz_butterflies") {
+                        db_folder = "OzButterflies") {
 
   download_images <- match.arg(download_images, several.ok = TRUE)
 
@@ -102,7 +102,7 @@ get_Oz_butterflies <- function(species = NULL,
   # Download the metadata spreadsheet in all formats
   metadata <- grep("Oz_butterflies\\.", files$file)
   if (length(metadata) == 0) {
-    stop("Internal error: Unable to locate Oz butterflies metadata file in repository")
+    stop("Internal error: Unable to locate OzButterflies metadata file in repository")
   }
   downloadFiles(files, metadata, db_folder)
 

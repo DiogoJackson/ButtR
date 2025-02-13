@@ -1,8 +1,11 @@
 
 
-#' Summarise contents of the Oz butterflies database
+#' Summarise contents of the OzButterflies database
 #'
-#' @param db_folder Path of folder that contains the Oz_butterflies database.
+#' @param db_folder Path of folder that contains the OzButterflies database.
+#' @param imgExt Regular expression used to identify files to be counted as
+#'   images. Default is `.ARW` files which are the RGB and UV photos of
+#'   specimens.
 #'
 #' @returns Data frame with 1 row and columns that summarise the database
 #'   contents. All summary statistics, apart from the `Images` count, describe
@@ -12,11 +15,11 @@
 #' @importFrom stats aggregate median
 #'
 #' @export
-Oz_butterflies_summary <- function(db_folder = "Oz_butterflies") {
+Oz_butterflies_summary <- function(db_folder = "OzButterflies", imgExt = "\\.ARW$|\\.arw$") {
   # Read meta data
   descr <- read.csv(file.path(db_folder, "Oz_butterflies.csv"))
 
-  imgs <- list.files(db_folder, pattern = "\\.JPG$|\\.jpg$|\\.PNG$|\\.png$", recursive = TRUE)
+  imgs <- list.files(db_folder, pattern = imgExt, recursive = TRUE)
 
   # Individuals per species
   ips <- aggregate(list(Count = descr$ID), by = list(Species = descr$Binomial), FUN = length)

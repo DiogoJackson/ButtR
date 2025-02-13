@@ -1,7 +1,7 @@
-Oz butterfly database
----------------------
+OzButterflies database
+----------------------
 
-This folder contains the Oz butterfly database. It consists of this
+This folder contains the OzButterflies database. It consists of this
 README.txt file, 2 spreadsheets (each in 3 formats) and specimen data
 files. Specimen data file are stored in folders by family, species and
 specimen ID.
@@ -14,7 +14,7 @@ The summary spreadsheet, Oz_butterflies_summary.csv, .xslx or .json,
 contains a row for each species in the database and the following
 columns:
 
-Family		Species family
+Family          Species family
 Species         Binomial species names
 Specimens       Number of specimens of the species in the database
 Females         Number of female specimens of the species in the database
@@ -37,7 +37,7 @@ Forewing.dorsal.damage   "y" or "n" if dorsal forewing has visible damage
 Forewing.ventral.damage  "y" or "n" if ventral forewing has visible damage
 Hindwing.dorsal.damage   "y" or "n" if dorsal hindwing has visible damage
 Hindwing.ventral.damage  "y" or "n" if ventral hindwing has visible damage
-Site            Site code
+Site            Site code, see "Site Codes" below
 Latitude        Latitude of site
 Longitude       Longitude of site
 Climate         "Temperate", "Subtropical or "Tropical"
@@ -86,3 +86,29 @@ Spectroscoped specimens include the following files:
                  not enough to show iridescence
 <ID>.csv         CSV files containing all procspec measures
 <ID>.png       Graph of the spectra measured at 45 degrees and 60 degrees or more
+
+Site Codes
+----------
+
+Code    Place                                   City
+BG      Cairns Botanic Gardens                  Cairns
+JCU     James Cook University campus            Cairns
+GP      Gamboora Park                           Cairns
+MR      Mossman River (Foxton Avenue Reserve)   Mossman
+BBG     Mt. Coot-tha Botanic Gardens            Brisbane
+CC      Cabbage Creek                           Brisbane
+OC      Oxley Creek                             Brisbane
+LSP     Lakeside Park                           Brisbane
+MQ      Macquarie University campus             Sydney
+WPP     West Pymple Park                        Sydney
+KRG     Ku-ring-gai Wildflower Garden           Sydney
+WLP     Westleigh Park                          Sydney
+AO      Allan Small Oval                        Sydney
+JB      Jubes Mountain Bike Track               Sydney
+WLR     Woo-La-Ra Park                          Sydney
+PP      Parramatta park                         Sydney
+
+Non-standardised collecting sites, i.e. haphazard collecting
+PD   Port Douglas City                          Port Douglas
+LG   Lisgar Gardens                             Sydney
+CCF  Cabbage Creek Forest                       Brisbane
