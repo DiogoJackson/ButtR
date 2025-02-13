@@ -24,6 +24,7 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 }
 
 #' @title ButtR - OzButterflies database
+
 #' @description The OzButterflies database contains reflectance spectra, images and CO1 sequences of Australian butterflies.
 #' The `ButtR` package downloads all or part of the OzButterflies database to a local folder.
 #'

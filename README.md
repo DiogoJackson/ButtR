@@ -11,13 +11,14 @@ of the **OzButterflies Database**, a large dataset containing
 comprehensive records of reflectance spectra, calibrated photographs and CO1 sequences
 of Australian butterflies.
 
-The OzButterflies database can be downloaded manually from [Dryad](https://blog.datadryad.org), however it is simpler to
+The **OzButterflies database** can be downloaded manually from [Dryad](https://blog.datadryad.org), however it is simpler to
 use `ButtR` to do so. The database is quite large, so if the entire
 database is not required, `ButtR` provides an efficient mechanism to
 download and install only the desired parts of the database. It is also much simpler to install
 the entire database using `ButtR` than to download and extract all of the zip files.
 
-If you use the OzButterflies database, please cite the paper: \
+If you use the OzButterflies database, please cite the paper: 
+
 📌 **[Citation to be added]**
 
 ## Why Use `ButtR`?
@@ -33,7 +34,7 @@ The `ButtR` package provides the following core functions:
 
 | Function | Description |
 |---------------------------------|---------------------------------------|
-| `get_Oz_butterflies()` | Downloads the dataset, optionally filtered by species, family, or location |
+| `get_Oz_butterflies()` | Download and install the database, optionally filtered by species, family, or location |
 
 ## 📥 Installation
 
@@ -144,10 +145,8 @@ The OzButterflies Database has five folders for butterfly families (Papilionidae
             -   📄 1-v-2-s.procspec (Spectra measured at 45 degrees -
                 ventral, patch 2)
             -   📄 1.csv (CSV file containing all procspec measures)
-            -   📄 1-s.png (Graph of the spectra measured at 45
+            -   📄 1.png (Graph of the spectra measured at 45
                 degrees)
-            -   📄 1-a.png (Graph of the spectra measured at 60
-                degrees or more)
         -   📁 2
         -   📁 3
     -   📁 Lampides_boeticus
@@ -164,7 +163,7 @@ If you use this database in a publication, please cite it as follows:
 
 ## 🤝 Helping us to improve
 
-We welcome contributions! If you’d like to improve `buttR`, feel free
+We welcome contributions! If you’d like to improve `ButtR`, feel free
 to open an **issue** for bug reports or feature requests.
 
 ------------------------------------------------------------------------
