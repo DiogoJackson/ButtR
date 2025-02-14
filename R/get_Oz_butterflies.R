@@ -23,20 +23,11 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
   }
 }
 
-#' @title ButtR - OzButterflies database
+#' @title get_Oz_butterflies: Downloading the OzButterflies Database
 
-#' @description The OzButterflies database contains reflectance spectra, images and CO1 sequences of Australian butterflies.
-#' The `ButtR` package downloads all or part of the OzButterflies database to a local folder.
-#'
-#' Simplifies downloading the OzButterflies database to a local folder. Since
-#' the database is quite large, download times are long and the database
-#' requires substantial local storage space. If the entire database is not
-#' needed, then this function saves time and local storage space by only
-#' downloading the required parts of the database.
-#'
-#' The metadata files in the database (Oz_butterflies.csv, Oz_butterflies.xslx
-#' and Oz_butterflies.json) always describe the entire database, regardless of
-#' whether the entire database or a subset is installed locally.
+#' @description The `get_Oz_butterflies()` is a function from the \code{\link{ButtR}} package which simplifies downloading the *OzButterflies database* (Ref) to a local folder.
+#' The function allows users to download specific subsets of the database by applying multiple filters, such as species
+#' name, genus, site, family, specific IDs, and more.
 #'
 #' @param species Optional vector of binomial names of species of interest. If
 #'   specified, only species from this list will be included in the local
