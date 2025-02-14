@@ -42,6 +42,15 @@ test_that("test get_Oz_butterflies", {
   expect_true(file.exists(file.path(dbDir, "Oz_butterflies.csv")))
   expect_true(file.exists(file.path(dbDir, "Oz_butterflies.json")))
 
+  # Should have all metadata
+  expect_true(file.exists(file.path(dbDir, "README.txt")))
+  expect_true(file.exists(file.path(dbDir, "standard-red.ProcSpec")))
+  expect_true(file.exists(file.path(dbDir, "standard-green.ProcSpec")))
+  expect_true(file.exists(file.path(dbDir, "standard-blue.ProcSpec")))
+  expect_true(file.exists(file.path(dbDir, "Oz_butterflies_summary.csv")))
+  expect_true(file.exists(file.path(dbDir, "Oz_butterflies_summary.json")))
+  expect_true(file.exists(file.path(dbDir, "Oz_butterflies_summary.xlsx")))
+
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/19/19_RGB.ARW")))
@@ -169,7 +178,7 @@ test_that("get reflectance", {
   gotSp <- unlist(gotSp, use.names = FALSE)
 
   # Debug opcional caso o erro persista
-  print(gotSp)
+  # print(gotSp)
 
   expect_equal(sort(gotSp), sort(c("Notocrypta_waigensis", "Suniana_sunias", "Euploea_darchia", "Papilio_aegeus")))
 })

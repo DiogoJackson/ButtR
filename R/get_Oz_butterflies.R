@@ -100,8 +100,8 @@ get_Oz_butterflies <- function(species = NULL,
   # List all files in the database
   files <- ListDbsFiles()
 
-  # Download the metadata spreadsheet in all formats
-  metadata <- grep("Oz_butterflies\\.", files$file)
+  # Download the metadata - all files that aren't .zip
+  metadata <- grep("\\.zip$", files$file, invert = TRUE)
   if (length(metadata) == 0) {
     stop("Internal error: Unable to locate OzButterflies metadata file in repository")
   }

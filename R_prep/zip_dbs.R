@@ -362,6 +362,9 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   # Copy the README
   file.copy(file.path(indir, "README.txt"), zipDir)
 
+  # Copy the the coour standard spectral reflectance files
+  file.copy(list.files(indir, pattern = "standard.*\\.ProcSpec", full.names = TRUE), zipDir)
+
   descr
 }
 

@@ -2,8 +2,11 @@ OzButterflies database
 ----------------------
 
 This folder contains the OzButterflies database. It consists of this
-README.txt file, 2 spreadsheets (each in 3 formats) and specimen data
-files. Specimen data file are stored in folders by family, species and
+README.txt file, 2 spreadsheets (each in 3 formats), reflectance spectra 
+of the red, green and blue colour standards (standard-<colour>.ProcSpec) 
+and specimen data files. 
+
+Specimen data file are stored in folders by family, species and
 specimen ID.
 
 
