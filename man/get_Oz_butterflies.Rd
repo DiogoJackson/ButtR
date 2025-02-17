@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_Oz_butterflies.R
 \name{get_Oz_butterflies}
 \alias{get_Oz_butterflies}
-\title{get_Oz_butterflies: Downloading the OzButterflies Database}
+\title{Download and install the OzButterflies Database}
 \usage{
 get_Oz_butterflies(
   species = NULL,
@@ -48,8 +48,12 @@ downloaded.}
 
 \item{db_folder}{Path of folder that will contain the downloaded database.}
 }
+\value{
+the installation folder (\code{db_folder}) in canonical form in invisible
+form (which means it is not automatically printed)
+}
 \description{
-The \code{get_Oz_butterflies()} is a function from the \code{\link{ButtR}} package which simplifies downloading the \emph{OzButterflies database} (Ref) to a local folder.
+Simplifies downloading the \emph{OzButterflies database} (Ref) to a local folder.
 The function allows users to download specific subsets of the database by applying multiple filters, such as species
 name, genus, site, family, specific IDs, and more.
 }

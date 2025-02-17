@@ -23,9 +23,9 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
   }
 }
 
-#' @title get_Oz_butterflies: Downloading the OzButterflies Database
-
-#' @description The `get_Oz_butterflies()` is a function from the \code{\link{ButtR}} package which simplifies downloading the *OzButterflies database* (Ref) to a local folder.
+#' Download and install the OzButterflies Database
+#'
+#' Simplifies downloading the *OzButterflies database* (Ref) to a local folder.
 #' The function allows users to download specific subsets of the database by applying multiple filters, such as species
 #' name, genus, site, family, specific IDs, and more.
 #'
@@ -49,6 +49,9 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   images should be downloaded. Only images with the specified type(s) will be
 #'   downloaded.
 #' @param db_folder Path of folder that will contain the downloaded database.
+#'
+#' @returns the installation folder (`db_folder`) in canonical form in invisible
+#' form (which means it is not automatically printed)
 #'
 #' @examples
 #' \dontrun{
