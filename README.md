@@ -1,8 +1,6 @@
 # 🦋 ButtR 🦋
 
 [![R-CMD-check](https://github.com/DiogoJackson/ButtR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/DiogoJackson/ButtR/actions/workflows/R-CMD-check.yaml)\
-[![Codecov test
-coverage](https://codecov.io/gh/DiogoJackson/ButtR/graph/badge.svg)](https://app.codecov.io/gh/DiogoJackson/ButtR)
 
 ## Overview
 
