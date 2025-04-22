@@ -42,7 +42,7 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' @param site If specified, only specimens collected at these sites
 #'   will be installed.
 #' @param spectra If specified, only specimens with the specified
-#'   spectra value will be installed (\code{"yes"} or \code{"no"}).
+#'   spectra value will be installed (\code{"y"} or \code{"n"}).
 #' @param sampleIDs If specified, only specimens with the specified IDs will be
 #'   installed.
 #' @param download_images Specifies whether \code{"raw"} and/or \code{"jpeg"}
