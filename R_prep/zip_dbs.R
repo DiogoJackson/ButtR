@@ -8,7 +8,12 @@
 # subsequent runs. Results are saved in AFD-query.csv in the top level package
 # directory.
 
+# install.packages("devtools")
+# devtools::install_github("JimMcL/JUtils")
 library(JUtils)
+library(openxlsx)
+library(lubridate)
+library(rvest) # Required for checking species names
 source("R/summarise.R")
 
 # If TRUE, only generate metadata, i.e. the two spreadsheets, each in 3 formats
@@ -35,11 +40,7 @@ METADATA_BASENAME <- "Oz_butterflies"
 SUMMARY_BASENAME <- "Oz_butterflies_summary"
 
 # List of file extensions in database
-ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "gb", "csv") # DNA extension?
-
-library(openxlsx)
-library(lubridate)
-library(rvest) # Required for checking species names
+ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "fastq", "csv") # DNA extension was gb, now fastq
 
 
 readDbMetadata <- function(dir) {
@@ -156,6 +157,8 @@ checkOzButtUnpacked <- function(dir) {
 
   # ProcSpec files should start with their specimen IDs
   specs <- list.files(dir, pattern = "\\.ProcSpec", recursive = TRUE, full.names = TRUE)
+  # Ignore standard spec files (red, green blue)
+  specs <- grep("standard-.*.ProcSpec", specs, invert = TRUE, value = TRUE)
   badSpecFiles <- specs[!fileMatchesSpecimen(specs)]
 
   # Report
@@ -280,7 +283,7 @@ hasPinnedImages <- function(sampleDirs) {
 
 hasDNA <- function(sampleDirs) {
   sapply(sampleDirs, function(d) {
-    nf <- length(list.files(d, pattern = "\\.gb"))
+    nf <- length(list.files(d, pattern = "\\.fastq"))
     nf > 0
   })
 }
@@ -308,14 +311,25 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
     descr <- trimMetadataForTesting(indir, descr)
   }
 
+  # Fix column names
+  names(new)[names(new) == "Body"] <- "Body.damage"
+  names(new)[names(new) == "Forewing.left"] <- "Forewing.dorsal.damage"
+  names(new)[names(new) == "Forewing.right"] <- "Forewing.ventral.damage"
+  names(new)[names(new) == "Hindwing.left"] <- "Hindwing.dorsal.damage"
+  names(new)[names(new) == "Hindwing.right"] <- "Hindwing.ventral.damage"
+
   # Get rid of Exclude column
   descr$Exclude <- NULL
   # Update the Pinned column
   descr$Pinned <- ifelse(hasPinnedImages(file.path(indir, sampleDirectory(descr))), "y", "n")
   # Add a DNA column
   descr$DNA <- ifelse(hasDNA(file.path(indir, sampleDirectory(descr))), "y", "n")
-  ## Has a Spec file (already in metadata)
-  #descr$Spec <- ifelse(hasSpec(file.path(indir, sampleDirectory(descr))), "y", "n")
+  # Has a Spec file (if not already in metadata)
+  if (!"Spectra" %in% names(descr)) {
+    descr$Spectra <- ifelse(hasSpec(file.path(indir, sampleDirectory(descr))), "y", "n")
+  }
+  # Fix up the date format
+  descr$Date <- strftime(dmy(descr$Date), "%d/%m/%Y")
 
   # Write repo files
   utils::write.csv(descr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
@@ -331,7 +345,7 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   md[is.na(md)] <- 0
 
   # Combine with manually constructed species info, e.g. sexually dimorphic etc...
-  man <- read.csv(file.path(indir, "Oz_butterflies_summary.csv"))
+  man <- read.csv(file.path(indir, paste0(SUMMARY_BASENAME, ".csv")))
   # Sanity checks
   badSumSp <- !man$Species %in% unique(descr$Binomial)
   if (any(badSumSp)) {
