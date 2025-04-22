@@ -159,7 +159,7 @@ test_that("get site", {
 test_that("get reflectance", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(spectra = c("y"), db_folder = dbDir)
+  get_Oz_butterflies(spectra = "y", db_folder = dbDir)
 
   # No ProcSpec files in test Notocrypta_waigensis/4 dir
   # expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))

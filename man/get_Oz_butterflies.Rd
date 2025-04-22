@@ -37,7 +37,7 @@ installed (options are 2022 or 2023).}
 will be installed.}
 
 \item{spectra}{If specified, only specimens with the specified
-spectra value will be installed (\code{"yes"} or \code{"no"}).}
+spectra value will be installed (\code{"y"} or \code{"n"}).}
 
 \item{sampleIDs}{If specified, only specimens with the specified IDs will be
 installed.}
