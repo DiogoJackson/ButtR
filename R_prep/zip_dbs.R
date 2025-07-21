@@ -1,7 +1,8 @@
 # Functions for constructing and checking the database. Carries out some checks
 # of database completeness and correctness, then creates a directory in the
-# format suitable for uploading to Dryad. These functions are not strictly part
-# of the published package, but are used to check and publish the database.
+# format suitable for uploading to a repository. These functions are not
+# strictly part of the published package, but are used to check and publish the
+# database.
 #
 # Will be slow to run the first time, because it queries the Australian Faunal
 # Directory once for each species. The results are saved locally to speed up
@@ -312,11 +313,16 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   }
 
   # Fix column names
-  names(new)[names(new) == "Body"] <- "Body.damage"
-  names(new)[names(new) == "Forewing.left"] <- "Forewing.dorsal.damage"
-  names(new)[names(new) == "Forewing.right"] <- "Forewing.ventral.damage"
-  names(new)[names(new) == "Hindwing.left"] <- "Hindwing.dorsal.damage"
-  names(new)[names(new) == "Hindwing.right"] <- "Hindwing.ventral.damage"
+  renameCol <- function(df, oldName, newName) {
+    if (oldName %in% names(df))
+      names(df)[names(df) == oldName] <- newName
+    df
+  }
+  new <- renameCol(new, "Body", "Body.damage")
+  new <- renameCol(new, "Forewing.left", "Forewing.dorsal.damage")
+  new <- renameCol(new, "Forewing.right", "Forewing.ventral.damage")
+  new <- renameCol(new, "Hindwing.left", "Hindwing.dorsal.damage")
+  new <- renameCol(new, "Hindwing.right", "Hindwing.ventral.damage")
 
   # Get rid of Exclude column
   descr$Exclude <- NULL
@@ -378,7 +384,7 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   # Copy the README
   file.copy(file.path(indir, "README.txt"), zipDir)
 
-  # Copy the the coour standard spectral reflectance files
+  # Copy the colour standard spectral reflectance files
   file.copy(list.files(indir, pattern = "standard.*\\.ProcSpec", full.names = TRUE), zipDir)
 
   descr
@@ -396,11 +402,11 @@ createZippedDb <- function(indir, zipDir, metadataOnly = FALSE) {
 
   if (!metadataOnly) {
 
-    species <- unique(descr[, c("Family", "Genus", "Species")])
-    speciesDir <- speciesDirectory(species)
+    # Zip into families
+    families <- unique(descr$Family)
+    familyDir <- families
 
-    zipName <- paste(species$Family, species$Genus, species$Species, sep = "_")
-    zipName <- paste0(zipName, ".zip")
+    zipName <- paste0(families, ".zip")
     zipPath <- normalizePath(file.path(zipDir, zipName), mustWork = FALSE)
 
     origDir <- getwd()
@@ -409,14 +415,14 @@ createZippedDb <- function(indir, zipDir, metadataOnly = FALSE) {
     # the relative paths in the zip file that we want
     setwd(indir)
 
-    pb <- JBuildProgressBar(progressBar = "win", numItems = nrow(species), title = "")
+    pb <- JBuildProgressBar(progressBar = "win", numItems = length(families), title = "")
     skippedDirs <- 0
-    for (spi in seq_len(nrow(species))) {
-      if (!dir.exists(speciesDir[spi])) {
+    for (fi in seq_along(families)) {
+      if (!dir.exists(familyDir[fi])) {
         skippedDirs <- skippedDirs + 1
       } else {
-        files <- list.files(speciesDir[spi], recursive = TRUE, full.names = TRUE)
-        zip <- zipPath[spi]
+        files <- list.files(familyDir[fi], recursive = TRUE, full.names = TRUE)
+        zip <- zipPath[fi]
         # Delete old zip file
         unlink(zip)
         x <- utils::zip(zip, files)

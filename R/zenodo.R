@@ -1,11 +1,12 @@
-# Interface with Dryad
+# Interface with Zenodo
 
-# The DOI of the ButtR repo in Dryad
-BUTTR_DOI <- "doi:10.5061/dryad.s1rn8pkdv" # TODO For now this is just some random project
+# The deposition ID of the ButtR repo in Zenodo
+BUTTR_DEPOSITION <- "6468938"  # TODO not the correct ID!!!
 
-# Dryad API constants
-DRYAD_API_SITE <- "https://datadryad.org"
-DRYAD_API_BASE <- paste0(DRYAD_API_SITE, "/api/v2/")
+# Zenodo API constants
+ZENODO_REC_URL <- "https://zenodo.org/api/records/"
+
+
 
 # Given a URL, downloads it and interprets it as JSON.
 getJSON <- function(url) {
@@ -15,26 +16,19 @@ getJSON <- function(url) {
   jsonlite::fromJSON(txt, flatten = TRUE)
 }
 
-# Given a Dryad dataset DOI, returns a data frame with the names of all files
+# Given a Dryad dataset deposition ID, returns a data frame with the names of all files
 # available for download, together with their download URLs
 #
 # @returns data frame with 2 columns, `file` with the name of the file stored in
 #   Dryad, and `url` with the URL that can be used to retrieve the file.
 #
-listFilesInDryad <- function(doi) {
-  # Given DOI, get link for data set
-  edoi <- utils::URLencode(doi, reserved = TRUE)
-  url <- paste0(DRYAD_API_BASE,"datasets/", edoi)
-  vj <- getJSON(url)
-  # Now query for the files in the dataset
-  filesURL <- paste0(DRYAD_API_SITE, vj$`_links`$`stash:version`, "/files")
-  fj <- getJSON(filesURL)
+listFilesInZenodo <- function(deposition) {
+  # List the Zenodo record
+  rec <- getJSON(paste0(ZENODO_REC_URL, deposition))
 
   # Available files
-  data.frame(
-    file = fj$`_embedded`[[1]]$path,
-    url = paste0(DRYAD_API_SITE, fj$`_embedded`[[1]]$`_links.stash:download.href`)
-  )
+  setNames(rec$files[, c("key", "links.self")],
+           c("file", "url"))
 }
 
 # Function for testing without using Dryad. This is a drop-in replacement for
@@ -69,7 +63,7 @@ listLocalFiles <- function(path, encode = FALSE) {
 # function to call to obtain formation about the database contents. Done this
 # way to facilitate testing without using Dryad, but without exposing something
 # publicly
-ListDbsFiles <- function() listFilesInDryad(BUTTR_DOI)
+ListDbsFiles <- function() listFilesInZenodo(BUTTR_DEPOSITION)
 
 
 #Uncomment this for debugging/development using local repository. For unit
