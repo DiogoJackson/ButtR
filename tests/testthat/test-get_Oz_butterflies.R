@@ -255,3 +255,20 @@ test_that("get id", {
   expect_equal(sort(got), sort(c("16")))
   expect_false(dir.exists(file.path(dbDir, "19")))
 })
+
+test_that("get DNA", {
+  dbDir <- prepareTest()
+
+  # Install 4 species, 2 with and 2 without DNA (in the test database)
+  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus", "Suniana sunias", "Euploea darchia"), db_folder = dbDir)
+
+  # Check that files that should not exist do not exist
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
+  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_f.ab1")))
+  expect_true(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/spec1.txt")))
+  expect_false(file.exists(file.path(dbDir, "Papilionidae/Papilio_aegeus/1361/1361_f.ab1")))
+
+  # Check that those that should exist do exist
+  expect_true(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186_f.ab1")))
+  expect_true(file.exists(file.path(dbDir, "Nymphalidae/Euploea_darchia/551/555_f.ab1")))
+})

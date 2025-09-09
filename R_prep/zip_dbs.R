@@ -17,7 +17,7 @@ library(lubridate)
 library(rvest) # Required for checking species names
 source("R/summarise.R")
 
-# Options for zip files are Family, Genus or Species
+# Determine how files get grouped together in zip files. Options for are Family, Genus or Species
 ZIP_INTO <- "Genus"
 
 # If TRUE, only generate metadata, i.e. the two spreadsheets, each in 3 formats
@@ -29,6 +29,7 @@ DBDIR <- "D:\\Oz_Butterflies"
 REPODIR <- "D:\\Oz_zips"
 
 
+FOR_TESTING_ONLY <- FALSE
 if (FOR_TESTING_ONLY) {
   message("Generating a truncated repository for testing only")
 
@@ -43,7 +44,7 @@ METADATA_BASENAME <- "Oz_butterflies"
 SUMMARY_BASENAME <- "Oz_butterflies_summary"
 
 # List of file extensions in database
-ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "fastq", "csv") # DNA extension was gb, now fastq
+ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "ab1", "csv") # DNA extension was gb, now fastq
 
 
 readDbMetadata <- function(dir) {
@@ -286,7 +287,7 @@ hasPinnedImages <- function(sampleDirs) {
 
 hasDNA <- function(sampleDirs) {
   sapply(sampleDirs, function(d) {
-    nf <- length(list.files(d, pattern = "\\.fastq"))
+    nf <- length(list.files(d, pattern = "\\.ab1"))
     nf > 0
   })
 }
