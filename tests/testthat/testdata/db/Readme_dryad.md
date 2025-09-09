@@ -42,6 +42,7 @@ The summary spreadsheet, Oz_butterflies_summary.csv, .xslx or .json, contains a 
 | Pinned                  | "y" if specimen is pinned (i.e. intact), "n" if wings are separated from body        |
 | Spectra                 | "y" if colour patches on the specimen were measured by spectrophotometer, "n" if not |
 | DNA                     | "y" if specimen has CO1 sequence in the database, "n" if it does not                 |
+| Repo.zipname            | Name of zip file in repository that contains specimen data                           |
 
 ## Specimen data
 

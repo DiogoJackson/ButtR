@@ -110,14 +110,6 @@ get_Oz_butterflies <- function(species = NULL,
   # Create a new column "full_species" that combines the "genus" and "species" columns into a full species name
   meta_data$full_species <- paste(meta_data$Genus, meta_data$Species)
 
-  ## Due to repository limits on number of files, we store all files in per-family zips.
-  meta_data$zipname <- paste0(meta_data$Family, ".zip")
-  # We originally intended to store them in per-species zip files
-  # # Create a new column "zipname" that combines "family", genus", "species" into a single name, separated by "_"
-  # meta_data$zipname <- paste(meta_data$Family, meta_data$Genus, meta_data$Species, sep = "_")
-  # # Add the ".zip" extension to the end of the file names in the "zipname" column
-  # meta_data$zipname <- paste0(meta_data$zipname, ".zip")
-
   # Start by selecting all rows (TRUE will be repeated nrow times)
   rows <- rep(TRUE, nrow(meta_data))
 
@@ -173,7 +165,7 @@ get_Oz_butterflies <- function(species = NULL,
   }
 
   # Get the unique zip file names that match the filtered criteria
-  zips <- unique(meta_data$zipname[rows])
+  zips <- unique(meta_data$Repo.zipname[rows])
 
   # Create a temporary directory to store zip files
   tempdir <- tempdir()

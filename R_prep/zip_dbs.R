@@ -17,6 +17,9 @@ library(lubridate)
 library(rvest) # Required for checking species names
 source("R/summarise.R")
 
+# Options for zip files are Family, Genus or Species
+ZIP_INTO <- "Genus"
+
 # If TRUE, only generate metadata, i.e. the two spreadsheets, each in 3 formats
 METADATA_ONLY <- FALSE
 
@@ -26,7 +29,6 @@ DBDIR <- "D:\\Oz_Butterflies"
 REPODIR <- "D:\\Oz_zips"
 
 
-FOR_TESTING_ONLY <- FALSE
 if (FOR_TESTING_ONLY) {
   message("Generating a truncated repository for testing only")
 
@@ -304,6 +306,17 @@ trimMetadataForTesting <- function(dir, descr) {
   descr[good, ]
 }
 
+# Returns the name (without folder) of the zip file that contains the samples
+zipFileForSpecimen <- function(descr) {
+  if (ZIP_INTO == "Family") {
+    paste0(descr$Family, ".zip")
+  } else if (ZIP_INTO == "Genus") {
+    paste0(paste(descr$Family, descr$Genus, sep = "_"), ".zip")
+  } else if (ZIP_INTO == "Species") {
+    paste0(paste(descr$Family, descr$Genus, descr$Species, sep = "_"), ".zip")
+  }
+}
+
 # Update and generate metadata in other formats
 genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   descr <- readDbMetadata(indir)
@@ -336,6 +349,9 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
   }
   # Fix up the date format
   descr$Date <- strftime(dmy(descr$Date), "%d/%m/%Y")
+
+  # Record the zip file that contains the sample in the repository
+  descr$Repo.zipname <- zipFileForSpecimen(descr)
 
   # Write repo files
   utils::write.csv(descr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
@@ -391,7 +407,7 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
 }
 
 
-# Create repo structure, metadata files and species zip files
+# Create repo structure, metadata files and zip files
 createZippedDb <- function(indir, zipDir, metadataOnly = FALSE) {
 
   # Copy (and generate) meta data files
@@ -402,11 +418,27 @@ createZippedDb <- function(indir, zipDir, metadataOnly = FALSE) {
 
   if (!metadataOnly) {
 
-    # Zip into families
-    families <- unique(descr$Family)
-    familyDir <- families
+    # Options for zip files are Family, Genus or Species
+    if (ZIP_INTO == "Family") {
+      # Zip into families
+      srcDir <- unique(descr$Family)
+      zipSubset <- FALSE   # All files in the source folder are stored in the zip file
+    } else if (ZIP_INTO == "Genus") {
+      genera <- unique(descr[, c("Family", "Genus")])
+      # Samples are not grouped into genus folders, so we obtain the data from the family folders
+      srcDir <- genera$Family
+      # Define a pattern to match the names of the files we want in this zip file
+      zipSubset <- paste(genera$Family, genera$Genus, sep = "/")
+      zipSubset <- paste0("^", zipSubset, "_")
+    } else if (ZIP_INTO == "Species") {
+      # Zip into species
+      species <- unique(descr[, c("Family", "Genus", "Species")])
+      srcDir <- speciesDirectory(species)
+      zipSubset <- FALSE   # All files in the source folder are stored in the zip file
+    }
 
-    zipName <- paste0(families, ".zip")
+    # Get the list of all zip files
+    zipName <- unique(zipFileForSpecimen(descr))
     zipPath <- normalizePath(file.path(zipDir, zipName), mustWork = FALSE)
 
     origDir <- getwd()
@@ -415,13 +447,19 @@ createZippedDb <- function(indir, zipDir, metadataOnly = FALSE) {
     # the relative paths in the zip file that we want
     setwd(indir)
 
-    pb <- JBuildProgressBar(progressBar = "win", numItems = length(families), title = "")
+    pb <- JBuildProgressBar(progressBar = "win", numItems = length(zipName), title = "")
     skippedDirs <- 0
-    for (fi in seq_along(families)) {
-      if (!dir.exists(familyDir[fi])) {
+    for (fi in seq_along(zipName)) {
+      if (!dir.exists(srcDir[fi])) {
         skippedDirs <- skippedDirs + 1
       } else {
-        files <- list.files(familyDir[fi], recursive = TRUE, full.names = TRUE)
+        files <- list.files(srcDir[fi], recursive = TRUE, full.names = TRUE)
+        # If we are zipping to family or species, it's simple because we are
+        # just zipping up an entire folder. When zipping to genus, it's more
+        # complicated because we want a subset of the folders
+        if (!isFALSE(zipSubset)) {
+          files <- grep(zipSubset[fi], files, value = TRUE)
+        }
         zip <- zipPath[fi]
         # Delete old zip file
         unlink(zip)
