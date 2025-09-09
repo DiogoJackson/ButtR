@@ -27,8 +27,8 @@ listFilesInZenodo <- function(deposition) {
   rec <- getJSON(paste0(ZENODO_REC_URL, deposition))
 
   # Available files
-  setNames(rec$files[, c("key", "links.self")],
-           c("file", "url"))
+  stats::setNames(rec$files[, c("key", "links.self")],
+                  c("file", "url"))
 }
 
 # Function for testing without using Dryad. This is a drop-in replacement for

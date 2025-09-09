@@ -28,7 +28,7 @@ database.}
 installed.}
 
 \item{sex}{If specified, only specimens of this sex (\code{"male"},
-\code{"female"} or  \code{"unknown"}) will be installed.}
+\code{"female"} or \code{"unknown"}) will be installed.}
 
 \item{year}{If specified, only specimens collected during these years will be
 installed (options are 2022 or 2023).}
