@@ -131,7 +131,7 @@ The OzButterflies Database has five folders for butterfly families (Papilionidae
                 photographed in visible light - non-pinned)
             -   📄 1-UV.ARW (Dorsal and ventral wing surfaces
                 photographed in ultraviolet light - non-pinned)
-            -   📄 1-f.gb (CO1 gene sequenced forward - DNA)
+            -   📄 1-f.ab1 (CO1 gene sequenced forward - DNA)
             -   📄 1-d.jpeg (Reference image for speced patch
                 numbers - dorsal)
             -   📄 1-v.jpeg (Reference image for speced patch
