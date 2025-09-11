@@ -1,0 +1,26 @@
+Release procedure
+-----------------
+
+Following are the steps required to create a release of the ButtR package:
+
+Update version number and date in DESCRIPTION file. See https://semver.org/
+
+Commit and push all changes
+
+Build source package from RStudio Build menu (creates ../ButtR_x.y.z.b.tar.gz)
+
+Run (possibly from RStudio terminal window): cd ..; R CMD check --as-cran ButtR_x.y.z.b.tar.gz
+You can add the option --no-manual if you get an error: pdflatex is not available
+
+Run devtools::check_win_release() and wait for the result
+
+Check CI github action results (CMD check; we were unable to get the coverage action to work) by going to the Actions page in the github project (https://github.com/DiogoJackson/ButtR/actions)
+
+Upload ../ButtR_x.y.z.tar.gz to CRAN (https://cran.r-project.org/). Use the ‘Optional comment’ field on the webform (and not a separate email) to explain how the feedback on previous submission(s) has been addressed.
+
+-----
+Once accepted by CRAN:
+
+Create a new release on GitHub (https://github.com/DiogoJackson/ButtR)
+
+Update version number in DESCRIPTION to x.y.z.9000. See http://r-pkgs.had.co.nz/description.html#version for rationale behind the use of 9000 as a version number.
