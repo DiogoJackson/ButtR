@@ -162,6 +162,6 @@ If you use this database in a publication, please cite it as follows:
 ## 🤝 Helping us to improve
 
 We welcome contributions! If you’d like to improve `ButtR`, feel free
-to open an **issue** for bug reports or feature requests.
+to open an **[issue](https://github.com/DiogoJackson/ButtR/issues)** for bug reports or feature requests.
 
 ------------------------------------------------------------------------
