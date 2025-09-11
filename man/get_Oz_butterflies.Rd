@@ -14,6 +14,7 @@ get_Oz_butterflies(
   spectra = NULL,
   sampleIDs = NULL,
   download_images = c("raw", "jpeg"),
+  download_dna = TRUE,
   db_folder = "OzButterflies"
 )
 }
@@ -33,11 +34,11 @@ installed.}
 \item{year}{If specified, only specimens collected during these years will be
 installed (options are 2022 or 2023).}
 
-\item{site}{If specified, only specimens collected at these sites
-will be installed.}
+\item{site}{If specified, only specimens collected at these sites will be
+installed.}
 
-\item{spectra}{If specified, only specimens with the specified
-spectra value will be installed (\code{"y"} or \code{"n"}).}
+\item{spectra}{If specified, only specimens with the specified spectra value
+will be installed (\code{"y"} or \code{"n"}).}
 
 \item{sampleIDs}{If specified, only specimens with the specified IDs will be
 installed.}
@@ -45,6 +46,9 @@ installed.}
 \item{download_images}{Specifies whether \code{"raw"} and/or \code{"jpeg"}
 images should be downloaded. Only images with the specified type(s) will be
 downloaded.}
+
+\item{download_dna}{If \code{TRUE} (the default), DNA files (.ab1) will be
+downloaded and installed. If \code{FALSE}, DNA files will not be installed.}
 
 \item{db_folder}{Path of folder that will contain the downloaded database.}
 }
@@ -54,8 +58,13 @@ form (which means it is not automatically printed)
 }
 \description{
 Simplifies downloading the \emph{OzButterflies database} (Ref) to a local folder.
-The function allows users to download specific subsets of the database by applying multiple filters, such as species
-name, genus, site, family, specific IDs, and more.
+The function allows users to download specific subsets of the database by
+applying multiple filters, such as species name, genus, site, family,
+specific IDs, and more.
+}
+\details{
+\code{get_Oz_butterflies} will not remove local existing files, so subsequent
+calls can be used to add to the installed database.
 }
 \examples{
 \dontrun{

@@ -259,6 +259,15 @@ test_that("get id", {
 test_that("get DNA", {
   dbDir <- prepareTest()
 
+  # Install species that have DNA but we don't want to install it. Do this
+  # BEFORe the next test because get_Oz_butterflies adds to the existing
+  # installation, it doesn't remove existing files.
+  get_Oz_butterflies(download_dna = FALSE, species = c("Suniana sunias", "Euploea darchia"), db_folder = dbDir)
+
+  # DNA files exist in database but should not have been installed
+  expect_false(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186_f.ab1")))
+  expect_false(file.exists(file.path(dbDir, "Nymphalidae/Euploea_darchia/551/555_f.ab1")))
+
   # Install 4 species, 2 with and 2 without DNA (in the test database)
   get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus", "Suniana sunias", "Euploea darchia"), db_folder = dbDir)
 
@@ -271,4 +280,5 @@ test_that("get DNA", {
   # Check that those that should exist do exist
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186_f.ab1")))
   expect_true(file.exists(file.path(dbDir, "Nymphalidae/Euploea_darchia/551/555_f.ab1")))
+
 })
