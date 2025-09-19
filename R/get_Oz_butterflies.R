@@ -25,6 +25,9 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 
 #' Download and install the OzButterflies Database
 #'
+#' Be aware that downloading very large files can take many hours, depending on
+#' the speed of your Internet connection.
+#'
 #' Simplifies downloading the *OzButterflies database* (Ref) to a local folder.
 #' The function allows users to download specific subsets of the database by
 #' applying multiple filters, such as species name, genus, site, family,
@@ -55,14 +58,14 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' @param download_dna If \code{TRUE} (the default), DNA files (.ab1) will be
 #'   downloaded and installed. If \code{FALSE}, DNA files will not be installed.
 #' @param db_folder Path of folder that will contain the downloaded database.
-#' @param timeout Maximum time allowed (in seconds) to download _each_ file. The
-#'   time required will depend on the speed of your internet connection and the
-#'   parts of the database that you choose to download. If you experience an
-#'   error message such as "\code{Timeout of 1200 seconds was reached}", try
-#'   increasing the timeout.
+#' @param timeout Maximum time allowed (in seconds) to download _each_ file;
+#'   default is 10 hours. The time required will depend on the speed of your
+#'   Internet connection and the parts of the database that you choose to
+#'   download. If you experience an error message such as "\code{Timeout of 36000
+#'   seconds was reached}", try increasing the timeout.
 #' @param quiet If \code{FALSE}, a progress bar is displayed showing the
-#'   download progress for _each_ file as it is downloaded from the
-#'   repository, and informational messages are printed to the console.
+#'   download progress for _each_ file as it is downloaded from the repository,
+#'   and informational messages are printed to the console.
 #'
 #' @returns The installation folder (`db_folder`) in canonical form in invisible
 #'   form (which means it is not automatically printed)
@@ -97,7 +100,7 @@ get_Oz_butterflies <- function(species = NULL,
                         download_images = c("raw", "jpeg"),
                         download_dna = TRUE,
                         db_folder = "OzButterflies",
-                        timeout = 20 * 60,
+                        timeout = 10 * 60 * 60,
                         quiet = FALSE) {
 
   download_images <- match.arg(download_images, several.ok = TRUE)

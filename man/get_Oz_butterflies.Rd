@@ -16,7 +16,7 @@ get_Oz_butterflies(
   download_images = c("raw", "jpeg"),
   download_dna = TRUE,
   db_folder = "OzButterflies",
-  timeout = 20 * 60,
+  timeout = 10 * 60 * 60,
   quiet = FALSE
 )
 }
@@ -54,27 +54,30 @@ downloaded and installed. If \code{FALSE}, DNA files will not be installed.}
 
 \item{db_folder}{Path of folder that will contain the downloaded database.}
 
-\item{timeout}{Maximum time allowed (in seconds) to download \emph{each} file. The
-time required will depend on the speed of your internet connection and the
-parts of the database that you choose to download. If you experience an
-error message such as "\code{Timeout of 1200 seconds was reached}", try
-increasing the timeout.}
+\item{timeout}{Maximum time allowed (in seconds) to download \emph{each} file;
+default is 10 hours. The time required will depend on the speed of your
+Internet connection and the parts of the database that you choose to
+download. If you experience an error message such as "\code{Timeout of 36000
+  seconds was reached}", try increasing the timeout.}
 
 \item{quiet}{If \code{FALSE}, a progress bar is displayed showing the
-download progress for \emph{each} file as it is downloaded from the
-repository, and informational messages are printed to the console.}
+download progress for \emph{each} file as it is downloaded from the repository,
+and informational messages are printed to the console.}
 }
 \value{
 The installation folder (\code{db_folder}) in canonical form in invisible
 form (which means it is not automatically printed)
 }
 \description{
+Be aware that downloading very large files can take many hours, depending on
+the speed of your Internet connection.
+}
+\details{
 Simplifies downloading the \emph{OzButterflies database} (Ref) to a local folder.
 The function allows users to download specific subsets of the database by
 applying multiple filters, such as species name, genus, site, family,
 specific IDs, and more.
-}
-\details{
+
 \code{get_Oz_butterflies} will not remove local existing files, so subsequent
 calls can be used to add to the installed database.
 }
