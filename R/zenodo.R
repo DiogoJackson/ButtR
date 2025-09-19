@@ -1,7 +1,7 @@
 # Interface with Zenodo
 
 # The deposition ID of the ButtR repo in Zenodo
-BUTTR_DEPOSITION <- "15881960"  # TODO not the correct ID!!!
+BUTTR_DEPOSITION <- "15881960"
 
 # Zenodo API constants
 ZENODO_REC_URL <- "https://zenodo.org/api/records/"
@@ -27,8 +27,8 @@ listFilesInZenodo <- function(deposition) {
   rec <- getJSON(paste0(ZENODO_REC_URL, deposition))
 
   # Available files
-  stats::setNames(rec$files[, c("key", "links.self")],
-                  c("file", "url"))
+  stats::setNames(rec$files[, c("key", "links.self", "size")],
+                  c("file", "url", "size"))
 }
 
 # Function for testing without using Dryad. This is a drop-in replacement for

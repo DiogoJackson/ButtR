@@ -125,7 +125,8 @@ test_that("zenodo interface works", {
                                                         55L, 56L, 63L, 58L, 65L, 68L, 70L, 67L, 57L, 61L, 66L, 72L, 75L,
                                                         69L, 77L, 74L, 59L, 62L, 76L, 71L, 60L, 64L, 79L, 78L, 80L, 81L,
                                                         73L, 1L, 5L, 3L, 2L, 4L), class = "data.frame")
-  expect_equal(f, expected)
+  # Ignore the size column
+  expect_equal(f[, c("file", "url")], expected)
 
   # Download README.txt
   ri <- which(f$file == "README.txt")
