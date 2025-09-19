@@ -62,7 +62,8 @@ download. If you experience an error message such as "\code{Timeout of 36000
 
 \item{quiet}{If \code{FALSE}, a progress bar is displayed showing the
 download progress for \emph{each} file as it is downloaded from the repository,
-and informational messages are printed to the console.}
+and informational messages are printed to the console. Specify \code{quiet
+  = TRUE} to prevent progress bar display.}
 }
 \value{
 The installation folder (\code{db_folder}) in canonical form in invisible

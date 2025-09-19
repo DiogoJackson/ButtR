@@ -65,7 +65,8 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   seconds was reached}", try increasing the timeout.
 #' @param quiet If \code{FALSE}, a progress bar is displayed showing the
 #'   download progress for _each_ file as it is downloaded from the repository,
-#'   and informational messages are printed to the console.
+#'   and informational messages are printed to the console. Specify \code{quiet
+#'   = TRUE} to prevent progress bar display.
 #'
 #' @returns The installation folder (`db_folder`) in canonical form in invisible
 #'   form (which means it is not automatically printed)
