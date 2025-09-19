@@ -1,7 +1,7 @@
 # Interface with Zenodo
 
 # The deposition ID of the ButtR repo in Zenodo
-BUTTR_DEPOSITION <- "6468938"  # TODO not the correct ID!!!
+BUTTR_DEPOSITION <- "15881960"  # TODO not the correct ID!!!
 
 # Zenodo API constants
 ZENODO_REC_URL <- "https://zenodo.org/api/records/"
