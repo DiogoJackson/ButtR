@@ -1,12 +1,12 @@
 # Download one or more files from the repository
-downloadFiles <- function(files, subset, destDir) {
+downloadFiles <- function(files, subset, destDir, quiet) {
   # Download them one at a time
   for (idx in subset) {
     # Define the path where the file will be saved locally
     destfile <- file.path(destDir, files$file[idx])
 
     # Download the spreadsheet from the URL and save it in the specified path
-    utils::download.file(url = files$url[idx], destfile = destfile, mode = "wb", quiet = TRUE)
+    utils::download.file(url = files$url[idx], destfile = destfile, mode = "wb", quiet = quiet)
   }
 }
 
@@ -55,8 +55,16 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' @param download_dna If \code{TRUE} (the default), DNA files (.ab1) will be
 #'   downloaded and installed. If \code{FALSE}, DNA files will not be installed.
 #' @param db_folder Path of folder that will contain the downloaded database.
+#' @param timeout Maximum time allowed (in seconds) to download _each_ file. The
+#'   time required will depend on the speed of your internet connection and the
+#'   parts of the database that you choose to download. If you experience an
+#'   error message such as "\code{Timeout of 1200 seconds was reached}", try
+#'   increasing the timeout.
+#' @param quiet If \code{FALSE}, a progress bar is displayed showing the
+#'   download progress for _each_ file as it is downloaded from the
+#'   repository, and informational messages are printed to the console.
 #'
-#' @returns the installation folder (`db_folder`) in canonical form in invisible
+#' @returns The installation folder (`db_folder`) in canonical form in invisible
 #'   form (which means it is not automatically printed)
 #'
 #' @examples
@@ -88,9 +96,16 @@ get_Oz_butterflies <- function(species = NULL,
                         sampleIDs = NULL,
                         download_images = c("raw", "jpeg"),
                         download_dna = TRUE,
-                        db_folder = "OzButterflies") {
+                        db_folder = "OzButterflies",
+                        timeout = 20 * 60,
+                        quiet = FALSE) {
 
   download_images <- match.arg(download_images, several.ok = TRUE)
+
+  # Increase default timeout for download.file
+  oldTimeout <- getOption("timeout")
+  on.exit(options(timeout = oldTimeout), add = TRUE)
+  options(timeout = max(timeout, oldTimeout))
 
   # Check if the "db_folder" directory (where the data will be stored) exists.
   # If it doesn't exist, create the folder.
@@ -106,7 +121,7 @@ get_Oz_butterflies <- function(species = NULL,
   if (length(metadata) == 0) {
     stop("Internal error: Unable to locate OzButterflies metadata file in repository")
   }
-  downloadFiles(files, metadata, db_folder)
+  downloadFiles(files, metadata, db_folder, quiet)
 
   # Identify the local spreadsheet file path
   spread_sheet <- file.path(db_folder, "Oz_butterflies.csv")
@@ -189,7 +204,7 @@ get_Oz_butterflies <- function(species = NULL,
     url <- files$url[files$file == zip]
 
     # Download the zip file from the URL
-    utils::download.file(url = url, destfile = zip_path, mode = "wb", quiet = TRUE)
+    utils::download.file(url = url, destfile = zip_path, mode = "wb", quiet = quiet)
 
     # List files inside the zip archive without extracting them
     zip_content <- utils::unzip(zip_path, list = TRUE)

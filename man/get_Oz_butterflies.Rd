@@ -15,7 +15,9 @@ get_Oz_butterflies(
   sampleIDs = NULL,
   download_images = c("raw", "jpeg"),
   download_dna = TRUE,
-  db_folder = "OzButterflies"
+  db_folder = "OzButterflies",
+  timeout = 20 * 60,
+  quiet = FALSE
 )
 }
 \arguments{
@@ -51,9 +53,19 @@ downloaded.}
 downloaded and installed. If \code{FALSE}, DNA files will not be installed.}
 
 \item{db_folder}{Path of folder that will contain the downloaded database.}
+
+\item{timeout}{Maximum time allowed (in seconds) to download \emph{each} file. The
+time required will depend on the speed of your internet connection and the
+parts of the database that you choose to download. If you experience an
+error message such as "\code{Timeout of 1200 seconds was reached}", try
+increasing the timeout.}
+
+\item{quiet}{If \code{FALSE}, a progress bar is displayed showing the
+download progress for \emph{each} file as it is downloaded from the
+repository, and informational messages are printed to the console.}
 }
 \value{
-the installation folder (\code{db_folder}) in canonical form in invisible
+The installation folder (\code{db_folder}) in canonical form in invisible
 form (which means it is not automatically printed)
 }
 \description{
