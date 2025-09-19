@@ -101,7 +101,7 @@ organiseDB <- function(indir, outdir) {
                                                            specs[!specs %in% md$ID]))
 
   # Update metadata to record presence of DNA files
-  dna <- getFileSamples(file.path(indir, "DNA files"), ".gb")
+  dna <- getFileSamples(file.path(indir, "DNA files"), ".ab1")
   md$DNA <- ifelse(md$ID %in% dna, "y", "n")
   if (sum(md$DNA == "y") != length(dna)) {
     for (s in dna) {
@@ -129,7 +129,7 @@ organiseDB <- function(indir, outdir) {
     copySampleFiles(s, indir, "^%s-.*\\.ARW$", sampleDir, min = 2)
 
     # Copy DNA files
-    copySampleFiles(s, file.path(indir, "DNA files"), "^%s-f\\.gb$", sampleDir, min = 0)
+    copySampleFiles(s, file.path(indir, "DNA files"), "^%s-f\\.ab1$", sampleDir, min = 0)
 
     # Copy Spec files
     copySampleFiles(s, file.path(indir, "ProcSpec files", s), "^%s_.*\\.ProcSpec$", sampleDir, min = 0)

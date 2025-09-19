@@ -66,9 +66,9 @@ Photographs of non-pinned specimens (wings separated from body):
 
 Specimens with DNA include the following files:
 
-| File name   | Description                         |
-|-------------|-------------------------------------|
-| \<ID\>-f.gb | CO1 gene gene sequenced forward (f) |
+| File name    | Description                         |
+|--------------|-------------------------------------|
+| \<ID\>-f.ab1 | CO1 gene gene sequenced forward (f) |
 
 Spectroscoped specimens include the following files:
 

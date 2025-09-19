@@ -332,11 +332,11 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
       names(df)[names(df) == oldName] <- newName
     df
   }
-  new <- renameCol(new, "Body", "Body.damage")
-  new <- renameCol(new, "Forewing.left", "Forewing.dorsal.damage")
-  new <- renameCol(new, "Forewing.right", "Forewing.ventral.damage")
-  new <- renameCol(new, "Hindwing.left", "Hindwing.dorsal.damage")
-  new <- renameCol(new, "Hindwing.right", "Hindwing.ventral.damage")
+  descr <- renameCol(descr, "Body", "Body.damage")
+  descr <- renameCol(descr, "Forewing.left", "Forewing.dorsal.damage")
+  descr <- renameCol(descr, "Forewing.right", "Forewing.ventral.damage")
+  descr <- renameCol(descr, "Hindwing.left", "Hindwing.dorsal.damage")
+  descr <- renameCol(descr, "Hindwing.right", "Hindwing.ventral.damage")
 
   # Get rid of Exclude column
   descr$Exclude <- NULL
