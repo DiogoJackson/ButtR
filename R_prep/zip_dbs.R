@@ -340,6 +340,8 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
 
   # Get rid of Exclude column
   descr$Exclude <- NULL
+  # Remove Process.ID column
+  descr$Process.ID <- NULL
   # Update the Pinned column
   descr$Pinned <- ifelse(hasPinnedImages(file.path(indir, sampleDirectory(descr))), "y", "n")
   # Add a DNA column
