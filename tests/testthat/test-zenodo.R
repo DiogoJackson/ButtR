@@ -2,7 +2,7 @@ library(testthat)
 
 test_that("zenodo interface works", {
   # Get list of files from the Zenodo repo (OzButterflies)
-  # (https://doi.org/10.5281/zenodo.15881961)
+  # (https://doi.org/10.5281/zenodo.15881960)
   f <- listFilesInZenodo(BUTTR_DEPOSITION)
 
   # This is what we expect to get. Don't assume order

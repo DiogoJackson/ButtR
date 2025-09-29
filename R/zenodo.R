@@ -1,15 +1,25 @@
 # Interface with Zenodo
 
-# The deposition ID of the ButtR repo in Zenodo The data set has an "all
-# versions" DOI, which is 10.5281/zenodo.15881960, however if I use "15881960"
-# as the record ID, I get an http error 410 "Gone", so it seems the record ID
-# must contain an explicit version.
-BUTTR_DEPOSITION <- "15881961"
+# The deposition ID of the ButtR repo in Zenodo. This is the "all versions"
+# record ID, and we explicitly look up the latest version
+BUTTR_DEPOSITION <- "15881960"
 
 # Zenodo API constants
+ZENODO_DOI_PREFIX <- "https://doi.org/10.5281/zenodo."
 ZENODO_REC_URL <- "https://zenodo.org/api/records/"
 
 
+# Given the record ID form the concept DOI (i.e. the DOI that resolves to the
+# latest version, whatever that is), returns the record URL for the latest
+# version
+getLatestVersionURL <- function(deposition) {
+  # Fetch the DOI record. It will automatically redirect us to the newest version
+  resp <- httr::HEAD(paste0(ZENODO_DOI_PREFIX, BUTTR_DEPOSITION))
+  httr::stop_for_status(resp)
+  # We have been redirected to the web page for the latest version. Derive the
+  # API url from the HTML URL
+  sub("/records/", "/api/records/", resp$url)
+}
 
 # Given a URL, downloads it and interprets it as JSON.
 getJSON <- function(url) {
@@ -27,7 +37,7 @@ getJSON <- function(url) {
 #
 listFilesInZenodo <- function(deposition) {
   # List the Zenodo record
-  rec <- getJSON(paste0(ZENODO_REC_URL, deposition))
+  rec <- getJSON(getLatestVersionURL(deposition))
 
   # Available files
   stats::setNames(rec$files[, c("key", "links.self", "size")],
