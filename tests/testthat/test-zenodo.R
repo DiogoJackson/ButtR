@@ -2,8 +2,8 @@ library(testthat)
 
 test_that("zenodo interface works", {
   # Get list of files from the Zenodo repo (OzButterflies)
-  # (https://doi.org/10.5281/zenodo.15881960)
-  f <- listFilesInZenodo("15881960")
+  # (https://doi.org/10.5281/zenodo.15881961)
+  f <- listFilesInZenodo(BUTTR_DEPOSITION)
 
   # This is what we expect to get. Don't assume order
   # NOTE that testing uses locale C, which is different from interactive use
@@ -137,12 +137,6 @@ test_that("zenodo interface works", {
   # This is the first line in the README.txt file
   expect_equal(line1, "OzButterflies database")
 })
-
-# test_that("correct version", {
-#   # Check that we are finding the latest version from Dryad
-#   f <- listFilesInZenodo("15881960")
-#   # TODO???
-# })
 
 test_that("local file interface works", {
   # This is to test that the test mock Dryad interface works. It is tested

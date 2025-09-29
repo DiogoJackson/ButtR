@@ -1,7 +1,10 @@
 # Interface with Zenodo
 
-# The deposition ID of the ButtR repo in Zenodo
-BUTTR_DEPOSITION <- "15881960"
+# The deposition ID of the ButtR repo in Zenodo The data set has an "all
+# versions" DOI, which is 10.5281/zenodo.15881960, however if I use "15881960"
+# as the record ID, I get an http error 410 "Gone", so it seems the record ID
+# must contain an explicit version.
+BUTTR_DEPOSITION <- "15881961"
 
 # Zenodo API constants
 ZENODO_REC_URL <- "https://zenodo.org/api/records/"
