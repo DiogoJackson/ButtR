@@ -363,10 +363,8 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
     descr$Spectra <- ifelse(hasSpec(file.path(indir, sampleDirectory(descr))), "y", "n")
   }
   # Fix up the date format
-  ## For day/month/year date format
-  descr$Date <- strftime(dmy(descr$Date), "%d/%m/%Y")
-  ## For ISO 8601 date format (year-month-day)
-  ## descr$Date <- strftime(dmy(descr$Date), "%F")
+  # Use ISO 8601 date format (year-month-day)
+  descr$Date <- strftime(dmy(descr$Date), "%F")
 
   # Record the zip file that contains the sample in the repository
   descr$Repo.zipname <- zipFileForSpecimen(descr)
