@@ -371,8 +371,11 @@ genMetadata <- function(indir, zipDir = NULL, testingData = FALSE) {
 
   # Write repo files
   utils::write.csv(descr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".csv")), row.names = FALSE)
-  openxlsx::write.xlsx(descr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".xlsx")))
   jsonlite::write_json(descr, path = file.path(zipDir, paste0(METADATA_BASENAME, ".json")))
+  # Allow Excel to know about the date column
+  xldescr <- descr
+  xldescr$Date <- as.Date(xldescr$Date)
+  openxlsx::write.xlsx(xldescr, file = file.path(zipDir, paste0(METADATA_BASENAME, ".xlsx")))
 
   ### Summary spreadsheet
   # Summarise dbs contents
