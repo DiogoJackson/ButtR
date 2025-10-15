@@ -180,10 +180,8 @@ get_Oz_butterflies <- function(species = NULL,
 
   # Filtrando apenas os anos especificados
   if (length(year) > 0) {
-    # Extract year from date
-    ddate <- as.Date(meta_data$Date) # Convert text to Date object
-    dyear <- format(ddate, "%Y")  # extract year from date
-    rows <- rows & dyear %in% as.character(year)
+    meta_data$Date <- substr(meta_data$Date, 7, 10)  # extract year from date
+    rows <- rows & meta_data$Date %in% as.character(year)  # string
   }
 
   # If sample ID is specified, update the filtering
