@@ -21,7 +21,7 @@ source("R/summarise.R")
 ZIP_INTO <- "Genus"
 
 # If TRUE, only generate metadata, i.e. the two spreadsheets, each in 3 formats
-METADATA_ONLY <- FALSE
+METADATA_ONLY <- TRUE
 
 # Location of the source (unpacked) database to be checked
 DBDIR <- "D:\\Oz_Butterflies"
