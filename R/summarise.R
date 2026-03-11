@@ -1,11 +1,13 @@
 
 
-#' Summarise contents of the OzButterflies database
+#' Summarise contents of the locally installed OzButterflies database
 #'
 #' @param db_folder Path of folder that contains the OzButterflies database.
 #' @param imgExt Regular expression used to identify files to be counted as
-#'   images. Default is `.ARW` files which are the RGB and UV photos of
-#'   specimens.
+#'   images. Default is `.DNG` or `.ARW` files which are the RGB and UV photos
+#'   of specimens. DNG is the Adobe open Digital Negative format and used in
+#'   version 4 (and above) of the database, while ARW is the Sony raw file
+#'   format, and used in versions 1, 2 and 3.
 #'
 #' @returns Data frame with 1 row and columns that summarise the database
 #'   contents. All summary statistics, apart from the `Images` count, describe
@@ -15,7 +17,7 @@
 #' @importFrom stats aggregate median
 #'
 #' @export
-Oz_butterflies_summary <- function(db_folder = "OzButterflies", imgExt = "\\.ARW$|\\.arw$") {
+Oz_butterflies_summary <- function(db_folder = "OzButterflies", imgExt = "\\.DNG$|\\.dng$|\\.ARW$|\\.arw$") {
   # Read meta data
   descr <- read.csv(file.path(db_folder, "Oz_butterflies.csv"))
 

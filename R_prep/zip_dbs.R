@@ -44,7 +44,7 @@ METADATA_BASENAME <- "Oz_butterflies"
 SUMMARY_BASENAME <- "Oz_butterflies_summary"
 
 # List of file extensions in database
-ALLOWED_EXTENSIONS <- c("ARW", "jpg", "txt", "ProcSpec", "png", "ab1", "csv") # DNA extension was gb, now fastq
+ALLOWED_EXTENSIONS <- c("DNG", "ARW", "jpg", "txt", "ProcSpec", "png", "ab1", "csv") # DNA extension was gb, now fastq
 
 
 readDbMetadata <- function(dir) {
@@ -156,7 +156,7 @@ checkOzButtUnpacked <- function(dir) {
   badExts <- files[!exts %in% ALLOWED_EXTENSIONS]
 
   # Image files should start with the specimen ID, which should be the same as the containing folder
-  imgs <- list.files(dir, pattern = "\\.ARW", recursive = TRUE, full.names = TRUE)
+  imgs <- list.files(dir, pattern = "\\.ARW|\\.DNG", recursive = TRUE, full.names = TRUE)
   badImgFiles <- imgs[!fileMatchesSpecimen(imgs)]
 
   # ProcSpec files should start with their specimen IDs
@@ -286,7 +286,7 @@ checkSpecies <- function(dbdir) {
 
 hasPinnedImages <- function(sampleDirs) {
   sapply(sampleDirs, function(d) {
-    pinnedFiles <- list.files(d, pattern = "_[d|v]_.*\\.ARW$")
+    pinnedFiles <- list.files(d, pattern = "_[d|v]_.*\\.ARW$|_[d|v]_.*\\.DNG$")
     # There should be 0 or an even number of files
     nf <- length(pinnedFiles)
     if (nf != 0 && nf %% 2 != 0) {

@@ -4,17 +4,33 @@
 # record ID, and we explicitly look up the latest version
 BUTTR_DEPOSITION <- "15881960"
 
+# Deposition IDs for specific versions
+BUTTR_DEP_V <- c("15881961", "17178034", "17533293")
+
 # Zenodo API constants
 ZENODO_DOI_PREFIX <- "https://doi.org/10.5281/zenodo."
 ZENODO_REC_URL <- "https://zenodo.org/api/records/"
 
+# Returns the Zenodo deposition ID for a specified version.
+#
+# @param version Integer version of the OzButterflies to retrieve from Zenodo.
+#   `NA` or `NULL` indicate the most recent version.
+zenodoVersionToDepo <- function(version) {
+  # If a version has been explicitly specified, use it
+  if (is.numeric(version) && version >= 1 && version <= length(BUTTR_DEP_V)) {
+    BUTTR_DEP_V[version]
+  } else {
+    # Default to the most recent version
+    BUTTR_DEPOSITION
+  }
+}
 
-# Given the record ID form the concept DOI (i.e. the DOI that resolves to the
+# Given the record ID from the concept DOI (i.e. the DOI that resolves to the
 # latest version, whatever that is), returns the record URL for the latest
 # version
-getLatestVersionURL <- function(deposition) {
+getLatestVersionURL <- function(deposition = BUTTR_DEPOSITION) {
   # Fetch the DOI record. It will automatically redirect us to the newest version
-  resp <- httr::HEAD(paste0(ZENODO_DOI_PREFIX, BUTTR_DEPOSITION))
+  resp <- httr::HEAD(paste0(ZENODO_DOI_PREFIX, deposition))
   httr::stop_for_status(resp)
   # We have been redirected to the web page for the latest version. Derive the
   # API url from the HTML URL
@@ -38,6 +54,20 @@ getJSON <- function(url) {
 listFilesInZenodo <- function(deposition) {
   # List the Zenodo record
   rec <- getJSON(getLatestVersionURL(deposition))
+
+  # AI suggests that downloads could be made more reliable by using the direct
+  # Zenodo link rather than the API link, but results were not more reliable for me
+  # # Try to make downloads more reliable - I get an intermittent error:
+  # # cannot open URL ...
+  # # In addition: Warning message:
+  # # In .rs.downloadFile(url = files$url[idx], destfile = destfile, quiet = quiet,  :
+  # #      URL '...': status was 'SSL peer certificate or SSH remote key was not OK'
+  # # This is an attempt to solve that
+  # apiToDirect <- function(url) {
+  #   sub("\\/content$", "?download=1", sub("api/records/", "records/", url))
+  # }
+  #
+  # rec$files$links.self <- apiToDirect(rec$files$links.self)
 
   # Available files
   stats::setNames(rec$files[, c("key", "links.self", "size")],
@@ -76,9 +106,9 @@ listLocalFiles <- function(path, encode = FALSE) {
 # function to call to obtain formation about the database contents. Done this
 # way to facilitate testing without using Dryad, but without exposing something
 # publicly
-ListDbsFiles <- function() listFilesInZenodo(BUTTR_DEPOSITION)
+ListDbsFiles <- function(version) listFilesInZenodo(zenodoVersionToDepo(version))
 
 
 #Uncomment this for debugging/development using local repository. For unit
 #tests, use testthat::local_mocked_bindings instead
-# ListDbsFiles = function() listLocalFiles(testthat::test_path("testdata/repo"))
+# ListDbsFiles = function(version) listLocalFiles(testthat::test_path("testdata/repo"))

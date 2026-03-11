@@ -17,7 +17,8 @@ get_Oz_butterflies(
   download_dna = TRUE,
   db_folder = "OzButterflies",
   timeout = 10 * 60 * 60,
-  quiet = FALSE
+  quiet = FALSE,
+  db_version = NA
 )
 }
 \arguments{
@@ -47,7 +48,9 @@ installed.}
 
 \item{download_images}{Specifies whether \code{"raw"} and/or \code{"jpeg"}
 images should be downloaded. Only images with the specified type(s) will be
-downloaded.}
+downloaded. In versions 1 to 3 of the Oz butterflies database, raw files
+are in Sony raw format (\code{.ARW}) database. From version 4, raw files are in
+the Adobe Digital negative format (\code{.DNG}) (see the \code{db_version} parameter).}
 
 \item{download_dna}{If \code{TRUE} (the default), DNA files (.ab1) will be
 downloaded and installed. If \code{FALSE}, DNA files will not be installed.}
@@ -64,23 +67,35 @@ download. If you experience an error message such as "\code{Timeout of 36000
 download progress for \emph{each} file as it is downloaded from the repository,
 and informational messages are printed to the console. Specify \code{quiet
   = TRUE} to prevent progress bar display.}
+
+\item{db_version}{Version of the database to download. \code{NA} (the default)
+means download the latest version. An integer version number will download
+that version of the database. Note that in version \code{3} and earlier, raw
+image files were in \code{.ARW} format. Starting from version 4, raw images are
+in \code{.DNG} format.}
 }
 \value{
 The installation folder (\code{db_folder}) in canonical form in invisible
 form (which means it is not automatically printed)
 }
 \description{
-Be aware that downloading very large files can take many hours, depending on
-the speed of your Internet connection.
-}
-\details{
 Simplifies downloading the \emph{OzButterflies database} (Ref) to a local folder.
 The function allows users to download specific subsets of the database by
 applying multiple filters, such as species name, genus, site, family,
 specific IDs, and more.
+}
+\details{
+Be aware that downloading very large files can take many hours, depending on
+the speed of your Internet connection.
 
 \code{get_Oz_butterflies} will not remove local existing files, so subsequent
 calls can be used to add to the installed database.
+
+If you receive an intermittent error such as "\verb{status was 'SSL peer certificate or SSH remote key was not OK'}", try using a different download
+method. ButtR downloads files by calling \code{\link[utils]{download.file}},
+so the download method can be specified by setting the \code{download.file.method}
+option; for example, \code{options(download.file.method = "curl")}. See the
+\code{\link[utils]{download.file}} help for further details.
 }
 \examples{
 \dontrun{
@@ -96,8 +111,14 @@ get_Oz_butterflies(genus = "Delias")
 # Get all species within the Nymphalidae family
 get_Oz_butterflies(family = "Nymphalidae")
 
-# Get data with multiple filters
-get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"))
+# Get raw files in .ARW format (from version 3 of the database),
+# using the "curl" download method (Curl must be installed on your system)
+options(download.file.method = "curl")
+get_Oz_butterflies(download_images = "raw", db_version = 3, species = c("Delias aganippe", "Delias mysis"))
+
+# Get raw files in .DNG format (from version 4 of the database)
+get_Oz_butterflies(download_images = "raw", db_version = 4, species = c("Delias aganippe", "Delias mysis"))
+
 }
 
 }

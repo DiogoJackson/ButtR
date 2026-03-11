@@ -25,16 +25,23 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 
 #' Download and install the OzButterflies Database
 #'
-#' Be aware that downloading very large files can take many hours, depending on
-#' the speed of your Internet connection.
-#'
 #' Simplifies downloading the *OzButterflies database* (Ref) to a local folder.
 #' The function allows users to download specific subsets of the database by
 #' applying multiple filters, such as species name, genus, site, family,
 #' specific IDs, and more.
 #'
+#' Be aware that downloading very large files can take many hours, depending on
+#' the speed of your Internet connection.
+#'
 #' \code{get_Oz_butterflies} will not remove local existing files, so subsequent
 #' calls can be used to add to the installed database.
+#'
+#' If you receive an intermittent error such as "`status was 'SSL peer
+#' certificate or SSH remote key was not OK'`", try using a different download
+#' method. ButtR downloads files by calling \code{\link[utils]{download.file}},
+#' so the download method can be specified by setting the `download.file.method`
+#' option; for example, `options(download.file.method = "curl")`. See the
+#' \code{\link[utils]{download.file}} help for further details.
 #'
 #' @param species Optional vector of binomial names of species of interest. If
 #'   specified, only species from this list will be included in the local
@@ -54,7 +61,9 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   installed.
 #' @param download_images Specifies whether \code{"raw"} and/or \code{"jpeg"}
 #'   images should be downloaded. Only images with the specified type(s) will be
-#'   downloaded.
+#'   downloaded. In versions 1 to 3 of the Oz butterflies database, raw files
+#'   are in Sony raw format (`.ARW`) database. From version 4, raw files are in
+#'   the Adobe Digital negative format (`.DNG`) (see the `db_version` parameter).
 #' @param download_dna If \code{TRUE} (the default), DNA files (.ab1) will be
 #'   downloaded and installed. If \code{FALSE}, DNA files will not be installed.
 #' @param db_folder Path of folder that will contain the downloaded database.
@@ -67,6 +76,11 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   download progress for _each_ file as it is downloaded from the repository,
 #'   and informational messages are printed to the console. Specify \code{quiet
 #'   = TRUE} to prevent progress bar display.
+#' @param db_version Version of the database to download. `NA` (the default)
+#'   means download the latest version. An integer version number will download
+#'   that version of the database. Note that in version `3` and earlier, raw
+#'   image files were in `.ARW` format. Starting from version 4, raw images are
+#'   in `.DNG` format.
 #'
 #' @returns The installation folder (`db_folder`) in canonical form in invisible
 #'   form (which means it is not automatically printed)
@@ -85,8 +99,14 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' # Get all species within the Nymphalidae family
 #' get_Oz_butterflies(family = "Nymphalidae")
 #'
-#' # Get data with multiple filters
-#' get_Oz_butterflies(species = c("Delias aganippe", "Delias mysis"))
+#' # Get raw files in .ARW format (from version 3 of the database),
+#' # using the "curl" download method (Curl must be installed on your system)
+#' options(download.file.method = "curl")
+#' get_Oz_butterflies(download_images = "raw", db_version = 3, species = c("Delias aganippe", "Delias mysis"))
+#'
+#' # Get raw files in .DNG format (from version 4 of the database)
+#' get_Oz_butterflies(download_images = "raw", db_version = 4, species = c("Delias aganippe", "Delias mysis"))
+#'
 #' }
 #'
 #' @export
@@ -102,7 +122,8 @@ get_Oz_butterflies <- function(species = NULL,
                         download_dna = TRUE,
                         db_folder = "OzButterflies",
                         timeout = 10 * 60 * 60,
-                        quiet = FALSE) {
+                        quiet = FALSE,
+                        db_version = NA) {
 
   download_images <- match.arg(download_images, several.ok = TRUE)
 
@@ -118,7 +139,7 @@ get_Oz_butterflies <- function(species = NULL,
   }
 
   # List all files in the database
-  files <- ListDbsFiles()
+  files <- ListDbsFiles(db_version)
 
   # Download the metadata - all files that aren't .zip
   metadata <- grep("\\.zip$", files$file, invert = TRUE)
@@ -222,15 +243,15 @@ get_Oz_butterflies <- function(species = NULL,
 
     # If not all image files were requested, filter them out
     if (!"raw" %in% download_images) {
-      selected_files <- selected_files[grep("\\.arw", selected_files, invert = TRUE, ignore.case = TRUE)]
+      selected_files <- selected_files[grep("\\.dng$|\\.arw$", selected_files, invert = TRUE, ignore.case = TRUE)]
     }
     if (!"jpeg" %in% download_images) {
-      selected_files <- selected_files[grep("\\.jpg", selected_files, invert = TRUE, ignore.case = TRUE)]
+      selected_files <- selected_files[grep("\\.jpg$", selected_files, invert = TRUE, ignore.case = TRUE)]
     }
 
     # Don't install DNA if not required
     if (!download_dna) {
-      selected_files <- selected_files[grep("\\.ab1", selected_files, invert = TRUE, ignore.case = TRUE)]
+      selected_files <- selected_files[grep("\\.ab1$", selected_files, invert = TRUE, ignore.case = TRUE)]
     }
 
     # If there are matching files, extract only those files

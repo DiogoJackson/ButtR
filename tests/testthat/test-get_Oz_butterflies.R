@@ -9,7 +9,7 @@
 # 2. Returns the name of a directory to be used to install into. The directory
 # will be deleted once the test is complete
 prepareTest <- function(env = parent.frame()) {
-  testthat::local_mocked_bindings(ListDbsFiles = function() {
+  testthat::local_mocked_bindings(ListDbsFiles = function(db_version) {
     listLocalFiles(testthat::test_path("testdata/repo"))
   }, .env = env)
 

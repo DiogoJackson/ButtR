@@ -2,19 +2,21 @@
 % Please edit documentation in R/summarise.R
 \name{Oz_butterflies_summary}
 \alias{Oz_butterflies_summary}
-\title{Summarise contents of the OzButterflies database}
+\title{Summarise contents of the locally installed OzButterflies database}
 \usage{
 Oz_butterflies_summary(
   db_folder = "OzButterflies",
-  imgExt = "\\\\.ARW$|\\\\.arw$"
+  imgExt = "\\\\.DNG$|\\\\.dng$|\\\\.ARW$|\\\\.arw$"
 )
 }
 \arguments{
 \item{db_folder}{Path of folder that contains the OzButterflies database.}
 
 \item{imgExt}{Regular expression used to identify files to be counted as
-images. Default is \code{.ARW} files which are the RGB and UV photos of
-specimens.}
+images. Default is \code{.DNG} or \code{.ARW} files which are the RGB and UV photos
+of specimens. DNG is the Adobe open Digital Negative format and used in
+version 4 (and above) of the database, while ARW is the Sony raw file
+format, and used in versions 1, 2 and 3.}
 }
 \value{
 Data frame with 1 row and columns that summarise the database
@@ -23,5 +25,5 @@ the entire database, regardless of whether the entire database or a subset
 is installed locally.
 }
 \description{
-Summarise contents of the OzButterflies database
+Summarise contents of the locally installed OzButterflies database
 }
