@@ -119,17 +119,17 @@ The OzButterflies Database has five folders for butterfly families (Papilionidae
 -   📁 Pieridae
     -   📁 Eurema_hecabe
         -   📁 1
-            -   📄 1-v-RGB.ARW (Ventral wing surfaces photographed in
+            -   📄 1-v-RGB.dng (Ventral wing surfaces photographed in
                 visible light)
-            -   📄 1-d-RGB.ARW (Dorsal wing surfaces photographed in
+            -   📄 1-d-RGB.dng (Dorsal wing surfaces photographed in
                 visible light)
-            -   📄 1-v-UV.ARW (Ventral wing surfaces photographed in
+            -   📄 1-v-UV.dng (Ventral wing surfaces photographed in
                 ultraviolet light)
-            -   📄 1-d-UV.ARW (Dorsal wing surfaces photographed in
+            -   📄 1-d-UV.dng (Dorsal wing surfaces photographed in
                 ultraviolet light)
-            -   📄 1-RGB.ARW (Dorsal and ventral wing surfaces
+            -   📄 1-RGB.dng (Dorsal and ventral wing surfaces
                 photographed in visible light - non-pinned)
-            -   📄 1-UV.ARW (Dorsal and ventral wing surfaces
+            -   📄 1-UV.dng (Dorsal and ventral wing surfaces
                 photographed in ultraviolet light - non-pinned)
             -   📄 1-f.ab1 (CO1 gene sequenced forward - DNA)
             -   📄 1-d.jpeg (Reference image for speced patch
