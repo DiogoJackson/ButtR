@@ -1,12 +1,16 @@
 Package: ButtR
 Type: Package
-Title: Downloading OzButterflies database
-Version: 0.1.0
+Title: Download and Extract Data from the OzButterflies Database
+Version: 1.1
 Authors@R: c(person("Diogo","Silva", email = "diogo.silva.094@ufrn.edu.br", role = c("aut", "cre"),
                     comment = c(ORCID = "0000-0002-0887-2001")),
              person("Jim", "McLean", email = "jim_mclean@optusnet.com.au", role = c("aut"),
                     comment = c(ORCID = "0000-0001-6229-7063")))
-Description: ButtR is an R package designed to simplify the download and extraction of the OzButterflies Database, a large dataset containing comprehensive records of reflectance spectra, calibrated photographs and CO1 sequences of Australian butterflies (Reference).    The main function of the package, `get_Oz_butterflies`, downloads the database from the OzButterflies website and extracts the files using multiples filters to a specified directory.
+Description: Provides tools to download and extract data from the 
+    OzButterflies Database, which contains reflectance spectra, 
+    calibrated photographs, and COI sequences of Australian butterflies. 
+    The main function, `get_Oz_butterflies()`, downloads the database 
+    and extracts selected files to a specified directory using user-defined filters.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
