@@ -2,7 +2,7 @@ Package: ButtR
 Type: Package
 Title: Download and Extract Data from the OzButterflies Database
 Version: 1.1
-Authors@R: c(person("Diogo","Silva", email = "diogo.silva.094@ufrn.edu.br", role = c("aut", "cre"),
+Authors@R: c(person("Diogo","Silva", email = "diogojackson@hotmail.com", role = c("aut", "cre"),
                     comment = c(ORCID = "0000-0002-0887-2001")),
              person("Jim", "McLean", email = "jim_mclean@optusnet.com.au", role = c("aut"),
                     comment = c(ORCID = "0000-0001-6229-7063")))
