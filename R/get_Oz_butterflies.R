@@ -99,13 +99,13 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' # Get all species within the Nymphalidae family
 #' get_Oz_butterflies(family = "Nymphalidae")
 #'
-#' # Get raw files in .ARW format (from version 3 of the database),
+#' # Get raw files in .DNG format (from version 3 of the database),
 #' # using the "curl" download method (Curl must be installed on your system)
 #' options(download.file.method = "curl")
-#' get_Oz_butterflies(download_images = "raw", db_version = 3, species = c("Delias aganippe", "Delias mysis"))
+#' get_Oz_butterflies(download_images = "raw", db_version = 3, species = c("Delias aganippe"))
 #'
 #' # Get raw files in .DNG format (from version 4 of the database)
-#' get_Oz_butterflies(download_images = "raw", db_version = 4, species = c("Delias aganippe", "Delias mysis"))
+#' get_Oz_butterflies(download_images = "raw", db_version = 4, species = c("Delias aganippe"))
 #'
 #' }
 #'
