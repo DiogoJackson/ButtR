@@ -16,7 +16,7 @@ specific subsets of the database by applying multiple filters (parameters), prov
 tailored access to the data based on user-defined criteria.
 }
 \author{
-\strong{Maintainer}: Diogo Silva \email{diogo.silva.094@ufrn.edu.br} (\href{https://orcid.org/0000-0002-0887-2001}{ORCID})
+\strong{Maintainer}: Diogo Silva \email{diogojackson@hotmail.com} (\href{https://orcid.org/0000-0002-0887-2001}{ORCID})
 
 Authors:
 \itemize{
