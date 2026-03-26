@@ -5,7 +5,7 @@
 BUTTR_DEPOSITION <- "15881960"
 
 # Deposition IDs for specific versions
-BUTTR_DEP_V <- c("15881961", "17178034", "17533293")
+BUTTR_DEP_V <- c("15881961", "17178034", "17533293", "19019034")
 
 # Zenodo API constants
 ZENODO_DOI_PREFIX <- "https://doi.org/10.5281/zenodo."
@@ -25,11 +25,13 @@ zenodoVersionToDepo <- function(version) {
   }
 }
 
-# Given the record ID from the concept DOI (i.e. the DOI that resolves to the
-# latest version, whatever that is), returns the record URL for the latest
-# version
-getLatestVersionURL <- function(deposition = BUTTR_DEPOSITION) {
-  # Fetch the DOI record. It will automatically redirect us to the newest version
+# Given the record ID from either a specific verion or the concept DOI (i.e. the
+# DOI that resolves to the latest version, whatever that is), returns the record
+# URL for the appropriate version
+getZenodoVersionURL <- function(deposition = BUTTR_DEPOSITION) {
+  # Fetch the DOI record. If the deposition is for the latest version rather
+  # than an explicit version, it will automatically redirect us to the newest
+  # version
   resp <- httr::HEAD(paste0(ZENODO_DOI_PREFIX, deposition))
   httr::stop_for_status(resp)
   # We have been redirected to the web page for the latest version. Derive the
@@ -53,7 +55,7 @@ getJSON <- function(url) {
 #
 listFilesInZenodo <- function(deposition) {
   # List the Zenodo record
-  rec <- getJSON(getLatestVersionURL(deposition))
+  rec <- getJSON(getZenodoVersionURL(deposition))
 
   # AI suggests that downloads could be made more reliable by using the direct
   # Zenodo link rather than the API link, but results were not more reliable for me
