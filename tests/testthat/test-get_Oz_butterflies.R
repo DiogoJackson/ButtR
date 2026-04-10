@@ -35,7 +35,7 @@ dirsAtLevel <- function(dir, level) {
 test_that("test get_Oz_butterflies", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus"), db_folder = dbDir)
+  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus"), save_folder = dbDir)
 
   expect_true(dir.exists(dbDir))
   expect_true(file.exists(file.path(dbDir, "Oz_butterflies.xlsx")))
@@ -70,7 +70,7 @@ test_that("test get_Oz_butterflies", {
 test_that("image types 1", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(species = c("Suniana sunias", "Papilio aegeus"), download_images = "jpeg", db_folder = dbDir)
+  get_Oz_butterflies(species = c("Suniana sunias", "Papilio aegeus"), download_images = "jpeg", save_folder = dbDir)
 
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186L.jpg")))
   # Raw files shouldn't be downloaded
@@ -81,7 +81,7 @@ test_that("image types 1", {
 test_that("image types 2", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(species = c("Suniana sunias", "Telicota mesoptis", "Papilio aegeus"), download_images = "raw", db_folder = dbDir)
+  get_Oz_butterflies(species = c("Suniana sunias", "Telicota mesoptis", "Papilio aegeus"), download_images = "raw", save_folder = dbDir)
 
   # Only raw files should be downloaded
   expect_false(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186L.jpg")))
@@ -98,11 +98,11 @@ test_that("get family", {
   dbDir <- prepareTest()
 
   # Invalid family name should fail
-  expect_error(get_Oz_butterflies(family = "Bad one", db_folder = dbDir), "requested family does not")
-  expect_error(get_Oz_butterflies(family = c("Bad one", "Bad two"), db_folder = dbDir), "requested families do not")
+  expect_error(get_Oz_butterflies(family = "Bad one", save_folder = dbDir), "requested family does not")
+  expect_error(get_Oz_butterflies(family = c("Bad one", "Bad two"), save_folder = dbDir), "requested families do not")
 
   fams <- c("Hesperiidae", "Nymphalidae")
-  get_Oz_butterflies(family = fams, db_folder = dbDir)
+  get_Oz_butterflies(family = fams, save_folder = dbDir)
   got <- dirsAtLevel(dbDir, 1)
   expect_equal(got, fams)
 
@@ -112,10 +112,10 @@ test_that("get genus", {
   dbDir <- prepareTest()
 
   # Invalid genus name should fail
-  expect_error(get_Oz_butterflies(genus = "Bad one", db_folder = dbDir))
+  expect_error(get_Oz_butterflies(genus = "Bad one", save_folder = dbDir))
 
   genera <- c("Notocrypta", "Telicota", "Euploea")
-  get_Oz_butterflies(genus = genera, db_folder = dbDir)
+  get_Oz_butterflies(genus = genera, save_folder = dbDir)
   got <- dirsAtLevel(dbDir, 2)
   expect_equal(sort(got), sort(c("Notocrypta_waigensis", "Telicota_mesoptis", "Euploea_darchia")))
 
@@ -125,10 +125,10 @@ test_that("get combines", {
   # Test that calling get_Oz_butterflies twice combines the data from both calls into the local database
   dbDir <- prepareTest()
   # Get one species
-  get_Oz_butterflies(species = "Suniana sunias", db_folder = dbDir)
+  get_Oz_butterflies(species = "Suniana sunias", save_folder = dbDir)
   expect_equal(dirsAtLevel(dbDir, 2), "Suniana_sunias")
   # Now get a second species
-  get_Oz_butterflies(species = "Papilio aegeus", db_folder = dbDir)
+  get_Oz_butterflies(species = "Papilio aegeus", save_folder = dbDir)
   # Both species should now be in the database
   expect_equal(dirsAtLevel(dbDir, 2), sort(c("Suniana_sunias", "Papilio_aegeus")))
 })
@@ -137,7 +137,7 @@ test_that("get combines", {
 test_that("get site", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(site = c("BG"), db_folder = dbDir)
+  get_Oz_butterflies(site = c("BG"), save_folder = dbDir)
 
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_UV.ARW")))
@@ -159,7 +159,7 @@ test_that("get site", {
 test_that("get reflectance", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(spectra = "y", db_folder = dbDir)
+  get_Oz_butterflies(spectra = "y", save_folder = dbDir)
 
   # No ProcSpec files in test Notocrypta_waigensis/4 dir
   # expect_true(file.exists(file.path(dbDir, "Hesperiidae/Notocrypta_waigensis/4/4_RGB.ARW")))
@@ -188,7 +188,7 @@ test_that("get reflectance", {
 test_that("get sex", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(sex = c("Male"), db_folder = dbDir)
+  get_Oz_butterflies(sex = c("Male"), save_folder = dbDir)
 
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
@@ -211,11 +211,11 @@ test_that("get sex", {
   expect_equal(sort(unname(gotSp)), sort(c("Papilio_aegeus", "Telicota_mesoptis")))
 })
 
-#Need expect_error to test invalid year ####
+# Need expect_error to test invalid year ####
 test_that("get year", {
   dbDir <- prepareTest()
 
-  get_Oz_butterflies(year = c("2022"), db_folder = dbDir)
+  get_Oz_butterflies(year = c("2022"), save_folder = dbDir)
 
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_UV.ARW")))
@@ -247,10 +247,10 @@ test_that("get id", {
   dbDir <- prepareTest()
 
   # Invalid genus name should fail
-  expect_error(get_Oz_butterflies(sampleIDs = "bad one", db_folder = dbDir))
+  expect_error(get_Oz_butterflies(sampleIDs = "bad one", save_folder = dbDir))
 
   ids <- c("16")
-  get_Oz_butterflies(sampleIDs = ids, db_folder = dbDir)
+  get_Oz_butterflies(sampleIDs = ids, save_folder = dbDir)
   got <- dirsAtLevel(dbDir, 3)
   expect_equal(sort(got), sort(c("16")))
   expect_false(dir.exists(file.path(dbDir, "19")))
@@ -260,16 +260,16 @@ test_that("get DNA", {
   dbDir <- prepareTest()
 
   # Install species that have DNA but we don't want to install it. Do this
-  # BEFORe the next test because get_Oz_butterflies adds to the existing
+  # BEFORE the next test because get_Oz_butterflies adds to the existing
   # installation, it doesn't remove existing files.
-  get_Oz_butterflies(download_dna = FALSE, species = c("Suniana sunias", "Euploea darchia"), db_folder = dbDir)
+  get_Oz_butterflies(download_dna = FALSE, species = c("Suniana sunias", "Euploea darchia"), save_folder = dbDir)
 
   # DNA files exist in database but should not have been installed
   expect_false(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186_f.ab1")))
   expect_false(file.exists(file.path(dbDir, "Nymphalidae/Euploea_darchia/551/555_f.ab1")))
 
   # Install 4 species, 2 with and 2 without DNA (in the test database)
-  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus", "Suniana sunias", "Euploea darchia"), db_folder = dbDir)
+  get_Oz_butterflies(species = c("Telicota mesoptis", "Papilio aegeus", "Suniana sunias", "Euploea darchia"), save_folder = dbDir)
 
   # Check that files that should not exist do not exist
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Telicota_mesoptis/16/16_RGB.ARW")))
@@ -281,4 +281,23 @@ test_that("get DNA", {
   expect_true(file.exists(file.path(dbDir, "Hesperiidae/Suniana_sunias/186/186_f.ab1")))
   expect_true(file.exists(file.path(dbDir, "Nymphalidae/Euploea_darchia/551/555_f.ab1")))
 
+})
+
+test_that("default save_folder uses OzButterflies folder name", {
+  testthat::local_mocked_bindings(ListDbsFiles = function(db_version) {
+    listLocalFiles(testthat::test_path("testdata/repo"))
+  })
+
+  old_wd <- getwd()
+  tmp <- withr::local_tempdir()
+  setwd(tmp)
+  withr::defer(setwd(old_wd))
+
+  get_Oz_butterflies(
+    species = "Telicota mesoptis",
+    save_folder = "default"
+  )
+
+  expect_true(dir.exists(file.path(tmp, "OzButterflies")))
+  expect_true(file.exists(file.path(tmp, "OzButterflies", "Oz_butterflies.csv")))
 })

@@ -1,15 +1,14 @@
 Package: ButtR
 Type: Package
-Title: Download and Extract Data from the OzButterflies Database
+Title: Download and Extract Data from the 'OzButterflies' Database
 Version: 1.1
 Authors@R: c(person("Diogo","Silva", email = "diogojackson@hotmail.com", role = c("aut", "cre"),
                     comment = c(ORCID = "0000-0002-0887-2001")),
              person("Jim", "McLean", email = "jim_mclean@optusnet.com.au", role = c("aut"),
                     comment = c(ORCID = "0000-0001-6229-7063")))
-Description: Provides tools to download and extract data from the 
-    OzButterflies Database, which contains reflectance spectra, 
-    calibrated photographs, and COI sequences of Australian butterflies. 
-    The main function, `get_Oz_butterflies()`, downloads the database 
+Description: Provides tools to download and extract data from the 'OzButterflies' Database <https://doi.org/10.5281/zenodo.19019034>, 
+    which contains reflectance spectra, calibrated photographs, and cytochrome c oxidase subunit I (COI) sequences of 
+    Australian butterflies. The main function get_Oz_butterflies() downloads the database 
     and extracts selected files to a specified directory using user-defined filters.
 License: MIT + file LICENSE
 Encoding: UTF-8

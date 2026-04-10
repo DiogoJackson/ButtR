@@ -15,7 +15,7 @@ get_Oz_butterflies(
   sampleIDs = NULL,
   download_images = c("raw", "jpeg"),
   download_dna = TRUE,
-  db_folder = "OzButterflies",
+  save_folder = NULL,
   timeout = 10 * 60 * 60,
   quiet = FALSE,
   db_version = NA
@@ -55,7 +55,10 @@ the Adobe Digital negative format (\code{.DNG}) (see the \code{db_version} param
 \item{download_dna}{If \code{TRUE} (the default), DNA files (.ab1) will be
 downloaded and installed. If \code{FALSE}, DNA files will not be installed.}
 
-\item{db_folder}{Path of folder that will contain the downloaded database.}
+\item{save_folder}{Folder where the downloaded database will be saved. This
+argument must be provided by the user. If \code{save_folder = "default"},
+the database will be saved in a folder called \code{"OzButterflies"} in the
+current working directory.}
 
 \item{timeout}{Maximum time allowed (in seconds) to download \emph{each} file;
 default is 10 hours. The time required will depend on the speed of your
@@ -70,13 +73,13 @@ and informational messages are printed to the console. Specify \code{quiet
 
 \item{db_version}{Version of the database to download. \code{NA} (the default)
 means download the latest version. An integer version number will download
-that version of the database. Note that in version \code{3} and earlier, raw
-image files were in \code{.ARW} format. Starting from version 4, raw images are
-in \code{.DNG} format.}
+that version of the database. Note that in version \code{3} and earlier,
+raw image files were in \code{.ARW} format. Starting from version 4, raw
+images are in \code{.DNG} format.}
 }
 \value{
-The installation folder (\code{db_folder}) in canonical form in invisible
-form (which means it is not automatically printed)
+The installation folder (\code{save_folder}) in canonical form in
+invisible form (which means it is not automatically printed).
 }
 \description{
 Simplifies downloading the \emph{OzButterflies database} (Ref) to a local folder.
@@ -98,27 +101,36 @@ option; for example, \code{options(download.file.method = "curl")}. See the
 \code{\link[utils]{download.file}} help for further details.
 }
 \examples{
-\dontrun{
-# Download the full OzButterflies Database
-get_Oz_butterflies()
+\donttest{
+# Download the full OzButterflies Database using the default folder name
+get_Oz_butterflies(save_folder = "default")
 
 # Get data only for Delias aganippe
-get_Oz_butterflies(species = "Delias aganippe")
+get_Oz_butterflies(species = "Delias aganippe", save_folder = "Delias_aganippe") #salve_folder can be what you want
 
 # Get data for all species of the genus Delias
-get_Oz_butterflies(genus = "Delias")
+get_Oz_butterflies(genus = "Delias", save_folder = "Delias_database")
 
 # Get all species within the Nymphalidae family
-get_Oz_butterflies(family = "Nymphalidae")
+get_Oz_butterflies(family = "Nymphalidae", save_folder = "Nymphalidae_data")
 
 # Get raw files in .ARW format (from version 3 of the database),
 # using the "curl" download method (Curl must be installed on your system)
 options(download.file.method = "curl")
-get_Oz_butterflies(download_images = "raw", db_version = 3, species = c("Delias aganippe"))
+get_Oz_butterflies(
+  download_images = "raw",
+  db_version = 3,
+  species = "Delias aganippe",
+  save_folder = "Delias_raw_ARW"
+)
 
 # Get raw files in .DNG format (from version 4 of the database)
-get_Oz_butterflies(download_images = "raw", db_version = 4, species = c("Delias aganippe"))
-
+get_Oz_butterflies(
+  download_images = "raw",
+  db_version = 4,
+  species = "Delias aganippe",
+  save_folder = "Delias_raw_DNG"
+)
 }
 
 }

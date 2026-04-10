@@ -14,12 +14,17 @@ downloadFiles <- function(files, subset, destDir, quiet) {
 checkValuesInSet <- function(what1, whatn, requested, available) {
   badVals <- !tolower(requested) %in% unique(tolower(available))
   if (any(badVals)) {
-    if (sum(badVals) == 1)
-      stop(sprintf("The following requested %s does not exist in the OzButterflies database: %s",
-                   what1, requested[badVals]))
-    else
-      stop(sprintf("The following requested %s do not exist in the OzButterflies database: %s",
-                 whatn, paste(requested[badVals], collapse = ", ")))
+    if (sum(badVals) == 1) {
+      stop(sprintf(
+        "The following requested %s does not exist in the OzButterflies database: %s",
+        what1, requested[badVals]
+      ))
+    } else {
+      stop(sprintf(
+        "The following requested %s do not exist in the OzButterflies database: %s",
+        whatn, paste(requested[badVals], collapse = ", ")
+      ))
+    }
   }
 }
 
@@ -66,7 +71,10 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   the Adobe Digital negative format (`.DNG`) (see the `db_version` parameter).
 #' @param download_dna If \code{TRUE} (the default), DNA files (.ab1) will be
 #'   downloaded and installed. If \code{FALSE}, DNA files will not be installed.
-#' @param db_folder Path of folder that will contain the downloaded database.
+#' @param save_folder Folder where the downloaded database will be saved. This
+#'   argument must be provided by the user. If \code{save_folder = "default"},
+#'   the database will be saved in a folder called \code{"OzButterflies"} in the
+#'   current working directory.
 #' @param timeout Maximum time allowed (in seconds) to download _each_ file;
 #'   default is 10 hours. The time required will depend on the speed of your
 #'   Internet connection and the parts of the database that you choose to
@@ -76,66 +84,84 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   download progress for _each_ file as it is downloaded from the repository,
 #'   and informational messages are printed to the console. Specify \code{quiet
 #'   = TRUE} to prevent progress bar display.
-#' @param db_version Version of the database to download. `NA` (the default)
+#' @param db_version Version of the database to download. \code{NA} (the default)
 #'   means download the latest version. An integer version number will download
-#'   that version of the database. Note that in version `3` and earlier, raw
-#'   image files were in `.ARW` format. Starting from version 4, raw images are
-#'   in `.DNG` format.
+#'   that version of the database. Note that in version \code{3} and earlier,
+#'   raw image files were in \code{.ARW} format. Starting from version 4, raw
+#'   images are in \code{.DNG} format.
 #'
-#' @returns The installation folder (`db_folder`) in canonical form in invisible
-#'   form (which means it is not automatically printed)
+#' @returns The installation folder (\code{save_folder}) in canonical form in
+#'   invisible form (which means it is not automatically printed).
 #'
 #' @examples
-#' \dontrun{
-#' # Download the full OzButterflies Database
-#' get_Oz_butterflies()
+#' \donttest{
+#' # Download the full OzButterflies Database using the default folder name
+#' get_Oz_butterflies(save_folder = "default")
 #'
 #' # Get data only for Delias aganippe
-#' get_Oz_butterflies(species = "Delias aganippe")
+#' get_Oz_butterflies(species = "Delias aganippe", save_folder = "Delias_aganippe")
 #'
 #' # Get data for all species of the genus Delias
-#' get_Oz_butterflies(genus = "Delias")
+#' get_Oz_butterflies(genus = "Delias", save_folder = "Delias_database")
 #'
 #' # Get all species within the Nymphalidae family
-#' get_Oz_butterflies(family = "Nymphalidae")
+#' get_Oz_butterflies(family = "Nymphalidae", save_folder = "Nymphalidae_data")
 #'
 #' # Get raw files in .ARW format (from version 3 of the database),
 #' # using the "curl" download method (Curl must be installed on your system)
-#' options(download.file.method = "curl")
-#' get_Oz_butterflies(download_images = "raw", db_version = 3, species = c("Delias aganippe"))
+#'
+#' get_Oz_butterflies(
+#'   download_images = "raw",
+#'   db_version = 3,
+#'   species = "Delias aganippe",
+#'   save_folder = "Delias_raw_ARW"
+#' )
 #'
 #' # Get raw files in .DNG format (from version 4 of the database)
-#' get_Oz_butterflies(download_images = "raw", db_version = 4, species = c("Delias aganippe"))
-#'
+#' get_Oz_butterflies(
+#'   download_images = "raw",
+#'   db_version = 4,
+#'   species = "Delias aganippe",
+#'   save_folder = "Delias_raw_DNG"
+#' )
 #' }
 #'
 #' @export
 get_Oz_butterflies <- function(species = NULL,
-                        genus = NULL,
-                        family = NULL,
-                        sex = NULL,
-                        year = NULL,
-                        site = NULL,
-                        spectra = NULL,
-                        sampleIDs = NULL,
-                        download_images = c("raw", "jpeg"),
-                        download_dna = TRUE,
-                        db_folder = "OzButterflies",
-                        timeout = 10 * 60 * 60,
-                        quiet = FALSE,
-                        db_version = NA) {
+                               genus = NULL,
+                               family = NULL,
+                               sex = NULL,
+                               year = NULL,
+                               site = NULL,
+                               spectra = NULL,
+                               sampleIDs = NULL,
+                               download_images = c("raw", "jpeg"),
+                               download_dna = TRUE,
+                               save_folder = NULL,
+                               timeout = 10 * 60 * 60,
+                               quiet = FALSE,
+                               db_version = NA) {
 
   download_images <- match.arg(download_images, several.ok = TRUE)
+
+  # Require the user to provide the destination folder
+  if (is.null(save_folder)) {
+    stop("Please provide 'save_folder' to specify where the OzButterflies database should be downloaded.")
+  }
+
+  # Use the original default folder name if requested explicitly
+  if (tolower(save_folder) == "default") {
+    save_folder <- "OzButterflies"
+  }
 
   # Increase default timeout for download.file
   oldTimeout <- getOption("timeout")
   on.exit(options(timeout = oldTimeout), add = TRUE)
   options(timeout = max(timeout, oldTimeout))
 
-  # Check if the "db_folder" directory (where the data will be stored) exists.
-  # If it doesn't exist, create the folder.
-  if (!dir.exists(db_folder)) {
-    dir.create(db_folder, recursive = TRUE)
+  # Check if the destination directory exists; if not, create it
+  if (!dir.exists(save_folder)) {
+    dir.create(save_folder, recursive = TRUE)
   }
 
   # List all files in the database
@@ -146,10 +172,10 @@ get_Oz_butterflies <- function(species = NULL,
   if (length(metadata) == 0) {
     stop("Internal error: Unable to locate OzButterflies metadata file in repository")
   }
-  downloadFiles(files, metadata, db_folder, quiet)
+  downloadFiles(files, metadata, save_folder, quiet)
 
   # Identify the local spreadsheet file path
-  spread_sheet <- file.path(db_folder, "Oz_butterflies.csv")
+  spread_sheet <- file.path(save_folder, "Oz_butterflies.csv")
 
   # Read metadata
   meta_data <- utils::read.csv(spread_sheet)
@@ -199,11 +225,10 @@ get_Oz_butterflies <- function(species = NULL,
     rows <- rows & tolower(meta_data$Sex) %in% tolower(sex)
   }
 
-  # Filtrando apenas os anos especificados
+  # Filter only the specified years
   if (length(year) > 0) {
-    # Extract year from date
-    ddate <- as.Date(meta_data$Date) # Convert text to Date object
-    dyear <- format(ddate, "%Y")  # extract year from date
+    ddate <- as.Date(meta_data$Date)
+    dyear <- format(ddate, "%Y")
     rows <- rows & dyear %in% as.character(year)
   }
 
@@ -217,16 +242,19 @@ get_Oz_butterflies <- function(species = NULL,
   zips <- unique(meta_data$Repo.zipname[rows])
 
   # Create a temporary directory to store zip files
-  tempdir <- tempdir()
+  tmp_dir <- tempdir()
 
   # Iterate over each zip file
   for (zip in zips) {
     # Define the path to be saved temporarily
-    zip_path <- file.path(tempdir, zip)
+    zip_path <- file.path(tmp_dir, zip)
 
     # Get the URL of the corresponding zip file
     if (!zip %in% files$file) {
-      stop(sprintf("Internal error: zip file %s not found in repository: files in repo are %s", zip, paste(files$file, collapse = ", ")))
+      stop(sprintf(
+        "Internal error: zip file %s not found in repository: files in repo are %s",
+        zip, paste(files$file, collapse = ", ")
+      ))
     }
     url <- files$url[files$file == zip]
 
@@ -256,12 +284,12 @@ get_Oz_butterflies <- function(species = NULL,
 
     # If there are matching files, extract only those files
     if (length(selected_files) > 0) {
-      utils::unzip(zip_path, files = selected_files, exdir = db_folder)
+      utils::unzip(zip_path, files = selected_files, exdir = save_folder)
     }
 
     # Delete the zip file so that disk space use is minimised
     unlink(zip_path)
   }
 
-  invisible(normalizePath(db_folder))
+  invisible(normalizePath(save_folder))
 }
