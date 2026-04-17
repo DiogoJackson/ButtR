@@ -5,12 +5,12 @@
 \title{Summarise contents of the locally installed OzButterflies database}
 \usage{
 Oz_butterflies_summary(
-  db_folder = "OzButterflies",
+  save_folder = "OzButterflies",
   imgExt = "\\\\.DNG$|\\\\.dng$|\\\\.ARW$|\\\\.arw$"
 )
 }
 \arguments{
-\item{db_folder}{Path of folder that contains the OzButterflies database.}
+\item{save_folder}{Path of folder that contains the OzButterflies database.}
 
 \item{imgExt}{Regular expression used to identify files to be counted as
 images. Default is \code{.DNG} or \code{.ARW} files which are the RGB and UV photos

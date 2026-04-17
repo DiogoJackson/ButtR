@@ -56,9 +56,7 @@ the Adobe Digital negative format (\code{.DNG}) (see the \code{db_version} param
 downloaded and installed. If \code{FALSE}, DNA files will not be installed.}
 
 \item{save_folder}{Folder where the downloaded database will be saved. This
-argument must be provided by the user. If \code{save_folder = "default"},
-the database will be saved in a folder called \code{"OzButterflies"} in the
-current working directory.}
+argument must be provided by the user.}
 
 \item{timeout}{Maximum time allowed (in seconds) to download \emph{each} file;
 default is 10 hours. The time required will depend on the speed of your
@@ -101,12 +99,12 @@ option; for example, \code{options(download.file.method = "curl")}. See the
 \code{\link[utils]{download.file}} help for further details.
 }
 \examples{
-\donttest{
-# Download the full OzButterflies Database using the default folder name
-get_Oz_butterflies(save_folder = "default")
+\dontrun{
+# Download the full OzButterflies Database
+get_Oz_butterflies(save_folder = "OzButterflies")
 
 # Get data only for Delias aganippe
-get_Oz_butterflies(species = "Delias aganippe", save_folder = "Delias_aganippe") #salve_folder can be what you want
+get_Oz_butterflies(species = "Delias aganippe", save_folder = "Delias_aganippe")
 
 # Get data for all species of the genus Delias
 get_Oz_butterflies(genus = "Delias", save_folder = "Delias_database")
@@ -114,9 +112,7 @@ get_Oz_butterflies(genus = "Delias", save_folder = "Delias_database")
 # Get all species within the Nymphalidae family
 get_Oz_butterflies(family = "Nymphalidae", save_folder = "Nymphalidae_data")
 
-# Get raw files in .ARW format (from version 3 of the database),
-# using the "curl" download method (Curl must be installed on your system)
-options(download.file.method = "curl")
+# Get raw files in .ARW format (from version 3 of the database)
 get_Oz_butterflies(
   download_images = "raw",
   db_version = 3,

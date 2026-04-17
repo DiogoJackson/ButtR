@@ -282,22 +282,3 @@ test_that("get DNA", {
   expect_true(file.exists(file.path(dbDir, "Nymphalidae/Euploea_darchia/551/555_f.ab1")))
 
 })
-
-test_that("default save_folder uses OzButterflies folder name", {
-  testthat::local_mocked_bindings(ListDbsFiles = function(db_version) {
-    listLocalFiles(testthat::test_path("testdata/repo"))
-  })
-
-  old_wd <- getwd()
-  tmp <- withr::local_tempdir()
-  setwd(tmp)
-  withr::defer(setwd(old_wd))
-
-  get_Oz_butterflies(
-    species = "Telicota mesoptis",
-    save_folder = "default"
-  )
-
-  expect_true(dir.exists(file.path(tmp, "OzButterflies")))
-  expect_true(file.exists(file.path(tmp, "OzButterflies", "Oz_butterflies.csv")))
-})

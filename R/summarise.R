@@ -2,7 +2,7 @@
 
 #' Summarise contents of the locally installed OzButterflies database
 #'
-#' @param db_folder Path of folder that contains the OzButterflies database.
+#' @param save_folder Path of folder that contains the OzButterflies database.
 #' @param imgExt Regular expression used to identify files to be counted as
 #'   images. Default is `.DNG` or `.ARW` files which are the RGB and UV photos
 #'   of specimens. DNG is the Adobe open Digital Negative format and used in
@@ -17,11 +17,11 @@
 #' @importFrom stats aggregate median
 #'
 #' @export
-Oz_butterflies_summary <- function(db_folder = "OzButterflies", imgExt = "\\.DNG$|\\.dng$|\\.ARW$|\\.arw$") {
+Oz_butterflies_summary <- function(save_folder = "OzButterflies", imgExt = "\\.DNG$|\\.dng$|\\.ARW$|\\.arw$") {
   # Read meta data
-  descr <- read.csv(file.path(db_folder, "Oz_butterflies.csv"))
+  descr <- read.csv(file.path(save_folder, "Oz_butterflies.csv"))
 
-  imgs <- list.files(db_folder, pattern = imgExt, recursive = TRUE)
+  imgs <- list.files(save_folder, pattern = imgExt, recursive = TRUE)
 
   # Individuals per species
   ips <- aggregate(list(Count = descr$ID), by = list(Species = descr$Binomial), FUN = length)

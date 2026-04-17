@@ -72,9 +72,7 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' @param download_dna If \code{TRUE} (the default), DNA files (.ab1) will be
 #'   downloaded and installed. If \code{FALSE}, DNA files will not be installed.
 #' @param save_folder Folder where the downloaded database will be saved. This
-#'   argument must be provided by the user. If \code{save_folder = "default"},
-#'   the database will be saved in a folder called \code{"OzButterflies"} in the
-#'   current working directory.
+#'   argument must be provided by the user.
 #' @param timeout Maximum time allowed (in seconds) to download _each_ file;
 #'   default is 10 hours. The time required will depend on the speed of your
 #'   Internet connection and the parts of the database that you choose to
@@ -94,9 +92,9 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #'   invisible form (which means it is not automatically printed).
 #'
 #' @examples
-#' \donttest{
-#' # Download the full OzButterflies Database using the default folder name
-#' get_Oz_butterflies(save_folder = "default")
+#' \dontrun{
+#' # Download the full OzButterflies Database
+#' get_Oz_butterflies(save_folder = "OzButterflies")
 #'
 #' # Get data only for Delias aganippe
 #' get_Oz_butterflies(species = "Delias aganippe", save_folder = "Delias_aganippe")
@@ -107,9 +105,7 @@ checkValuesInSet <- function(what1, whatn, requested, available) {
 #' # Get all species within the Nymphalidae family
 #' get_Oz_butterflies(family = "Nymphalidae", save_folder = "Nymphalidae_data")
 #'
-#' # Get raw files in .ARW format (from version 3 of the database),
-#' # using the "curl" download method (Curl must be installed on your system)
-#'
+#' # Get raw files in .ARW format (from version 3 of the database)
 #' get_Oz_butterflies(
 #'   download_images = "raw",
 #'   db_version = 3,
@@ -147,11 +143,6 @@ get_Oz_butterflies <- function(species = NULL,
   # Require the user to provide the destination folder
   if (is.null(save_folder)) {
     stop("Please provide 'save_folder' to specify where the OzButterflies database should be downloaded.")
-  }
-
-  # Use the original default folder name if requested explicitly
-  if (tolower(save_folder) == "default") {
-    save_folder <- "OzButterflies"
   }
 
   # Increase default timeout for download.file

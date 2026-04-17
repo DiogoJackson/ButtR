@@ -88,17 +88,31 @@ listFilesInZenodo <- function(deposition) {
 # get_species(...)
 #
 listLocalFiles <- function(path, encode = FALSE) {
-  files <- list.files(path)
+  files <- list.files(path, recursive = TRUE)
+
   # Remove unwanted files
   files <- grep("^~\\$", files, invert = TRUE, value = TRUE)
+
+  # Minimal fix: return empty data frame if no files were found
+  if (length(files) == 0) {
+    return(data.frame(
+      file = character(0),
+      url = character(0),
+      stringsAsFactors = FALSE
+    ))
+  }
+
   # Construct URLs
   urls <- paste0("file://", normalizePath(file.path(path, files), winslash = "/"))
+
   if (encode) {
     urls <- utils::URLencode(urls)
   }
+
   data.frame(
     file = files,
-    url = urls
+    url = urls,
+    stringsAsFactors = FALSE
   )
 }
 
