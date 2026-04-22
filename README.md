@@ -69,35 +69,35 @@ Download the entire database:
 
 ``` r
 # Download the full OzButterflies Database
-get_Oz_butterflies()
+get_Oz_butterflies(save_folder = "OzButterflies")
 ```
 
 Download data for a specific species:
 
 ``` r
 # Get data only for Delias aganippe
-get_Oz_butterflies(species = "Delias aganippe")
+get_Oz_butterflies(species = "Delias aganippe", save_folder = "Delias_aganippe_database")
 ```
 
 Download data for a specific genus:
 
 ``` r
 # Get data for all species of the genus Delias
-get_Oz_butterflies(genus = "Delias")
+get_Oz_butterflies(genus = "Delias", save_folder = "genus_delias")
 ```
 
 Download data for a specific family:
 
 ``` r
 # Get all species within the Nymphalidae family
-get_Oz_butterflies(family = "Nymphalidae")
+get_Oz_butterflies(family = "Nymphalidae", save_folder = "nymphalidae_family")
 ```
 
 Download data by site:
 
 ``` r
 # Get all butterfly species from Cairns Botanic Gardens ("BG")
-get_Oz_butterflies(site = "BG")
+get_Oz_butterflies(site = "BG", save_folder = "BG_site")
 ```
 
 Download data for male *Delias aganippe* and *Delias mysis* from all sites with standardised collections in Brisbane:
@@ -106,7 +106,8 @@ Download data for male *Delias aganippe* and *Delias mysis* from all sites with 
 # Get data with multiple filters 
 get_Oz_butterflies(sex = "male", 
     species = c("Delias aganippe", "Delias mysis"), 
-    site = c("BBG", "CC", "OC", "LSP"))
+    site = c("BBG", "CC", "OC", "LSP"),
+    save_folder = "name_folder")
 ```
 
 ------------------------------------------------------------------------
