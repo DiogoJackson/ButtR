@@ -9,15 +9,14 @@ of the **OzButterflies Database**, a large dataset containing
 comprehensive records of reflectance spectra, calibrated photographs and CO1 sequences
 of Australian butterflies.
 
-The **OzButterflies database** can be downloaded manually from [Dryad](https://blog.datadryad.org), however it is simpler to
-use `ButtR` to do so. The database is quite large, so if the entire
+The **OzButterflies database** can be downloaded manually from [Zenodo](https://zenodo.org/records/17178034), however it is simpler to use `ButtR` to do so. The database is quite large, so if the entire
 database is not required, `ButtR` provides an efficient mechanism to
 download and install only the desired parts of the database. It is also much simpler to install
 the entire database using `ButtR` than to download and extract all of the zip files.
 
 If you use the OzButterflies database, please cite the paper: 
 
-📌 **[Citation to be added]**
+📌 **[Coming soon]**
 
 ## Why Use `ButtR`?
 
@@ -76,7 +75,7 @@ Download data for a specific species:
 
 ``` r
 # Get data only for Delias aganippe
-get_Oz_butterflies(species = "Delias aganippe", save_folder = "Delias_aganippe_database")
+get_Oz_butterflies(species = "Delias aganippe", save_folder = "choose_a_name")
 ```
 
 Download data for a specific genus:
